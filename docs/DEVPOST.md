@@ -144,8 +144,8 @@ tailwindcss, webaudio, canvas, github-actions, node.js
 
 - App listing: `[https://developers.reddit.com/apps/dalang-daily]`
 - Demo post (judges start here): `[https://www.reddit.com/r/<your_test_subreddit>/comments/...]`
-- Source code: `[https://github.com/<owner>/dalang-daily]`
-- Browser demo (same game, server logic in the page): `[https://<owner>.github.io/dalang-daily/]`
+- Source code: https://github.com/Gary029/dalang-daily
+- Browser demo (same game, server logic in the page): https://gary029.github.io/dalang-daily/
 - Video (optional, under 1 minute): `[youtube link]`
 
 ## Checklist before submitting

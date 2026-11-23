@@ -1,0 +1,54 @@
+{
+  "private": true,
+  "name": "dalang-daily",
+  "version": "0.0.0",
+  "license": "BSD-3-Clause",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "devvit playtest",
+    "local": "vite --config vite.local.config.ts",
+    "build:local": "vite build --config vite.local.config.ts",
+    "bank": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/generate-bank.ts",
+    "check:bank": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/check-bank.ts",
+    "check:bundle": "node scripts/check-bundle.mjs",
+    "deploy": "npm run test:types && npm run lint && devvit upload",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"scripts/**/*.ts\"",
+    "login": "devvit login",
+    "prettier": "prettier --write .",
+    "test": "npm run test:types && npm run lint && npm run test:unit && npm run check:bank",
+    "test:types": "tsc --build",
+    "test:unit": "node --experimental-strip-types --no-warnings=ExperimentalWarning --test \"src/**/*.test.ts\" \"scripts/**/*.test.ts\""
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "dependencies": {
+    "@devvit/start": "0.15.4",
+    "@devvit/web": "0.15.4",
+    "@hono/node-server": "2.1.6",
+    "devvit": "0.15.4",
+    "hono": "4.13.17",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@tailwindcss/vite": "4.3.5",
+    "@types/node": "^24.13.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "ajv": "^8.17.1",
+    "eslint": "10.14.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.7",
+    "globals": "17.14.0",
+    "prettier": "3.9.10",
+    "tailwindcss": "4.3.5",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.2",
+    "vite": "8.3.7"
+  },
+  "description": "Dalang: Bayang Harian. A daily wayang shadow-puppet logic puzzle for Reddit (Devvit Web)."
+}

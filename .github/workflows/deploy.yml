@@ -1,0 +1,85 @@
+# CD. On main, after CI passes:
+#  1. the browser demo (server logic in the page) goes to GitHub Pages;
+#  2. the app is uploaded to Reddit with `devvit upload` as a new private
+#     version, when the DEVVIT_AUTH_TOKEN secret is set. Uploading never
+#     publishes the app; publishing stays a manual step after the hackathon.
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: ['main']
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: 'Upload a new version to Reddit'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  pages:
+    name: Browser demo on GitHub Pages
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}splash.html
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --no-fund
+      - name: Build the browser demo
+        run: npm run build:local -- --base /${{ github.event.repository.name }}/
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist/local
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+  reddit:
+    name: Upload to Reddit (devvit upload)
+    if: github.event_name == 'workflow_dispatch' && inputs.upload || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: reddit
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --no-fund
+      - name: Upload a private version
+        env:
+          DEVVIT_AUTH_TOKEN: ${{ secrets.DEVVIT_AUTH_TOKEN }}
+          DEVVIT_DISABLE_METRICS: '1'
+        run: |
+          if [ -z "$DEVVIT_AUTH_TOKEN" ]; then
+            echo "::notice::DEVVIT_AUTH_TOKEN is not set, skipping the upload (see README: Continuous deployment)."
+            exit 0
+          fi
+          npm run build
+          npx devvit upload --bump patch --just-do-it

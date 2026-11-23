@@ -1,0 +1,53 @@
+# Every push and pull request: types, lint, unit tests, the puzzle-bank gate,
+# a production build, and a check that no answers ship inside the post.
+name: CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Install Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-fund
+      - name: Typecheck
+        run: npm run test:types
+      - name: Lint
+        run: npm run lint
+      - name: Unit tests
+        run: npm run test:unit
+      - name: Puzzle bank gate (one answer each, true par)
+        run: npm run check:bank
+      - name: Build the Devvit app
+        run: npm run build
+      - name: Bundle check (no answers in the post)
+        run: npm run check:bundle
+      - name: Keep the build
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dalang-daily-dist
+          path: dist/client
+          retention-days: 14

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
+  "name": "dalang-daily",
+  "post": {
+    "dir": "dist/client",
+    "entrypoints": {
+      "default": {
+        "inline": true,
+        "entry": "splash.html"
+      },
+      "game": {
+        "entry": "game.html"
+      }
+    }
+  },
+  "server": {
+    "dir": "dist/server",
+    "entry": "index.cjs"
+  },
+  "permissions": {
+    "redis": true,
+    "reddit": {
+      "enable": true,
+      "scope": "user",
+      "asUser": ["SUBMIT_COMMENT"]
+    }
+  },
+  "menu": {
+    "items": [
+      {
+        "label": "Dalang: post today's shadow",
+        "description": "Creates today's daily puzzle post",
+        "location": "subreddit",
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/post-today"
+      },
+      {
+        "label": "Dalang: post the start-here demo",
+        "description": "A post that opens on the warm-up and Monday's puzzle",
+        "location": "subreddit",
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/post-demo"
+      }
+    ]
+  },
+  "triggers": {
+    "onAppInstall": "/internal/triggers/on-app-install"
+  },
+  "scheduler": {
+    "tasks": {
+      "daily-post": {
+        "endpoint": "/internal/scheduler/daily-post",
+        "cron": "0 0 * * *"
+      }
+    }
+  },
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build"
+  }
+}

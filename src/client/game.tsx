@@ -33,6 +33,7 @@ import {
 import { api } from './api.ts';
 import { isMuted, setMuted, solvedPhrase, tick, wrongPhrase } from './audio.ts';
 import { Kelir } from './board.tsx';
+import { Reveal } from './reveal.tsx';
 import { Icon, KAWUNG, Modal, PuppetArt } from './ui.tsx';
 
 type Tool =
@@ -133,6 +134,9 @@ const App = () => {
   const [moves, setMoves] = useState(0);
   const [result, setResult] = useState<SolveResponse | null>(null);
   const [glow, setGlow] = useState(0);
+  /** solved, now showing the dalang's side before the result */
+  const [reveal, setReveal] = useState<SolveResponse | null>(null);
+  const [replay, setReplay] = useState(false);
   const [hints, setHints] = useState<string[]>([]);
   const [showHints, setShowHints] = useState(false);
   const [album, setAlbum] = useState(false);
@@ -210,7 +214,7 @@ const App = () => {
 
   // solved: glow, gamelan, tell the server
   useEffect(() => {
-    if (!solvedNow || !puzzle || result || sending.current) return;
+    if (!solvedNow || !puzzle || result || reveal || sending.current) return;
     sending.current = true;
     solvedPhrase();
     const t0 = performance.now();
@@ -232,7 +236,7 @@ const App = () => {
         setCards(r.cards);
         setTimeout(() => {
           if (mode === 'warmup') markSeen('warmup');
-          setResult(r);
+          setReveal(r);
         }, 1100);
       })
       .catch(() => say('Could not reach Reddit. Your shadow is still here.'))
@@ -240,7 +244,7 @@ const App = () => {
         sending.current = false;
       });
     return () => cancelAnimationFrame(raf);
-  }, [solvedNow, puzzle, result, slots, moves, mode, say]);
+  }, [solvedNow, puzzle, result, reveal, slots, moves, mode, say]);
 
   const act = (fn: (s: Slot[]) => Slot[] | null) => {
     if (result || solvedNow) return;
@@ -548,6 +552,18 @@ const App = () => {
         </Modal>
       )}
 
+      {(reveal ?? replay) && (
+        <Reveal
+          offered={puzzle.offered}
+          slots={slots}
+          onDone={() => {
+            if (reveal) setResult(reveal);
+            setReveal(null);
+            setReplay(false);
+          }}
+        />
+      )}
+
       {result && mode === 'warmup' && (
         <Modal>
           <h2 className="display">Well cast.</h2>
@@ -565,7 +581,7 @@ const App = () => {
         </Modal>
       )}
 
-      {result && mode === 'daily' && (
+      {result && !replay && mode === 'daily' && (
         <ResultCard
           data={data}
           puzzle={puzzle}
@@ -574,6 +590,7 @@ const App = () => {
           onAlbum={() => setAlbum(true)}
           onClose={() => setResult(null)}
           onCard={setCard}
+          onBehind={() => setReplay(true)}
         />
       )}
 
@@ -600,6 +617,7 @@ const ResultCard = (props: {
   onAlbum: () => void;
   onClose: () => void;
   onCard: (id: string) => void;
+  onBehind: () => void;
 }) => {
   const { data, puzzle, result } = props;
   const pct =
@@ -665,6 +683,9 @@ const ResultCard = (props: {
           Album
         </button>
       </div>
+      <button className="link-btn behind" onClick={props.onBehind}>
+        See the dalang's side
+      </button>
       <button
         className="close-x"
         onClick={props.onClose}

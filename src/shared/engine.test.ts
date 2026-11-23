@@ -27,8 +27,10 @@ import {
   DEFAULT_POSE,
   POSES,
   placedPolys,
+  poseAffine,
   poseFromIndex,
   poseIndex,
+  poseTransform,
   puppetMask,
 } from './shadow.ts';
 
@@ -115,4 +117,22 @@ test('shadowOf ignores puppets in the chest', () => {
   const p = BANK.puzzles[3]!;
   const none = p.offered.map(() => null);
   assert.equal(count(shadowOf(p.offered, none)), 0);
+});
+
+test('the painting matrix matches the shadow transform for every pose', () => {
+  for (const f of FIGURES)
+    for (let i = 0; i < POSES; i += 37) {
+      const p = poseFromIndex(i);
+      const t = poseTransform(f, p);
+      const m = poseAffine(f, p);
+      for (const [x, y] of [
+        [0, 0],
+        [0.3, 0.9],
+        [-0.2, 0.4],
+      ] as const) {
+        const [X, Y] = t(x, y);
+        assert.ok(Math.abs(m.a * x + m.c * y + m.e - X) < 1e-9);
+        assert.ok(Math.abs(m.b * x + m.d * y + m.f - Y) < 1e-9);
+      }
+    }
 });

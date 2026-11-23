@@ -50,7 +50,12 @@ kelir. You are the dalang.
 - **Match**: only a 100% match solves it. Par is the fewest taps, worked out
   by our solver, and every live puzzle is proved to have exactly one answer.
 
-Solve it and the scene's wayang join your album: 15 characters in five sets
+Solve it and the screen turns around. In 3D, the camera swings from the
+audience's side of the kelir to the dalang's side: the painted leather
+puppets stand in exactly the pose you set, the blencong lamp flickers, and
+a real light casts the very shadow you just matched onto the cloth.
+
+Then the scene's wayang join your album: 15 characters in five sets
 (Punakawan, Pandawa, Kurawa, Dewa, Raksasa), each with a short card telling
 who they are. Solve at par with no hints and the card turns to gold leaf.
 Finish a set to earn the gunungan. Your rank (Penonton → Dalang Muda →
@@ -79,6 +84,11 @@ tool matters, and Semar gives up to three hints a day.
   searches combinations. It rejects any puzzle with zero or two answers and
   computes par. A seeded generator rolls each story scene until it is unique
   and its par fits the weekday.
+- **The reveal** uses three.js, loaded only after a solve so the feed card
+  stays light. Each puppet is painted onto a plane in its exact pose, with
+  its carved holes cut out. We place it by inverting the lamp's projection,
+  so a real point light gives a shadow that matches the scored one. Without
+  WebGL, or with reduced motion on, the kelir flips flat instead.
 - **Server**: Redis keeps profiles (album, gold cards, streaks), per-post
   solve counts and hints. The answer never ships in the post; the server
   re-checks every solve. The Devvit scheduler creates the daily post; a mod
@@ -138,7 +148,7 @@ streak.
 ## Built with
 
 devvit, devvit-web, reddit, react, typescript, vite, hono, redis,
-tailwindcss, webaudio, canvas, github-actions, node.js
+tailwindcss, three.js, webgl, webaudio, canvas, github-actions, node.js
 
 ## Links ("Try it out")
 

@@ -83,6 +83,29 @@ export const poseTransform = (f: Figure, p: Pose) => {
   };
 };
 
+/**
+ * The same transform as poseTransform written as a 2D affine matrix
+ * (x' = a x + c y + e, y' = b x + d y + f), for painting a puppet in its pose.
+ */
+export const poseAffine = (f: Figure, p: Pose) => {
+  const m = DEPTH_SCALE[p.d]!;
+  const s = m * UNIT;
+  const cx = LAMP_X + (slotX(p.x) - LAMP_X) * m;
+  const pv = f.height * 0.5;
+  const ang = (p.a * Math.PI) / 4;
+  const c = Math.cos(ang);
+  const sn = Math.sin(ang);
+  const fl = p.flip ? -1 : 1;
+  return {
+    a: s * fl * c,
+    b: s * fl * sn,
+    c: -s * sn,
+    d: s * c,
+    e: cx + s * pv * sn,
+    f: BASELINE + s * (pv - pv * c),
+  };
+};
+
 const mapPoly = (
   poly: Poly,
   t: (x: number, y: number) => [number, number]

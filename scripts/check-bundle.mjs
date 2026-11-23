@@ -12,9 +12,11 @@ for (const entry of ['splash.html', 'game.html'])
   if (!existsSync(join(root, entry))) problems.push(`missing ${entry}`);
 if (!existsSync('dist/server/index.cjs'))
   problems.push('missing dist/server/index.cjs');
+// A solution is an array of poses or nulls: "solution":[{"x":... or
+// solution:[null,... The word boundary keeps three.js's `resolution:[` out.
+const SOLUTION = /\bsolution["']?\s*:\s*\[\s*(\{|null)/;
 for (const f of walk(root).filter((f) => /\.(js|html)$/.test(f))) {
-  const s = readFileSync(f, 'utf8');
-  if (s.includes('"solution"') || s.includes('solution:['))
+  if (SOLUTION.test(readFileSync(f, 'utf8')))
     problems.push(`${f} contains puzzle solutions`);
 }
 const size = walk(root).reduce((n, f) => n + statSync(f).size, 0);

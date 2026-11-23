@@ -1,0 +1,344 @@
+import * as THREE from 'three';
+import { GH, GW } from '../shared/grid.ts';
+import { DEPTH_SCALE, LAMP_X } from '../shared/shadow.ts';
+import type { PaintedPuppet } from './paint.ts';
+
+/**
+ * The turn-around: the solved kelir in 3D, then the camera swings to the
+ * dalang's side. A real point light at the blencong lamp casts the puppets'
+ * shadows onto the cloth. Each puppet is placed by inverting that projection,
+ * so its 3D shadow is exactly the 2D shadow the player matched.
+ *
+ * World units are kelir cells; the cloth is the plane z = 0, the lamp is at
+ * z = LAMP_Z on the dalang's side.
+ */
+
+const LAMP_Z = 160;
+const LAMP_Y = 30;
+/** shadow magnification for a depth step; always > 1 for a point light */
+const magnify = (d: number) => 1.15 + (DEPTH_SCALE[d]! - 0.78) * 2;
+
+const SWING_START = 450;
+const SWING_MS = 3400;
+const FOV = 32;
+
+const ease = (t: number) =>
+  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const smooth = (a: number, b: number, t: number) => {
+  const k = Math.min(1, Math.max(0, (t - a) / (b - a)));
+  return k * k * (3 - 2 * k);
+};
+
+const texture = (c: HTMLCanvasElement) => {
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 4;
+  return t;
+};
+
+const clothCanvas = () => {
+  const c = document.createElement('canvas');
+  c.width = 640;
+  c.height = 384;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#f6e6c2';
+  g.fillRect(0, 0, c.width, c.height);
+  g.globalAlpha = 0.05;
+  g.fillStyle = '#6b4a2a';
+  for (let x = 0; x < c.width; x += 6) g.fillRect(x, 0, 1, c.height);
+  for (let y = 0; y < c.height; y += 6) g.fillRect(0, y, c.width, 1);
+  // a maroon border sewn along the top, like a real kelir
+  g.globalAlpha = 1;
+  g.fillStyle = '#7a1f1f';
+  g.fillRect(0, 0, c.width, 10);
+  g.fillRect(0, c.height - 6, c.width, 6);
+  return c;
+};
+
+const flameCanvas = () => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d')!;
+  const r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  r.addColorStop(0, 'rgba(255,250,225,1)');
+  r.addColorStop(0.18, 'rgba(255,214,120,0.95)');
+  r.addColorStop(0.45, 'rgba(255,150,50,0.35)');
+  r.addColorStop(1, 'rgba(255,120,30,0)');
+  g.fillStyle = r;
+  g.fillRect(0, 0, 128, 128);
+  return c;
+};
+
+export type RevealHandle = { dispose: () => void };
+
+/** Throws if WebGL is unavailable; the caller falls back to the flat flip. */
+export const startReveal = (
+  host: HTMLElement,
+  puppets: PaintedPuppet[]
+): RevealHandle => {
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
+  // nothing that casts a shadow moves, so render the shadow map once
+  renderer.shadowMap.autoUpdate = false;
+  renderer.shadowMap.needsUpdate = true;
+  renderer.domElement.className = 'reveal-gl';
+  host.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const night = new THREE.Color('#150c0b');
+  scene.background = night;
+  scene.fog = new THREE.Fog(night, 420, 1100);
+  const camera = new THREE.PerspectiveCamera(FOV, 1, 1, 3000);
+
+  scene.add(new THREE.AmbientLight('#ffdcb0', 0.8));
+  const lamp = new THREE.PointLight('#ffd08f', 3.4, 0, 0);
+  lamp.position.set(LAMP_X, LAMP_Y, LAMP_Z);
+  lamp.castShadow = true;
+  lamp.shadow.mapSize.set(1024, 1024);
+  lamp.shadow.camera.near = 4;
+  lamp.shadow.camera.far = 600;
+  lamp.shadow.bias = -0.002;
+  lamp.shadow.radius = 2;
+  scene.add(lamp);
+
+  // the kelir and its carved frame
+  const cloth = new THREE.Mesh(
+    new THREE.PlaneGeometry(GW, GH),
+    new THREE.MeshLambertMaterial({ map: texture(clothCanvas()) })
+  );
+  cloth.position.set(GW / 2, GH / 2, 0);
+  cloth.receiveShadow = true;
+  scene.add(cloth);
+  const wood = new THREE.MeshLambertMaterial({ color: '#4a2717' });
+  const bar = (w: number, h: number, x: number, y: number) => {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, 5), wood);
+    b.position.set(x, y, -1.2);
+    b.receiveShadow = true;
+    scene.add(b);
+  };
+  bar(GW + 16, 7, GW / 2, GH + 3.5);
+  bar(GW + 16, 7, GW / 2, -3.5);
+  bar(8, GH + 70, -4, GH / 2 - 28);
+  bar(8, GH + 70, GW + 4, GH / 2 - 28);
+  // the banana trunk the puppets stand in, and the floor
+  const trunk = new THREE.Mesh(
+    new THREE.CylinderGeometry(5, 5, GW + 40, 20),
+    new THREE.MeshLambertMaterial({ color: '#4f5a2a' })
+  );
+  trunk.rotation.z = Math.PI / 2;
+  trunk.position.set(GW / 2, -12, 26);
+  trunk.receiveShadow = true;
+  scene.add(trunk);
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(1600, 1600),
+    new THREE.MeshLambertMaterial({ color: '#2a1810' })
+  );
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.set(GW / 2, -18, 200);
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  // the blencong: a brass lamp with a live flame
+  const brass = new THREE.MeshLambertMaterial({
+    color: '#c99a3e',
+    emissive: '#3a2408',
+  });
+  const body = new THREE.Mesh(new THREE.SphereGeometry(3.2, 16, 12), brass);
+  body.scale.set(1.6, 0.7, 1);
+  body.position.set(LAMP_X, LAMP_Y - 3.4, LAMP_Z + 1.5);
+  const chain = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.35, 0.35, 160, 6),
+    brass
+  );
+  chain.position.set(LAMP_X, LAMP_Y + 78, LAMP_Z + 1.5);
+  const flameMat = new THREE.SpriteMaterial({
+    map: texture(flameCanvas()),
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    transparent: true,
+    opacity: 0,
+  });
+  const flame = new THREE.Sprite(flameMat);
+  flame.position.copy(lamp.position);
+  const glowMat = flameMat.clone();
+  const glow = new THREE.Sprite(glowMat);
+  glow.position.copy(lamp.position);
+  glow.scale.set(80, 80, 1);
+  const lampParts = [body, chain, flame, glow];
+  for (const o of lampParts) {
+    o.visible = false;
+    scene.add(o);
+  }
+
+  // the puppets, each where its shadow says it must be
+  const faded: THREE.Material[] = [];
+  /** what the final shot must hold: the lamp, the puppets, their shadows */
+  const keep: THREE.Vector3[] = [
+    lamp.position.clone(),
+    lamp.position.clone().add(new THREE.Vector3(0, 10, 0)),
+    lamp.position.clone().add(new THREE.Vector3(-14, 0, 0)),
+    lamp.position.clone().add(new THREE.Vector3(14, 0, 0)),
+  ];
+  for (const p of puppets) {
+    const m = magnify(p.pose.d);
+    const z = LAMP_Z * (1 - 1 / m);
+    const wx = (x: number) => LAMP_X + (x - LAMP_X) / m;
+    const wy = (y: number) => LAMP_Y + (y - LAMP_Y) / m;
+    const ax = wx(p.box.x0);
+    const bx = wx(p.box.x1);
+    const ay = wy(p.box.y0);
+    const by = wy(p.box.y1);
+    const geo = new THREE.PlaneGeometry(bx - ax, by - ay);
+    const colorTex = texture(p.color);
+    const front = new THREE.MeshLambertMaterial({
+      map: colorTex,
+      alphaTest: 0.5,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0,
+    });
+    const mesh = new THREE.Mesh(geo, front);
+    mesh.position.set((ax + bx) / 2, (ay + by) / 2, z);
+    mesh.castShadow = true;
+    // the shadow comes from the exact silhouette, not the gilt rim
+    mesh.customDistanceMaterial = new THREE.MeshDistanceMaterial({
+      map: new THREE.CanvasTexture(p.mask),
+      alphaTest: 0.5,
+      side: THREE.DoubleSide,
+    });
+    scene.add(mesh);
+    // the leather's thickness, seen when the camera swings round
+    const back = new THREE.MeshBasicMaterial({
+      map: colorTex,
+      color: '#2b190d',
+      alphaTest: 0.5,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0,
+    });
+    const edge = new THREE.Mesh(geo, back);
+    edge.position.set(mesh.position.x + 0.15, mesh.position.y, z - 0.6);
+    scene.add(edge);
+    faded.push(front, back);
+    for (const [x, y] of [
+      [p.box.x0, p.box.y0],
+      [p.box.x1, p.box.y1],
+      [p.box.x0, p.box.y1],
+      [p.box.x1, p.box.y0],
+    ] as const) {
+      keep.push(new THREE.Vector3(x, Math.max(0, y), 0));
+      keep.push(new THREE.Vector3(wx(x), wy(y), z));
+    }
+  }
+
+  // camera: from the audience's square-on view to the dalang's side
+  const tanV = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
+  const lookStart = new THREE.Vector3(GW / 2, GH / 2, 0);
+  const lookEnd = new THREE.Box3()
+    .setFromPoints(keep)
+    .getCenter(new THREE.Vector3());
+  const dirOf = (yaw: number, el: number) =>
+    new THREE.Vector3(
+      Math.sin(yaw) * Math.cos(el),
+      Math.sin(el),
+      Math.cos(yaw) * Math.cos(el)
+    );
+  let aspect = 1;
+  let d0 = 1;
+  let d1 = 1;
+  let yaw1 = 0.9;
+  let el1 = 0.2;
+  /** the distance at which every kept point fits the frame */
+  const fitPoints = (dir: THREE.Vector3) => {
+    const right = new THREE.Vector3(0, 1, 0).cross(dir).normalize();
+    const up = dir.clone().cross(right).normalize();
+    const tanH = tanV * aspect;
+    let d = 0;
+    const v = new THREE.Vector3();
+    for (const p of keep) {
+      v.copy(p).sub(lookEnd);
+      const ahead = v.dot(dir);
+      d = Math.max(
+        d,
+        ahead + Math.abs(v.dot(right)) / tanH,
+        ahead + Math.abs(v.dot(up)) / tanV
+      );
+    }
+    return d * 1.15;
+  };
+  const resize = () => {
+    const w = host.clientWidth || 1;
+    const h = host.clientHeight || 1;
+    aspect = w / h;
+    renderer.setSize(w, h, false);
+    camera.aspect = aspect;
+    camera.updateProjectionMatrix();
+    // a tall phone sees the stage from higher and more behind the lamp
+    yaw1 = aspect < 1 ? 0.62 : 0.92;
+    el1 = aspect < 1 ? 0.28 : 0.2;
+    d0 = Math.max((GH / 2 + 4) / tanV, (GW / 2 + 4) / (tanV * aspect));
+    d1 = fitPoints(dirOf(yaw1, el1));
+  };
+  resize();
+  const ro = new ResizeObserver(resize);
+  ro.observe(host);
+
+  const look = new THREE.Vector3();
+  const t0 = performance.now();
+  let raf = 0;
+  const frame = (now: number) => {
+    const ms = now - t0;
+    const k = ease(Math.min(1, Math.max(0, (ms - SWING_START) / SWING_MS)));
+    const drift =
+      k >= 1 ? Math.sin((ms - SWING_START - SWING_MS) / 2600) * 0.05 : 0;
+    look.copy(lookStart).lerp(lookEnd, k);
+    camera.position
+      .copy(dirOf(yaw1 * k + drift, el1 * k))
+      .multiplyScalar(d0 + (d1 - d0) * k)
+      .add(look);
+    camera.lookAt(look);
+
+    const show = smooth(0.12, 0.55, k);
+    for (const mat of faded) mat.opacity = show;
+    const lit = smooth(0.2, 0.6, k);
+    for (const o of lampParts) o.visible = lit > 0;
+    const s = ms / 1000;
+    const flicker = 1 + 0.05 * Math.sin(s * 13.1) + 0.03 * Math.sin(s * 7.7);
+    lamp.intensity = 3.4 * flicker;
+    flameMat.opacity = lit;
+    glowMat.opacity = lit * 0.5;
+    flame.scale.set(12 * flicker, 16 * flicker, 1);
+    renderer.render(scene, camera);
+    raf = requestAnimationFrame(frame);
+  };
+  raf = requestAnimationFrame(frame);
+
+  return {
+    dispose: () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      scene.traverse((o) => {
+        if (o instanceof THREE.Mesh || o instanceof THREE.Sprite) {
+          o.geometry.dispose();
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          for (const mat of mats as THREE.Material[]) {
+            for (const v of Object.values(mat))
+              if (v instanceof THREE.Texture) v.dispose();
+            mat.dispose();
+          }
+        }
+        const dist: unknown =
+          o instanceof THREE.Mesh ? o.customDistanceMaterial : undefined;
+        if (dist instanceof THREE.MeshDistanceMaterial) {
+          dist.map?.dispose();
+          dist.dispose();
+        }
+      });
+      renderer.dispose();
+      renderer.forceContextLoss();
+      renderer.domElement.remove();
+    },
+  };
+};

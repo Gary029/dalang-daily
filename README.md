@@ -55,6 +55,11 @@ hints and the card turns to gold leaf.
 - 15 wayang in five sets (Punakawan, Pandawa, Kurawa, Dewa, Raksasa), gold
   cards, a gunungan badge for a full set, ranks (Penonton → Dalang Muda →
   Dalang Agung) shown as user flair.
+- The turn-around: after a solve, a three.js scene swings the camera to the
+  dalang's side of the screen. The painted puppets stand in your pose, and
+  a real lamp casts your matched shadow onto the cloth. It loads only after
+  a solve, and falls back to a flat flip without WebGL or with reduced
+  motion.
 - Streaks, "% solved today", a result card shared as a comment.
 - A daily post from the Devvit scheduler, a mod menu to post today's puzzle
   or the "start here" demo post, and a demo post on install.
@@ -73,7 +78,8 @@ src/shared/    the game itself, shared by the post and the server
   puzzle.ts      moves and par, the solver, the calendar, Semar's hints
   game.ts        saves: cards, gold, streaks, counts (any Redis-like store)
   bank.json      the generated, solver-checked puzzles
-src/client/    the post (React): splash card in the feed, the game, album
+src/client/    the post (React): splash card in the feed, the game, album,
+               reveal3d.ts (the three.js turn-around, loaded after a solve)
 src/server/    Devvit Web server (Hono): API, scheduler, menu, install trigger
 scripts/       generate-bank.ts, check-bank.ts (the CI gate), bundle check
 ```

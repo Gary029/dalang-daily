@@ -999,3 +999,14 @@ button:focus-visible {
   max-width: 720px;
   margin: 4px auto 8px;
 }
+/* five puppets and Reset must fit a phone */
+.chest .chip {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.chest .chip span {
+  overflow-wrap: anywhere;
+}
+.chest .chip.reset {
+  flex: 0 0 48px;
+}

@@ -9,7 +9,8 @@ import type { PlacedPolys } from '../shared/shadow.ts';
 export type KelirLayers = {
   shadow: PlacedPolys[];
   target: PlacedPolys[] | null;
-  selected: PlacedPolys | null;
+  /** the held puppet: one outline, or one per lamp */
+  selected: PlacedPolys | PlacedPolys[] | null;
   /** 0..1, warms the cloth when solved */
   glow?: number;
   /** paint shadow that falls outside the outline red (off on the hardest days) */
@@ -164,20 +165,39 @@ export const drawKelir = (canvas: HTMLCanvasElement, layers: KelirLayers) => {
     ctx.globalAlpha = 1;
   }
   const shadow = paintShapes(w, h, layers.shadow, '#1d1411');
-  // the lamp's soft penumbra, then the crisp shadow
-  ctx.save();
-  ctx.shadowColor = 'rgba(29, 20, 17, 0.55)';
-  ctx.shadowBlur = 5 * px;
-  ctx.globalAlpha = 0.94;
-  ctx.drawImage(shadow, 0, 0);
-  ctx.restore();
+  const second = layers.shadow.filter((s) => s.lamp === 1);
+  if (second.length === 0) {
+    // the lamp's soft penumbra, then the crisp shadow
+    ctx.save();
+    ctx.shadowColor = 'rgba(29, 20, 17, 0.55)';
+    ctx.shadowBlur = 5 * px;
+    ctx.globalAlpha = 0.94;
+    ctx.drawImage(shadow, 0, 0);
+    ctx.restore();
+  } else {
+    // two lamps: each lamp's shadow is half dark, where both fall it is deep
+    const first = layers.shadow.filter((s) => s.lamp !== 1);
+    for (const part of [first, second]) {
+      ctx.save();
+      ctx.shadowColor = 'rgba(29, 20, 17, 0.35)';
+      ctx.shadowBlur = 4 * px;
+      ctx.globalAlpha = 0.66;
+      ctx.drawImage(paintShapes(w, h, part, '#1d1411'), 0, 0);
+      ctx.restore();
+    }
+  }
   if (target) {
     if (layers.overflow !== false)
       ctx.drawImage(outside(shadow, target, '#6b1414'), 0, 0);
     ctx.drawImage(outline(target, '#a8621c', Math.max(1, 1.3 * px)), 0, 0);
   }
   if (layers.selected) {
-    const sel = paintShapes(w, h, [layers.selected], '#000');
+    const sel = paintShapes(
+      w,
+      h,
+      Array.isArray(layers.selected) ? layers.selected : [layers.selected],
+      '#000'
+    );
     ctx.save();
     ctx.shadowColor = 'rgba(255, 170, 60, 0.9)';
     ctx.shadowBlur = 6 * px;

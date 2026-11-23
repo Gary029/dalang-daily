@@ -183,3 +183,19 @@ test('a player shadow plays like any post, on its own board, with no cards or st
   });
   assert.equal(t.author, 'maker');
 });
+
+test('a second lamp splits each shadow, wider the closer the puppet stands', async () => {
+  const { lampShift, puppetMask } = await import('./shadow.ts');
+  const { count } = await import('./grid.ts');
+  const shifts = [0, 1, 2, 3, 4].map((d) => lampShift({ ...DEFAULT_POSE, d }));
+  for (let k = 1; k < shifts.length; k++)
+    assert.ok(shifts[k]! > shifts[k - 1]!);
+  const one = count(puppetMask('bima', { ...DEFAULT_POSE, d: 4 }, 1));
+  const two = count(puppetMask('bima', { ...DEFAULT_POSE, d: 4 }, 2));
+  assert.ok(two > one * 1.2, 'two lamps cast more shadow than one');
+});
+
+test('Sundays are two-lamp nights, the rest of the week one lamp', () => {
+  for (const p of BANK.puzzles) assert.equal(p.lamps, p.weekday === 6 ? 2 : 1);
+  assert.equal(BANK.warmup.lamps, 1);
+});

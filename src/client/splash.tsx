@@ -29,7 +29,9 @@ const Splash = () => {
   }, []);
   const shadow = useMemo(
     () =>
-      data?.solved ? shapesOf(data.puzzle.offered, data.solved.slots) : [],
+      data?.solved
+        ? shapesOf(data.puzzle.offered, data.solved.slots, data.puzzle.lamps)
+        : [],
     [data]
   );
 
@@ -54,7 +56,7 @@ const Splash = () => {
           <p className="eyebrow">
             {data.author
               ? `Player shadow by u/${data.author} · ${LEVELS[p.weekday]}`
-              : `${data.dateLabel} · ${LEVELS[p.weekday]} · ${p.lakon}`}
+              : `${data.dateLabel} · ${LEVELS[p.weekday]}${p.lamps === 2 ? ' · two lamps' : ''} · ${p.lakon}`}
           </p>
           <div className="splash-kelir">
             <Kelir
@@ -62,6 +64,7 @@ const Splash = () => {
               target={p.targetShapes}
               selected={null}
               glow={solved ? 1 : 0}
+              lamps={p.lamps}
               label={`Today's outline: ${p.title}`}
             />
           </div>

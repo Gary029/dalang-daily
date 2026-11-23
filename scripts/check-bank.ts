@@ -23,7 +23,7 @@ for (const p of all) {
   if (ids.has(p.id)) fail(p, 'duplicate id');
   ids.add(p.id);
   const target = decodeMask(p.target);
-  if (!equal(shadowOf(p.offered, p.solution), target))
+  if (!equal(shadowOf(p.offered, p.solution, p.lamps), target))
     fail(p, 'target is not the shadow of the solution');
   if (isSolved(p, p.start)) fail(p, 'already solved at the start');
   if (parOf(p.start, p.solution) !== p.par)
@@ -37,7 +37,9 @@ for (const p of all) {
   for (const c of p.cards)
     if (!p.solution[p.offered.indexOf(c)])
       fail(p, `card ${c} is not in the answer`);
-  const { solutions } = solve(p.offered, target, 2);
+  if (p.weekday === 6 && p.index >= 0 && p.lamps !== 2)
+    fail(p, 'Sunday should be a two-lamp night');
+  const { solutions } = solve(p.offered, target, 2, p.lamps);
   if (solutions.length !== 1)
     fail(p, `${solutions.length} answers (must be exactly 1)`);
   console.log(

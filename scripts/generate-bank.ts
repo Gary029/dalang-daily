@@ -192,6 +192,9 @@ const rng = (seed: number) => () => {
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 };
 
+/** Sunday is a two-lamp night */
+const lampsFor = (weekday: number) => (weekday === 6 ? 2 : 1);
+
 const touchesEdge = (m: Mask): boolean => {
   for (let j = 0; j < GH; j++)
     if (getBit(m, 0, j) || getBit(m, GW - 1, j)) return true;
@@ -200,12 +203,16 @@ const touchesEdge = (m: Mask): boolean => {
 };
 
 /** each puppet in the answer must keep at least `share` of its shadow visible */
-const visibleShares = (cast: string[], poses: Pose[]): number[] =>
+const visibleShares = (
+  cast: string[],
+  poses: Pose[],
+  lamps: number
+): number[] =>
   cast.map((id, k) => {
-    const own = new Uint32Array(puppetMask(id, poses[k]!));
+    const own = new Uint32Array(puppetMask(id, poses[k]!, lamps));
     const others = emptyMask();
     cast.forEach((o, n) => {
-      if (n !== k) orInto(others, puppetMask(o, poses[n]!));
+      if (n !== k) orInto(others, puppetMask(o, poses[n]!, lamps));
     });
     const total = count(own);
     andNotInto(own, others);
@@ -213,11 +220,11 @@ const visibleShares = (cast: string[], poses: Pose[]): number[] =>
   });
 
 /** the best share of a decoy's shadow that can lie inside the target */
-const bestFit = (id: string, target: Mask): number => {
+const bestFit = (id: string, target: Mask, lamps: number): number => {
   let best = 0;
   const tmp = emptyMask();
   for (let i = 0; i < POSES; i++) {
-    const m = puppetMask(id, poseFromIndex(i));
+    const m = puppetMask(id, poseFromIndex(i), lamps);
     const total = count(m);
     if (total === 0) continue;
     tmp.set(m);
@@ -249,6 +256,7 @@ const build = (
     [offered[k], offered[n]] = [offered[n]!, offered[k]!];
   }
   const [lo, hi] = PAR[weekday]!;
+  const lamps = lampsFor(weekday);
   for (let attempt = 0; attempt < 20000; attempt++) {
     const goal: Pose[] = spec.cast.map(() => ({
       x: Math.floor(r() * SLOTS),
@@ -257,9 +265,9 @@ const build = (
       arm: Math.floor(r() * 3),
       flip: r() < 0.35,
     }));
-    if (goal.some((g, k) => touchesEdge(puppetMask(spec.cast[k]!, g))))
+    if (goal.some((g, k) => touchesEdge(puppetMask(spec.cast[k]!, g, lamps))))
       continue;
-    const shares = visibleShares(spec.cast, goal);
+    const shares = visibleShares(spec.cast, goal, lamps);
     if (shares.some((s) => s < 0.45)) continue;
     if (
       weekday >= OVERLAP_FROM &&
@@ -286,14 +294,14 @@ const build = (
       start[offered.indexOf(spec.cast[0]!)] = { ...DEFAULT_POSE };
     const par = parOf(start, solution);
     if (par < lo || par > hi) continue;
-    const target = shadowOf(offered, solution);
-    if (count(shadowOf(offered, start)) === 0) continue;
+    const target = shadowOf(offered, solution, lamps);
+    if (count(shadowOf(offered, start, lamps)) === 0) continue;
     if (
       weekday >= NEAR_MISS_FROM &&
-      Math.max(...spec.decoys.map((d) => bestFit(d, target))) < NEAR_MISS
+      Math.max(...spec.decoys.map((d) => bestFit(d, target, lamps))) < NEAR_MISS
     )
       continue;
-    const { solutions } = solve(offered, target, 2);
+    const { solutions } = solve(offered, target, 2, lamps);
     if (solutions.length !== 1) continue;
     const id =
       index < 0
@@ -312,6 +320,7 @@ const build = (
       offered,
       start,
       par,
+      lamps,
       target: encodeMask(target),
       solution,
       cards: [...spec.cast],
@@ -338,6 +347,7 @@ const warmup = (): PuzzleDef => {
     offered,
     start,
     par: parOf(start, solution),
+    lamps: 1,
     target: encodeMask(target),
     solution,
     cards: ['semar'],

@@ -3,7 +3,15 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { figure } from '../shared/figures.ts';
 import { GH, GW } from '../shared/grid.ts';
-import { DEPTH_SCALE, LAMP_X, UNIT, poseAffine } from '../shared/shadow.ts';
+import {
+  DEPTH_SCALE,
+  LAMP_B_DX,
+  LAMP_X,
+  UNIT,
+  lampMagnify,
+  lampShift,
+  poseAffine,
+} from '../shared/shadow.ts';
 import type { PaintedPuppet } from './paint.ts';
 
 /**
@@ -25,8 +33,9 @@ const modelUrl = (id: string) => `${import.meta.env.BASE_URL}models/${id}.glb`;
 
 const LAMP_Z = 160;
 const LAMP_Y = 30;
-/** shadow magnification for a depth step; always > 1 for a point light */
-const magnify = (d: number) => 1.15 + (DEPTH_SCALE[d]! - 0.78) * 2;
+/** shadow magnification for a depth step; always > 1 for a point light.
+ * Shared with the engine, so a second lamp's shadow lands where it scores. */
+const magnify = lampMagnify;
 
 const SWING_START = 450;
 const SWING_MS = 3400;
@@ -84,7 +93,8 @@ export type RevealHandle = { dispose: () => void };
 /** Throws if WebGL is unavailable; the caller falls back to the flat flip. */
 export const startReveal = (
   host: HTMLElement,
-  puppets: PaintedPuppet[]
+  puppets: PaintedPuppet[],
+  lampCount = 1
 ): RevealHandle => {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -103,15 +113,22 @@ export const startReveal = (
   const camera = new THREE.PerspectiveCamera(FOV, 1, 1, 3000);
 
   scene.add(new THREE.AmbientLight('#ffdcb0', 0.8));
-  const lamp = new THREE.PointLight('#ffd08f', 3.4, 0, 0);
-  lamp.position.set(LAMP_X, LAMP_Y, LAMP_Z);
-  lamp.castShadow = true;
-  lamp.shadow.mapSize.set(1024, 1024);
-  lamp.shadow.camera.near = 4;
-  lamp.shadow.camera.far = 600;
-  lamp.shadow.bias = -0.002;
-  lamp.shadow.radius = 2;
-  scene.add(lamp);
+  // one blencong, or two on a two-lamp night (the second LAMP_B_DX to the left)
+  const lampXs = lampCount === 2 ? [LAMP_X, LAMP_X + LAMP_B_DX] : [LAMP_X];
+  const power = lampCount === 2 ? 2.1 : 3.4;
+  const lights = lampXs.map((x) => {
+    const l = new THREE.PointLight('#ffd08f', power, 0, 0);
+    l.position.set(x, LAMP_Y, LAMP_Z);
+    l.castShadow = true;
+    l.shadow.mapSize.set(1024, 1024);
+    l.shadow.camera.near = 4;
+    l.shadow.camera.far = 600;
+    l.shadow.bias = -0.002;
+    l.shadow.radius = 2;
+    scene.add(l);
+    return l;
+  });
+  const lamp = lights[0]!;
 
   // the kelir and its carved frame
   const cloth = new THREE.Mesh(
@@ -155,14 +172,6 @@ export const startReveal = (
     color: '#c99a3e',
     emissive: '#3a2408',
   });
-  const body = new THREE.Mesh(new THREE.SphereGeometry(3.2, 16, 12), brass);
-  body.scale.set(1.6, 0.7, 1);
-  body.position.set(LAMP_X, LAMP_Y - 3.4, LAMP_Z + 1.5);
-  const chain = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.35, 0.35, 160, 6),
-    brass
-  );
-  chain.position.set(LAMP_X, LAMP_Y + 78, LAMP_Z + 1.5);
   const flameMat = new THREE.SpriteMaterial({
     map: texture(flameCanvas()),
     blending: THREE.AdditiveBlending,
@@ -170,13 +179,26 @@ export const startReveal = (
     transparent: true,
     opacity: 0,
   });
-  const flame = new THREE.Sprite(flameMat);
-  flame.position.copy(lamp.position);
   const glowMat = flameMat.clone();
-  const glow = new THREE.Sprite(glowMat);
-  glow.position.copy(lamp.position);
-  glow.scale.set(80, 80, 1);
-  const lampParts = [body, chain, flame, glow];
+  const flames: THREE.Sprite[] = [];
+  const lampParts: THREE.Object3D[] = [];
+  for (const l of lights) {
+    const body = new THREE.Mesh(new THREE.SphereGeometry(3.2, 16, 12), brass);
+    body.scale.set(1.6, 0.7, 1);
+    body.position.set(l.position.x, LAMP_Y - 3.4, LAMP_Z + 1.5);
+    const chain = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.35, 0.35, 160, 6),
+      brass
+    );
+    chain.position.set(l.position.x, LAMP_Y + 78, LAMP_Z + 1.5);
+    const flame = new THREE.Sprite(flameMat);
+    flame.position.copy(l.position);
+    const glow = new THREE.Sprite(glowMat);
+    glow.position.copy(l.position);
+    glow.scale.set(80, 80, 1);
+    flames.push(flame);
+    lampParts.push(body, chain, flame, glow);
+  }
   for (const o of lampParts) {
     o.visible = false;
     scene.add(o);
@@ -258,7 +280,9 @@ export const startReveal = (
   const keep: THREE.Vector3[] = [
     lamp.position.clone(),
     lamp.position.clone().add(new THREE.Vector3(0, 10, 0)),
-    lamp.position.clone().add(new THREE.Vector3(-14, 0, 0)),
+    lamp.position
+      .clone()
+      .add(new THREE.Vector3(-14 + (lampCount === 2 ? LAMP_B_DX : 0), 0, 0)),
     lamp.position.clone().add(new THREE.Vector3(14, 0, 0)),
   ];
   for (const p of puppets) {
@@ -321,6 +345,15 @@ export const startReveal = (
     ] as const) {
       keep.push(new THREE.Vector3(x, Math.max(0, y), 0));
       keep.push(new THREE.Vector3(wx(x), wy(y), z));
+      // the second lamp's shadow, shifted along the cloth
+      if (lampCount === 2)
+        keep.push(
+          new THREE.Vector3(
+            Math.min(GW, x + lampShift(p.pose)),
+            Math.max(0, y),
+            0
+          )
+        );
     }
   }
 
@@ -379,6 +412,13 @@ export const startReveal = (
   const look = new THREE.Vector3();
   const t0 = performance.now();
   let raf = 0;
+  if (import.meta.env.DEV)
+    // dev only: lets a test check that the final shot holds everything
+    (window as unknown as Record<string, unknown>).__reveal = () =>
+      keep.map((p) => {
+        const v = p.clone().project(camera);
+        return [Math.round(v.x * 100) / 100, Math.round(v.y * 100) / 100];
+      });
   const frame = (now: number) => {
     const ms = now - t0;
     const k = ease(Math.min(1, Math.max(0, (ms - SWING_START) / SWING_MS)));
@@ -397,10 +437,13 @@ export const startReveal = (
     for (const o of lampParts) o.visible = lit > 0;
     const s = ms / 1000;
     const flicker = 1 + 0.05 * Math.sin(s * 13.1) + 0.03 * Math.sin(s * 7.7);
-    lamp.intensity = 3.4 * flicker;
+    lights.forEach((l, n) => {
+      // each wick flickers on its own
+      l.intensity = power * (n === 0 ? flicker : 2 - flicker);
+    });
     flameMat.opacity = lit;
     glowMat.opacity = lit * 0.5;
-    flame.scale.set(12 * flicker, 16 * flicker, 1);
+    for (const f of flames) f.scale.set(12 * flicker, 16 * flicker, 1);
     renderer.render(scene, camera);
     raf = requestAnimationFrame(frame);
   };

@@ -15,7 +15,7 @@ import {
   POSES,
   poseFromIndex,
   puppetMask,
-  placedPolys,
+  placedByLamp,
   sceneMask,
   type Placement,
   type PlacedPolys,
@@ -36,6 +36,8 @@ export type PuzzlePublic = {
   offered: string[];
   start: Slot[];
   par: number;
+  /** 1, or 2 on two-lamp nights (every puppet casts two shadows) */
+  lamps: number;
   /** run-length encoded target shadow: what the match is checked against */
   target: string;
   /** the same target as outlines, only for drawing it smoothly */
@@ -80,8 +82,9 @@ export const toPublic = (p: PuzzleDef): PuzzlePublic => ({
   offered: p.offered,
   start: p.start,
   par: p.par,
+  lamps: p.lamps,
   target: p.target,
-  targetShapes: shapesOf(p.offered, p.solution),
+  targetShapes: shapesOf(p.offered, p.solution, p.lamps),
 });
 
 const round = (q: number[]) => q.map((v) => Math.round(v * 100) / 100);
@@ -89,13 +92,17 @@ const round = (q: number[]) => q.map((v) => Math.round(v * 100) / 100);
 /** outlines of every puppet on stage, in kelir cells */
 export const shapesOf = (
   offered: readonly string[],
-  slots: readonly Slot[]
+  slots: readonly Slot[],
+  lamps = 1
 ): PlacedPolys[] =>
   offered.flatMap((id, k) => {
     const pose = slots[k];
     if (!pose) return [];
-    const s = placedPolys(figure(id), pose);
-    return [{ solids: s.solids.map(round), holes: s.holes.map(round) }];
+    return placedByLamp(figure(id), pose, lamps).map((s) => ({
+      ...s,
+      solids: s.solids.map(round),
+      holes: s.holes.map(round),
+    }));
   });
 
 export const placements = (
@@ -105,13 +112,15 @@ export const placements = (
 
 export const shadowOf = (
   offered: readonly string[],
-  slots: readonly Slot[]
-): Mask => sceneMask(placements(offered, slots));
+  slots: readonly Slot[],
+  lamps = 1
+): Mask => sceneMask(placements(offered, slots), lamps);
 
 export const isSolved = (
-  p: { offered: readonly string[]; target: string },
+  p: { offered: readonly string[]; target: string; lamps?: number },
   slots: readonly Slot[]
-): boolean => equal(shadowOf(p.offered, slots), decodeMask(p.target));
+): boolean =>
+  equal(shadowOf(p.offered, slots, p.lamps ?? 1), decodeMask(p.target));
 
 // --- moves -------------------------------------------------------------------
 
@@ -163,12 +172,13 @@ export type SolveResult = { solutions: Slot[][]; candidates: number[] };
 export const solve = (
   offered: readonly string[],
   target: Mask,
-  limit = 2
+  limit = 2,
+  lamps = 1
 ): SolveResult => {
   const cands: { pose: number; mask: Mask }[][] = offered.map((id) => {
     const out: { pose: number; mask: Mask }[] = [];
     for (let i = 0; i < POSES; i++) {
-      const m = puppetMask(id, poseFromIndex(i));
+      const m = puppetMask(id, poseFromIndex(i), lamps);
       if (count(m) > 0 && subsetOf(m, target)) out.push({ pose: i, mask: m });
     }
     return out;

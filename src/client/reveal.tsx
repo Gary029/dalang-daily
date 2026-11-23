@@ -11,6 +11,8 @@ import { paintScene, type PaintedPuppet } from './paint.ts';
  */
 
 type Props = {
+  /** 2 on a two-lamp night */
+  lamps?: number;
   offered: readonly string[];
   slots: readonly (Pose | null)[];
   onDone: () => void;
@@ -57,7 +59,7 @@ const drawFlat = (canvas: HTMLCanvasElement, puppets: PaintedPuppet[]) => {
     );
 };
 
-export const Reveal = ({ offered, slots, onDone }: Props) => {
+export const Reveal = ({ offered, slots, onDone, lamps = 1 }: Props) => {
   const puppets = useMemo(() => paintScene(offered, slots), [offered, slots]);
   const [flat, setFlat] = useState(() => !canWebGL() || reducedMotion());
   const host = useRef<HTMLDivElement>(null);
@@ -71,7 +73,7 @@ export const Reveal = ({ offered, slots, onDone }: Props) => {
     import('./reveal3d.ts')
       .then((m) => {
         if (gone) return;
-        handle = m.startReveal(el, puppets);
+        handle = m.startReveal(el, puppets, lamps);
       })
       .catch(() => {
         if (!gone) setFlat(true);
@@ -80,7 +82,7 @@ export const Reveal = ({ offered, slots, onDone }: Props) => {
       gone = true;
       handle?.dispose();
     };
-  }, [flat, puppets]);
+  }, [flat, puppets, lamps]);
 
   useEffect(() => {
     if (!flat || !flatCanvas.current) return;

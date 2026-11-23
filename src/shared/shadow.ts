@@ -119,27 +119,58 @@ const mapPoly = (
   return out;
 };
 
-export type PlacedPolys = { solids: Poly[]; holes: Poly[] };
+/** `lamp` 1 marks the second lamp's copy of a shadow (two-lamp nights) */
+export type PlacedPolys = { solids: Poly[]; holes: Poly[]; lamp?: number };
+
+/**
+ * Two-lamp nights: a second blencong hangs LAMP_B_DX cells to the left of
+ * the first, at the same height and distance. Every puppet then casts a
+ * second shadow, shifted right by more the closer it stands to the lamps.
+ * The shift is the real projection used by the 3D reveal (magnify = how much
+ * bigger than the puppet its shadow is), so the reveal's second light lands
+ * on exactly this shadow.
+ */
+export const LAMP_B_DX = -30;
+export const lampMagnify = (d: number): number =>
+  1.15 + (DEPTH_SCALE[d]! - 0.78) * 2;
+export const lampShift = (p: Pose): number =>
+  -LAMP_B_DX * (lampMagnify(p.d) - 1);
 
 /** The puppet's outline in kelir space (for drawing and rasterising). */
-export const placedPolys = (f: Figure, p: Pose): PlacedPolys => {
-  const t = poseTransform(f, p);
+export const placedPolys = (f: Figure, p: Pose, shift = 0): PlacedPolys => {
+  const t0 = poseTransform(f, p);
+  const t =
+    shift === 0
+      ? t0
+      : (x: number, y: number): [number, number] => {
+          const [X, Y] = t0(x, y);
+          return [X + shift, Y];
+        };
   return {
     solids: [...f.body, ...armPolys(f, p.arm)].map((q) => mapPoly(q, t)),
     holes: f.holes.map((q) => mapPoly(q, t)),
   };
 };
 
+/** one outline per lamp */
+export const placedByLamp = (f: Figure, p: Pose, lamps = 1): PlacedPolys[] =>
+  lamps === 2
+    ? [placedPolys(f, p), { ...placedPolys(f, p, lampShift(p)), lamp: 1 }]
+    : [placedPolys(f, p)];
+
 const cache = new Map<string, Mask>();
 
-/** The shadow one puppet casts: its solid parts minus its carved holes. */
-export const puppetMask = (id: string, p: Pose): Mask => {
-  const key = `${id}:${poseIndex(p)}`;
+/** The shadow one puppet casts: its solid parts minus its carved holes, per lamp. */
+export const puppetMask = (id: string, p: Pose, lamps = 1): Mask => {
+  const key = `${id}:${poseIndex(p)}:${lamps}`;
   const hit = cache.get(key);
   if (hit) return hit;
-  const { solids, holes } = placedPolys(figure(id), p);
-  const m = fillPolys(emptyMask(), solids);
-  andNotInto(m, fillPolys(emptyMask(), holes));
+  const m = emptyMask();
+  for (const { solids, holes } of placedByLamp(figure(id), p, lamps)) {
+    const one = fillPolys(emptyMask(), solids);
+    andNotInto(one, fillPolys(emptyMask(), holes));
+    orInto(m, one);
+  }
   if (cache.size > 20000) cache.clear();
   cache.set(key, m);
   return m;
@@ -149,10 +180,13 @@ export const puppetMask = (id: string, p: Pose): Mask => {
 export type Placement = { id: string; pose: Pose | null };
 
 /** The whole shadow on the kelir: union of every puppet on stage. */
-export const sceneMask = (placements: readonly Placement[]): Mask => {
+export const sceneMask = (
+  placements: readonly Placement[],
+  lamps = 1
+): Mask => {
   const m = emptyMask();
   for (const pl of placements)
-    if (pl.pose) orInto(m, puppetMask(pl.id, pl.pose));
+    if (pl.pose) orInto(m, puppetMask(pl.id, pl.pose, lamps));
   return m;
 };
 

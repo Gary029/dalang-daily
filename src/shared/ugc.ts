@@ -128,6 +128,7 @@ export const toUgc = (
   offered: [...req.offered],
   start: req.offered.map(() => null),
   par: check.par,
+  lamps: 1,
   target: encodeMask(shadowOf(req.offered, req.slots)),
   solution: [...req.slots],
   cards: [],

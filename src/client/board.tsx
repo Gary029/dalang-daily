@@ -6,13 +6,15 @@ import {
   type PointerEvent,
 } from 'react';
 import { GH, GW, getBit, type Mask } from '../shared/grid.ts';
-import type { PlacedPolys } from '../shared/shadow.ts';
+import { LAMP_B_DX, type PlacedPolys } from '../shared/shadow.ts';
 import { cellAt, drawKelir } from './kelir.ts';
 
 type Props = {
   shadow: PlacedPolys[];
   target: PlacedPolys[] | null;
-  selected: PlacedPolys | null;
+  selected: PlacedPolys | PlacedPolys[] | null;
+  /** 2 hangs a second lamp on the frame */
+  lamps?: number;
   glow?: number;
   overflow?: boolean;
   /** puppet masks in stage order, for tapping a shadow to pick it */
@@ -109,6 +111,15 @@ export const Kelir = (props: Props) => {
           aria-label={props.label ?? 'The shadow screen'}
         />
         <div className="lamp" aria-hidden="true" />
+        {props.lamps === 2 && (
+          <div
+            className="lamp"
+            aria-hidden="true"
+            style={{
+              left: `${((14 + size.w * ((100 + LAMP_B_DX) / GW)) / (size.w + 28)) * 100}%`,
+            }}
+          />
+        )}
       </div>
     </div>
   );

@@ -78,7 +78,9 @@ Dalang Agung) shows as user flair.
 **It gets harder by rule, not just by par:** from Wednesday puppets overlap
 and hide each other's carved holes; from Thursday the match meter is gone
 and one decoy almost fits; at the weekend shadow that spills outside the
-outline is no longer marked red.
+outline is no longer marked red. **Sunday is a two-lamp night**: every
+puppet casts two half-dark shadows, and how far apart they fall tells you
+how close it stands to the lamps.
 
 The week follows one lakon (story), one scene a day, harder from Monday to
 Sunday: _Bima Suci_ (Bima's search for the water of life) and _Arjuna
@@ -162,8 +164,8 @@ streak.
 
 ### What's next for Dalang
 
-- **Next, after judging:** two-lamp puzzles (two screens at once), the
-  weekend story riddle, App Review and publishing.
+- **Next, after judging:** the weekend story riddle, two-lamp player
+  shadows, App Review and publishing.
 - **Later:** more lakon (Ramayana, Sawerigading, Purbasari), other wayang
   forms such as wayang golek, and subreddit events where a whole community
   solves one long lakon together.

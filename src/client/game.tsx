@@ -24,7 +24,7 @@ import {
 } from '../shared/puzzle.ts';
 import {
   DEFAULT_POSE,
-  placedPolys,
+  placedByLamp,
   puppetMask,
   type Pose,
 } from '../shared/shadow.ts';
@@ -78,6 +78,11 @@ const warmupCoach = (
 /** the first daily tip this player has not seen yet */
 const firstTip = (puzzle: PuzzlePublic): string | null => {
   const tips: [string, string, boolean][] = [
+    [
+      'twolamps',
+      'Two lamps tonight: every puppet casts two shadows. The closer it stands to the lamps, the further apart they fall. Where both shadows meet, the screen is darkest.',
+      puzzle.lamps === 2,
+    ],
     [
       'nometer',
       'From Thursday the lamp shows no match meter. Trust the outline: it only lights up when the shadow is exact.',
@@ -203,11 +208,11 @@ const App = () => {
     [puzzle]
   );
   const shadow = useMemo(
-    () => (puzzle ? shadowOf(puzzle.offered, slots) : null),
+    () => (puzzle ? shadowOf(puzzle.offered, slots, puzzle.lamps) : null),
     [puzzle, slots]
   );
   const shapes = useMemo(
-    () => (puzzle ? shapesOf(puzzle.offered, slots) : []),
+    () => (puzzle ? shapesOf(puzzle.offered, slots, puzzle.lamps) : []),
     [puzzle, slots]
   );
   const solvedNow = !!(shadow && target && equal(shadow, target));
@@ -254,7 +259,9 @@ const App = () => {
     if (!next) return;
     if (puzzle && target)
       trail.current.push(
-        closeness(matchRatio(shadowOf(puzzle.offered, next), target))
+        closeness(
+          matchRatio(shadowOf(puzzle.offered, next, puzzle.lamps), target)
+        )
       );
     tick();
     setSlots(next);
@@ -365,11 +372,11 @@ const App = () => {
     .filter((p): p is { index: number; slot: Pose } => !!p.slot)
     .map((p) => ({
       index: p.index,
-      mask: puppetMask(puzzle.offered[p.index]!, p.slot),
+      mask: puppetMask(puzzle.offered[p.index]!, p.slot, puzzle.lamps),
     }));
   const selShape =
     sel !== null && selSlot
-      ? placedPolys(figure(puzzle.offered[sel]!), selSlot)
+      ? placedByLamp(figure(puzzle.offered[sel]!), selSlot, puzzle.lamps)
       : null;
   const coach =
     mode === 'warmup' ? warmupCoach(sel, slots[0] ?? null, solvedNow) : tip;
@@ -430,6 +437,7 @@ const App = () => {
         selected={result ? null : selShape}
         glow={glow}
         overflow={mode === 'warmup' || showsOverflow(puzzle.weekday)}
+        lamps={puzzle.lamps}
         pickable={pickable}
         onPick={(k) => setSel(k)}
         label={
@@ -581,6 +589,7 @@ const App = () => {
         <Reveal
           offered={puzzle.offered}
           slots={slots}
+          lamps={puzzle.lamps}
           onDone={() => {
             if (reveal) setResult(reveal);
             setReveal(null);

@@ -57,6 +57,12 @@ hints and the card turns to gold leaf.
   overlap and hide each other's carved holes; from Thursday the match meter
   is gone and one decoy almost fits; at the weekend shadow that spills
   outside the outline is no longer marked red.
+- Sunday is a two-lamp night: a second blencong hangs beside the first, so
+  every puppet casts two half-dark shadows. The closer it stands to the
+  lamps the further apart they fall, so the gap tells you its depth; where
+  both shadows meet the screen is darkest. The second shadow follows the
+  same projection as the 3D reveal, which lights the scene with two real
+  lamps.
 - 15 wayang in five sets (Punakawan, Pandawa, Kurawa, Dewa, Raksasa), gold
   cards, a gunungan badge for a full set, ranks (Penonton → Dalang Muda →
   Dalang Agung) shown as user flair.
@@ -85,7 +91,7 @@ hints and the card turns to gold leaf.
   beating, kendang and the cempala knock on every move. Nothing is
   downloaded.
 
-**Not built yet:** two-lamp puzzles, the weekend story riddle.
+**Not built yet:** the weekend story riddle.
 
 ## Project layout
 

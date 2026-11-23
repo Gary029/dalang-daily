@@ -172,9 +172,18 @@ test('flair and comment text read well', () => {
   const t = shareText(
     def,
     1,
-    { moves: 7, par: def.par, gold: false, slots: def.solution },
+    {
+      moves: 7,
+      par: def.par,
+      gold: false,
+      slots: def.solution,
+      trail: [0, 1, 3],
+    },
     2
   );
-  assert.match(t, /Shadow matched 100% in 7 moves/);
-  assert.match(t, /2-day streak/);
+  assert.match(t, /100% in 7 moves/);
+  assert.match(t, /\u{1F525}2/u);
+  assert.match(t, /⬛\u{1F7EB}\u{1F7E8}/u);
+  // spoiler-free: nothing about where the puppets stood
+  assert.doesNotMatch(t, /"x"|flip|depth/);
 });

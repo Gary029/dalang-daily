@@ -1,7 +1,26 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import { drawPuppet, type ArtStyle } from './art.ts';
 
-/** a puppet drawn on its own canvas */
+/** the Blender-rendered card art (tools/blender/build_wayang.py) */
+const artUrl = (id: string, arm: number) =>
+  `${import.meta.env.BASE_URL}art/${id}-${arm}.webp`;
+
+/** a faint warm edge so dark puppets read on the dark chest */
+const EDGE: CSSProperties = {
+  filter: 'drop-shadow(0 0 1px rgba(255, 228, 180, 0.85))',
+};
+const GOLD_LEAF: CSSProperties = {
+  filter:
+    'drop-shadow(0 0 5px rgba(255, 205, 90, 0.9)) saturate(1.15) brightness(1.08)',
+};
+
+/** a puppet: the 3D card art, or drawn on a canvas when locked or offline */
 export const PuppetArt = (props: {
   id: string;
   style?: ArtStyle;
@@ -10,15 +29,35 @@ export const PuppetArt = (props: {
 }) => {
   const ref = useRef<HTMLCanvasElement>(null);
   const { id, style = 'painted', arm = 0 } = props;
+  const src = artUrl(id, Math.min(2, Math.max(0, arm)));
+  const [failed, setFailed] = useState<string | null>(null);
+  const useImage = style !== 'locked' && failed !== src;
   useEffect(() => {
     const c = ref.current;
-    if (!c) return;
+    if (useImage || !c) return;
     const r = c.getBoundingClientRect();
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     c.width = Math.max(8, Math.round(r.width * dpr));
     c.height = Math.max(8, Math.round(r.height * dpr));
     drawPuppet(c, id, style, arm);
-  }, [id, style, arm]);
+  }, [id, style, arm, useImage]);
+  if (useImage)
+    return (
+      <img
+        src={src}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        className={props.className ?? 'puppet-art'}
+        style={{
+          objectFit: 'contain',
+          objectPosition: '50% 100%',
+          minWidth: 0,
+          ...(style === 'gold' ? GOLD_LEAF : EDGE),
+        }}
+        onError={() => setFailed(src)}
+      />
+    );
   return (
     <canvas
       ref={ref}

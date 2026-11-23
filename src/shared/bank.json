@@ -1,858 +1,745 @@
 {
- "warmup": {
-  "id": "warmup",
-  "index": -1,
-  "lakon": "Warm-up",
-  "title": "Wake Semar",
-  "scene": "Move Semar so his shadow fills the outline exactly.",
-  "weekday": 0,
-  "offered": [
-   "semar"
-  ],
-  "start": [
-   {
-    "x": 3,
-    "d": 2,
-    "a": 0,
-    "arm": 0,
-    "flip": false
-   }
-  ],
-  "par": 3,
-  "target": "4CBKBJByFBKBJByFBKBJByFBKBJByFBKBJByFBKBJBxFCCJEIvFCDGBBFGwFCCFDBEGxFCCFDBDHxFCCFDBDHxFBDFDBDHxFBDGCBCIxFBDGCBCHyFBEFCBCFBByFBEGBBBGBByFBEGBBBGBByFBEGBBBGBByFBEPBByFBFOBByFBFQxFXxFXxFXxFHDNxFHEMwFHFNvFIENuFKCPtFcsFcsFdrFdrFdrFdrFdrFQFJqFQFJrFPFItFOFIuFODJvFZwFXxFXyFV0FT1FT2FR4FECK9FL9FM7FHCE7FGEE6FHCF6FIBG6FO6FO6FP5FHBG6FEEG5FEFG5FEFG5FDGF6FDGF6FCHF4FEHE5FDIEkGEkGDlGDlGClGDlGDkGEkGEjGFjGFjGEkGEkGDmGB32H",
-  "solution": [
-   {
-    "x": 3,
-    "d": 3,
-    "a": 0,
-    "arm": 2,
-    "flip": false
-   }
-  ],
-  "cards": [
-   "semar"
+  "warmup": {
+    "id": "warmup",
+    "index": -1,
+    "lakon": "Warm-up",
+    "title": "Wake Semar",
+    "scene": "Move Semar so his shadow fills the outline exactly.",
+    "weekday": 0,
+    "offered": ["semar"],
+    "start": [
+      {
+        "x": 3,
+        "d": 2,
+        "a": 0,
+        "arm": 0,
+        "flip": false
+      }
+    ],
+    "par": 3,
+    "target": "4CBKBJByFBKBJByFBKBJByFBKBJByFBKBJByFBKBJBxFCCJEIvFCDGBBFGwFCCFDBEGxFCCFDBDHxFCCFDBDHxFBDFDBDHxFBDGCBCIxFBDGCBCHyFBEFCBCFBByFBEGBBBGBByFBEGBBBGBByFBEGBBBGBByFBEPBByFBFOBByFBFQxFXxFXxFXxFHDNxFHEMwFHFNvFIENuFKCPtFcsFcsFdrFdrFdrFdrFdrFQFJqFQFJrFPFItFOFIuFODJvFZwFXxFXyFV0FT1FT2FR4FECK9FL9FM7FHCE7FGEE6FHCF6FIBG6FO6FO6FP5FHBG6FEEG5FEFG5FEFG5FDGF6FDGF6FCHF4FEHE5FDIEkGEkGDlGDlGClGDlGDkGEkGEjGFjGFjGEkGEkGDmGB32H",
+    "solution": [
+      {
+        "x": 3,
+        "d": 3,
+        "a": 0,
+        "arm": 2,
+        "flip": false
+      }
+    ],
+    "cards": ["semar"],
+    "tale": "That is all a dalang does: light, a puppet, and a shadow that tells the story."
+  },
+  "puzzles": [
+    {
+      "id": "w1-1",
+      "index": 0,
+      "lakon": "Bima Suci",
+      "title": "Semar opens the screen",
+      "scene": "Before every lakon the old servant steps out first. Cast his shadow.",
+      "weekday": 0,
+      "offered": ["semar", "gareng"],
+      "start": [
+        {
+          "x": 5,
+          "d": 3,
+          "a": 0,
+          "arm": 1,
+          "flip": true
+        },
+        null
+      ],
+      "par": 4,
+      "target": "2CCLBICwFCLBICwFCLBICwFCLBIBxFCLBIBxFBMBIBxFBDKEKsFBEHBBFHuFBDGDBEGwFBDFEBEFxFBDFEBEFxFBDGDBDGxFBDGDBDGxFBDGDBDHwFBEGCBCIwFBEGCBCHwFCEGCBCHwFCEHBBBIwFCEHBBBIwFCEHBBBIwFCFQxFCFSvFCFSvFZvFZuFauFJDOuFIFOtFIFOsFJFOsFJFPqFLCRqFfpFgBoFgBoFgBoFhBnFhBoFgBnFTEKnFSGJnFSGJpFQGJqFPGJrFPEKrFctFbuFZvFZwFXyFV0FT1FS3FEDK9FM7FN7FIBF6FHDE6FHED6FICE6FIBF7FO6FLBC6FKEB5FI_FFjGFjGEkGEkGDkGEkGDjGEkGE2iJ",
+      "solution": [
+        {
+          "x": 3,
+          "d": 4,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        },
+        null
+      ],
+      "cards": ["semar"],
+      "tale": "Semar bows to the lamp and the night begins. Far away in Astina, the teacher Durna has a strange errand for Bima. Who will he send into the dark?"
+    },
+    {
+      "id": "w1-2",
+      "index": 1,
+      "lakon": "Bima Suci",
+      "title": "Bima asks the way",
+      "scene": "Bima will search for the water of life, wherever it hides.",
+      "weekday": 1,
+      "offered": ["bima", "arjuna", "buta"],
+      "start": [
+        {
+          "x": 4,
+          "d": 2,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        },
+        {
+          "x": 2,
+          "d": 3,
+          "a": 0,
+          "arm": 1,
+          "flip": false
+        },
+        null
+      ],
+      "par": 6,
+      "target": "0EBHC-FBHB_FBHB_FBHBnGBBB-FBGBBB5FHFBBIzFFGBBBCF1FEFBBBDE1FEFBBBDE1FFEBBBDE1FFEBBBDE2FEEBBBCF2FEEBBBCF2FFDBBBCE2FGDBBBBF3FFDBBBBF3FFDBBBBF3FGCBDF3FGCBCF5FFCBCF5FFCBCF5FGBBBG6FFBBBG6FFBH7FFBI3FCBQ1FT1FT2FR3FFCK3FFCK4FIDE5FIDE5FP5FP6FO6FO6FO5FP5FP5FGDG5FFEG5FFEG5FGCH5FP5FP5FO6FO8FBBK-FFiGFiGGhGH-FK_FJgGIhGHiGIhGJgGK-FL-FFCD9FBJB8FDJB6FC_yK",
+      "solution": [
+        {
+          "x": 6,
+          "d": 0,
+          "a": 0,
+          "arm": 0,
+          "flip": true
+        },
+        null,
+        null
+      ],
+      "cards": ["bima"],
+      "tale": "Durna tells Bima that the water of life lies under Mount Reksamuka. Bima does not ask why. He simply walks. But the mountain is not empty."
+    },
+    {
+      "id": "w1-3",
+      "index": 2,
+      "lakon": "Bima Suci",
+      "title": "The giant of the mountain",
+      "scene": "On Mount Reksamuka a giant guards the forest. Bima walks straight in.",
+      "weekday": 2,
+      "offered": ["cakil", "duryudana", "buta", "bima"],
+      "start": [
+        null,
+        null,
+        null,
+        {
+          "x": 3,
+          "d": 2,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        }
+      ],
+      "par": 8,
+      "target": "zDBEBrBB2EBEBrBBLBqEBEBrBBKCqEBEB2BBrEBEBqBBKBsEBEBqBBJBnEKBBGKaCHBoEIDBGIcDFCnEIEBGHdEDCoEGBBEBFGfFCBNB7DIEBFGfBBFND7DHEBFGfBBFMD8DHEBFGfIJCBB9DHEBEHfGKCBB-DHEBEHeHJCBB_DHEBEHeGJCBBhEHDBEGcBBHICBBiEHDBDHcIICBCiEHDBDHbIICBCjEHDBDHbIHCBCkEIGHbHHCBCBBkEHDBBIbHGCCBCCjEHDBBHaIGCCBDDiEICBBHZJFCCBEEhEICBBHZJECCBGEhEHCJZHBBDCCBHFgEIBJBETIBBCCCCFI-DYNCDIBBCCCCEI9DaOCDIBBBCCCDK9DaNEBICDCCCL-DMDLNMDCDBCKhEKELMNCCDBBLiELDLMMCBBBCNjEMBMLNBBCBBMlEYLNBBDNmEYLdoEYKHCUqEXKGERsEYIHDRsEZIIBQuENDJHZuENFJEZwENFJCPBMvEMGZDMtEOFZELtEPDbCLuE4BwEFBwBBBwEiBCRCBwEhBEOEBwEhBFLFCxEgBFKGCxEJBMCIEKHByEICMDUIByEHELDTJByEIDgBKBzEIBlBGBzExBBFxE4BwEmBBRxEbCHKJxEXHFOHxEVJCSG3ENiBC4EKBBkBB3EM8FL7FO8FP5FQ4FQzFECPyFGBN0FGBM1FT2FEBM8FM9FIBB-FIgGIhGGjGElGB0pH",
+      "solution": [
+        null,
+        null,
+        {
+          "x": 4,
+          "d": 1,
+          "a": 0,
+          "arm": 1,
+          "flip": false
+        },
+        {
+          "x": 5,
+          "d": 2,
+          "a": 1,
+          "arm": 0,
+          "flip": true
+        }
+      ],
+      "cards": ["bima", "buta"],
+      "tale": "Two giants, Rukmuka and Rukmakala, rush down the mountain. Bima breaks them with his bare hands, and where they fall, two gods rise up. One small giant is still watching from the trees."
+    },
+    {
+      "id": "w1-4",
+      "index": 3,
+      "lakon": "Bima Suci",
+      "title": "Bima against Cakil",
+      "scene": "A quick giant blocks the path. Only one of the two will stand.",
+      "weekday": 3,
+      "offered": ["arjuna", "bima", "buta", "cakil"],
+      "start": [
+        null,
+        null,
+        null,
+        {
+          "x": 3,
+          "d": 2,
+          "a": 0,
+          "arm": 1,
+          "flip": false
+        }
+      ],
+      "par": 9,
+      "target": "vVBzFBSC0FCPEvFCDCNGvFCDCLHVC5EBECJEBECBQD6EBECHCEECCOE7EBECMEBEME9EBECMJKBBC_EBFBLKHCBC0EBMBFCJLFCBC2ECLBFCIMDCBC4ECLBFCGHDEBCBC6ECLBFCFHHCBC8ECLBFCDIGCBCPCuECJCFCBJFCBCPCwECJCFMDBCCPCyECJCFLBCCCOC1ECJCDOCCOC3ECJCCNCCOC6ECIKBFBCOC3EBECIRLBBC4ECFCHIBHMD4EGDCFICHKF3EJDCCLCGCBEI1EMCCBKEFCCBLzEDDJBLEGBQxEBIUCBBRBF7EPCDDPGC6EOECDOjFPCBBCCNjFSDPjFUCQiFmBhFpB_ErB8EgBCM6EfDN4EgBDGDE2EJCiBCD2EIEiBBE0EJEEBiBzELCEDhByESEHBZwEUCKBXuEjBCVuEhBFLDHsEhBJHEIqEgBLHEIpEfOGEJnELDRQSmELFOTQnELFMVPoELFKYNqEKFJaMrEKDJcLsEVeKKBhEThBDBFHEgETlBGGF_DSmBHEG-DTnBHBH_DRoBPgEQpBQ-DHBIqBPwDCLJCFqBRuDGIJFCqBMBEsDODKuBFBH2DLBLtBEEF7DTtBEDBgET1FTxBBkES3FS3FR4FFDDFB4FBkGElGDlGDmGCmGCnGBv_G",
+      "solution": [
+        null,
+        {
+          "x": 2,
+          "d": 3,
+          "a": 1,
+          "arm": 0,
+          "flip": false
+        },
+        null,
+        {
+          "x": 3,
+          "d": 3,
+          "a": 7,
+          "arm": 0,
+          "flip": true
+        }
+      ],
+      "cards": ["bima", "cakil"],
+      "tale": "Cakil dances in, all knives and laughter. Bima does not dance. The forest goes quiet. Somewhere behind, two familiar voices are arguing."
+    },
+    {
+      "id": "w1-5",
+      "index": 4,
+      "lakon": "Bima Suci",
+      "title": "The brothers follow",
+      "scene": "Petruk and Gareng run after Bima, arguing all the way.",
+      "weekday": 4,
+      "offered": ["petruk", "semar", "sengkuni", "bagong", "gareng"],
+      "start": [
+        null,
+        {
+          "x": 1,
+          "d": 3,
+          "a": 0,
+          "arm": 1,
+          "flip": false
+        },
+        null,
+        null,
+        {
+          "x": 2,
+          "d": 0,
+          "a": 0,
+          "arm": 1,
+          "flip": true
+        }
+      ],
+      "par": 11,
+      "target": "-CBEBHB6FBEBHB6FBEBHB6FBEBFBBB6FBEBECBB5FCEBDCCB4FIDH3FFBBCBBG2FEDBBBCFBB1FEDCCH2FFCCCG4FFBBDF5FHCG5FHCG5FFBBCG5FFBBCG5FFBBBH5FFBJ4FQ3FJBG4FJBG3FEBKBB2FFBKBB1FRBB0FUzFWyFEBRxFEBSrFCDEBHDJrFDBMEJqFRDKpFeqFepFOBQoFOCQoFFBDCDCQnFFDCCEBQnFFEHCHBHnFFDHDGCHmFPEFEGlFPFFEGkFPGGDFkFPHHBGjFDBKKNiFDDGBBLNhFEEEONgFFDESK_EMXBBF9ELYI-EJZJ9EIZKuEBNIaMtECKEBDbMvECGFgBLxEKiBMxEIjBLyEHhBDBKyEGiBEBJyEGhBDHE0EEiBCIE2EBiBCJE2ECsBE2ECsBD3ECsBD3EBtBDkGDkGFjGFkGE1hK",
+      "solution": [
+        {
+          "x": 2,
+          "d": 1,
+          "a": 1,
+          "arm": 0,
+          "flip": true
+        },
+        null,
+        null,
+        null,
+        {
+          "x": 3,
+          "d": 3,
+          "a": 0,
+          "arm": 2,
+          "flip": false
+        }
+      ],
+      "cards": ["petruk", "gareng"],
+      "tale": "Petruk and Gareng find no water on the mountain, only broken rocks. Durna was wrong, or Durna lied. Back in the palace, someone is smiling."
+    },
+    {
+      "id": "w1-6",
+      "index": 5,
+      "lakon": "Bima Suci",
+      "title": "Sengkuni's errand",
+      "scene": "The quest was a trap: Sengkuni and his king hope Bima drowns.",
+      "weekday": 5,
+      "offered": ["sengkuni", "yudhistira", "duryudana", "bima", "arjuna"],
+      "start": [
+        null,
+        null,
+        {
+          "x": 2,
+          "d": 0,
+          "a": 0,
+          "arm": 2,
+          "flip": false
+        },
+        {
+          "x": 3,
+          "d": 3,
+          "a": 0,
+          "arm": 1,
+          "flip": false
+        },
+        null
+      ],
+      "par": 11,
+      "target": "jBBCBDB3BCIB-DBCBDB3BCIB-DBCBDB3BCIB-DBCBDB3BCIB-DBBBEB4BBnEBBBEB4BBhERaBRIBBFH2DGBBBFdBQFCBBBGF2DECBBBBEfBPEDBBBFE4DECBBBBEbCDBOEDBBBFE5DDCBBGcCDBGBGEDBBBFE5DDCBBEBBZCCCDBECGFCBBBEF5DDCBBEBCZCDBDBCEFFCBBBEF5DDCBBEBCbBDBCIFECBBBEE6DEBBBEBCcCCBCDBEEECBBBEE6DEBBBEBBeCCCBCCEDFBBBBDF6DEBBBEBBgBBBDBCCDDFBBBBDF6DEBIhBCBCBCBECFBBBBDF7DDBIgBFBBBCBECGBBDF7DDBFBCfJBCBEBGBBCG7DMeCEIBDBGBBCG7DMlBRCBCG7DMmBRBBCG5DOnBQBBBH4DPlBCCQBFBB3DQmBTBFBB3DICFpBXBC2DHDFqBZ3DFFErBY3DOsBW4DOuBPBE4DOvBT4DOwBGCK4DOxBR4DHCFyBQ5DFEEzBP5DFEEyBT2DFDFyBU1DNyBQCC2DMzBOEB4DIBBzBPCC4DIBBzBFCM3DJBByBGDJ5DLyBGEH6DLyBHCJ5DLzBS4DLzBQBC3DLzBQCC2DLzBSBCDCwDLzBSCEyDL4BFBMzDL5BUwDL5BPCDzDI6BOCD0DH5BNFC0DDBD5BLHB1DDBE4BMGB1DI5BLGB1DJ1BKBE6DK0BICBBE6DKxBLCBBD7DLwBKDBBD8DGBDvBDCGDF1DNCDuBBJBDE2DNCDtBBJDCE2DNCD5BCBE3DDBICC9BD8DIBD9BD8DIBD9BD8DIBD9BD8DGBBBC9BD9DGBE9BD-DFBE8BE_DDCD9BE_DCDD9BEkED8BFkEC9BElEC8BBpEC7BBoEEkGElGDuyH",
+      "solution": [
+        {
+          "x": 3,
+          "d": 1,
+          "a": 7,
+          "arm": 0,
+          "flip": true
+        },
+        null,
+        {
+          "x": 0,
+          "d": 1,
+          "a": 0,
+          "arm": 2,
+          "flip": false
+        },
+        {
+          "x": 3,
+          "d": 0,
+          "a": 0,
+          "arm": 2,
+          "flip": false
+        },
+        null
+      ],
+      "cards": ["sengkuni", "duryudana", "bima"],
+      "tale": "Sengkuni whispers to Duryudana: send Bima to the bottom of the sea, and he will never come back. Bima hears the new order and walks into the waves."
+    },
+    {
+      "id": "w1-7",
+      "index": 6,
+      "lakon": "Bima Suci",
+      "title": "The god in the sea",
+      "scene": "In the deep ocean Bima meets a god the size of his thumb.",
+      "weekday": 6,
+      "offered": ["guru", "bima", "semar", "dewaruci", "bagong"],
+      "start": [
+        null,
+        {
+          "x": 4,
+          "d": 4,
+          "a": 0,
+          "arm": 0,
+          "flip": true
+        },
+        {
+          "x": 1,
+          "d": 0,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        },
+        {
+          "x": 5,
+          "d": 2,
+          "a": 0,
+          "arm": 2,
+          "flip": false
+        },
+        {
+          "x": 0,
+          "d": 2,
+          "a": 0,
+          "arm": 0,
+          "flip": true
+        }
+      ],
+      "par": 16,
+      "target": "xBHcenEHGf8EYwFHiGG5FBIG5FCIG5FCIGBB3FCHEBD4FCGEBD5FCFJ5FCEK5FCDIBBrFCNCCJBBrFCNCBKBBrFCNCBKBBrFCMNBCrFCKCBMBCrFCIDCMBCrFBHDDFBGBDxBBNBkBClCBFFCRwBUdHjCBDOBL9BZHO_BCEMBN7BKFjB8BCDNBQ3B1B6BCDLBT5BiBEBFG6BCEf7BXBIBCmCCEf9BODOoCCEfjBHLVDNqCBGeiBnBDFEErCBFfwBZBEHDsCBDgBvBBHXHCtCCCHEWuBBDbICtCCBHFVuBgBHCuCJFKCJuBKEGVBuCIEKEJtBFJCoDVGIeBmEVGIdClEXFIdClEYDJcD6DBKnBZD6DBJqBRJ5DCJtBJO5DDIGBoBBU4DEHmBDc2DHGlC0DKFjCBBoDBKMEgCuDCIME8ByDDHND5B1DECSCdCW6D1BDV7DDBeDQDODF6DBCeFPDLGF9DdHXBEHF8DdH3BtDICFCMHnC9CILLFLEPJEXG9CINLBNEPJFFX9CINZEQBYuDGOZEe5DGO0BCFKBvDEP8BICuDEQ8BICtDFQ_BEDtDERiCBDsDFRmCrDEbFEFBQEbqDDwBMJWhFIORkFEUKBBhGE90J",
+      "solution": [
+        null,
+        {
+          "x": 2,
+          "d": 4,
+          "a": 2,
+          "arm": 1,
+          "flip": true
+        },
+        {
+          "x": 2,
+          "d": 3,
+          "a": 7,
+          "arm": 2,
+          "flip": false
+        },
+        {
+          "x": 5,
+          "d": 3,
+          "a": 6,
+          "arm": 2,
+          "flip": false
+        },
+        null
+      ],
+      "cards": ["dewaruci", "bima", "semar"],
+      "tale": "In the deep, a god no bigger than Bima's thumb asks him to step inside his ear. Inside, Bima sees the whole world, and himself. Next week a new story begins on a mountain."
+    },
+    {
+      "id": "w2-1",
+      "index": 7,
+      "lakon": "Arjuna Wiwaha",
+      "title": "Arjuna on Indrakila",
+      "scene": "Arjuna climbs the mountain alone to sit in stillness.",
+      "weekday": 0,
+      "offered": ["nakula", "arjuna"],
+      "start": [
+        null,
+        {
+          "x": 3,
+          "d": 2,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        }
+      ],
+      "par": 4,
+      "target": "zBBCBEB_FBCBEB_FBCBEB_FBCBEB_FBCBEB_FBCBEB5FIBJ3FGBI4FECBBBBF5FDDBBBBF5FECBBBBE6FECBBG6FECBBG7FDCBBG7FDCBBG7FEBBBEBC6FEBBBEBC6FEBBBEBC6FEBBBEBC6FEBJ6FEBJ7FN7FM8FM6FO4FQ4FQ4FQ4FFDI4FFEH4FFDI4FQ4FQ4FQ5FHCG5FGEF5FGEF5FGEF6FO6FO6FO6FO8FJBB9FL9FL9FL9FL9FECF9FECF9FECF9FL9FL9FL9FL9FL9FLhGHhGHiGGiGHhGIgGIgGIgGK-FJ_FK-FK4FBDICC3FNCD2FNCC4FMCC5FEBDBCBD6FCGCBDiGBCCjGBCCjGBBDjGBBCkGBBCkGBBCkGEkGDlGDlGDlGCmGCmGBmGDlGDlGCmGCmGC35F",
+      "solution": [
+        null,
+        {
+          "x": 1,
+          "d": 2,
+          "a": 0,
+          "arm": 2,
+          "flip": false
+        }
+      ],
+      "cards": ["arjuna"],
+      "tale": "Arjuna leaves his brothers to sit in stillness on Mount Indrakila. Before he goes, the eldest brother has one thing to say."
+    },
+    {
+      "id": "w2-2",
+      "index": 8,
+      "lakon": "Arjuna Wiwaha",
+      "title": "The eldest brother's blessing",
+      "scene": "Yudhistira lets his brother go with a quiet word.",
+      "weekday": 1,
+      "offered": ["sadewa", "yudhistira", "sengkuni"],
+      "start": [
+        {
+          "x": 6,
+          "d": 3,
+          "a": 0,
+          "arm": 2,
+          "flip": false
+        },
+        {
+          "x": 2,
+          "d": 4,
+          "a": 0,
+          "arm": 1,
+          "flip": true
+        },
+        {
+          "x": 1,
+          "d": 4,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        }
+      ],
+      "par": 7,
+      "target": "MCCBCCgGBCBCCgGBCBCCgGBCBCCgGBCCBCgGBCCBC7FU1FHBBBI4FFBBBCBF6FDBBBCCE6FDBBBCCE6FFBCCE6FFBBDE6FFBBDD7FFBBCE7FFBBCE8FGCE8FGCE4FBDGCE5FBCGBF5FCBGBF5FJBE6FJBE6FJBE6FO6FP5FR4FR3FR3FR3FR3FICH3FHEG3FICH3FR3FR4FQ4FGBI5FFDH5FFDH5FFCI5FO6FO6FO6FO7FM8FK-FK-FL9FL9FFBF8FFDE8FEEE8FFDE8FM8FM8FM8FM8FM9FL_FFiGFiGGiGGhGH-FHBC-FHBC8FJBC7FKBC8FJBC-FHhGHiGIBB-FIBC9FM9FGEDoGBmyI",
+      "solution": [
+        null,
+        {
+          "x": 0,
+          "d": 3,
+          "a": 0,
+          "arm": 0,
+          "flip": true
+        },
+        null
+      ],
+      "cards": ["yudhistira"],
+      "tale": "Yudhistira, who has never told a lie, gives Arjuna his blessing and a warning: the gods will test you. While Arjuna is gone, the camp needs guards."
+    },
+    {
+      "id": "w2-3",
+      "index": 9,
+      "lakon": "Arjuna Wiwaha",
+      "title": "The twins keep watch",
+      "scene": "Nakula and Sadewa guard the camp while Arjuna is away.",
+      "weekday": 2,
+      "offered": ["arjuna", "sadewa", "gareng", "nakula"],
+      "start": [
+        null,
+        {
+          "x": 4,
+          "d": 4,
+          "a": 0,
+          "arm": 0,
+          "flip": true
+        },
+        null,
+        {
+          "x": 6,
+          "d": 1,
+          "a": 0,
+          "arm": 2,
+          "flip": true
+        }
+      ],
+      "par": 9,
+      "target": "2DBBBCBiGBBBCBiGBBBlGBBBBBjGBBBBBjGBBBBB-FGBGbC_EFBFcBgFCCBBDdBEB8ECCBCCcBEB9EDBFSBIBDC-EDBFSCGBDCDC6EDBFBBPEEBDCDC7EDBFBBOGCBDCDC8EDBEBBPIDBDC_ECBEBBOECDCBDCgFJNEDBCCDChFJMEDBCDCBjFJLFCBCCBDjFKLECBCHhFMKECBCJgFMJFBBBHBE_EMDBEFBJFC-EFBGCKBJmFEDEDJBJnFFBFCSqFKBSDBnFGCUBDoFGCXpFdsFbtFavFMCKwFLDJxFDBGFGzFDBHDG0FT1FS2FQ4FP5FO5FO5FIBD6FN6FO7FM9FL9FO6FM0FBHLzFEFMyFFEMzFFDFBBCEzFFCGEEzFFBIDD3FK-FK9FL8FN7FHhGFlGCutL",
+      "solution": [
+        null,
+        {
+          "x": 4,
+          "d": 0,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        },
+        null,
+        {
+          "x": 4,
+          "d": 2,
+          "a": 1,
+          "arm": 0,
+          "flip": false
+        }
+      ],
+      "cards": ["nakula", "sadewa"],
+      "tale": "Nakula and Sadewa watch the camp all night, and nothing comes. Up on the mountain, something does."
+    },
+    {
+      "id": "w2-4",
+      "index": 10,
+      "lakon": "Arjuna Wiwaha",
+      "title": "The flower battle",
+      "scene": "Cakil leaps from the forest. Arjuna does not even draw his keris at first.",
+      "weekday": 3,
+      "offered": ["buta", "bima", "cakil", "arjuna"],
+      "start": [
+        {
+          "x": 1,
+          "d": 4,
+          "a": 0,
+          "arm": 2,
+          "flip": false
+        },
+        {
+          "x": 2,
+          "d": 2,
+          "a": 0,
+          "arm": 2,
+          "flip": true
+        },
+        {
+          "x": 2,
+          "d": 1,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        },
+        null
+      ],
+      "par": 10,
+      "target": "1IBnGCnGCnGCIB-FBHCyFBMBFCzFCBBKBDD0FEKBBEwFCCDBBKFxFCCDBBKFxFCBEBBFBEEyFCBEBBDCFEzFBBEBBBFEEzFBBBBCBHDE0FDBJEE0FGBBBEDE1FDBCBBBEDE0FEBCBGCEzFCCCBCBFDExFFBCBBCFCFvFKBBCFCEuFMBBCFBFsFEDHBBCFBFrFEEHBBBMpFHDHBBBNpFIBJBNpFfsFduFbvFOBLwFZxFYxFYxFVBCiEBuBLCIBCiEBuBLBMiECuBWjECuBWjECuBWjECuBWjECvBTBBGC7DCvBTBBFC9DBvBVDD-DBvBZBB-DBuBYiECtBagECvBa-DCvBUBE_DCuBLBJCD_DCuBKCJCCgECuBJDGBCBDhEBtBKDDECBCiEBqBHBFBEFBCCiEBnBGELFBBDiECkBFGLDCBBBCjEChBGIJDDCEjECeGKIEDDDkECcFMPEDkECaEOPFClECYDQPGClECXDQOHDmEBVDQNJDnEBTDQCDCBFLCoECRCpBBqECPD1FCND3FCMC5FCKD6FCID8FCHC_FBFChGBDDiGCBCkGDlGDkGDlGDlGC9jI",
+      "solution": [
+        null,
+        null,
+        {
+          "x": 3,
+          "d": 1,
+          "a": 7,
+          "arm": 2,
+          "flip": false
+        },
+        {
+          "x": 3,
+          "d": 2,
+          "a": 7,
+          "arm": 1,
+          "flip": true
+        }
+      ],
+      "cards": ["arjuna", "cakil"],
+      "tale": "Cakil leaps at the meditating Arjuna. Arjuna moves only once. The giant falls on his own keris, as every Cakil always does. Down in the village, Bagong heard the story too."
+    },
+    {
+      "id": "w2-5",
+      "index": 11,
+      "lakon": "Arjuna Wiwaha",
+      "title": "Bagong tells it wrong",
+      "scene": "Bagong retells the battle to Petruk, and wins it himself.",
+      "weekday": 4,
+      "offered": ["sengkuni", "gareng", "semar", "bagong", "petruk"],
+      "start": [
+        null,
+        null,
+        null,
+        {
+          "x": 4,
+          "d": 4,
+          "a": 0,
+          "arm": 1,
+          "flip": true
+        },
+        {
+          "x": 1,
+          "d": 3,
+          "a": 0,
+          "arm": 1,
+          "flip": true
+        }
+      ],
+      "par": 11,
+      "target": "rCBEBGBgGBGBgGBGBgGBGB6FBFBGB6FBFBGB6FHEF4FFBBEDWBjFEGEVDiFFFEUEiFFFETEjFBBDEFSEkFBBEDFJBHElFBBECGJCFDnFBBECEBBHFDDoFBBKBBHGCCpFMBBGEBFqFOFEECrFPDEECsFPDEDCsFQCEDCFBnFQBEDCFDmFUDBFGlFUCBFIkFBBRBCEGCDiFIDIBCEFpFHEHBCEFrFGFIDGsFGEIDGuFGCIDFwFPCGxFOCGzFNBF1FS2FR2FFBL2FQyBBkERxBCjESwBBkEHBLvBBlEHBMtBBnEFCMsBBnEHCKrBCnEUqBCnEVpBCnERBDpBCnERCDoBCoEQDDnBCoEDDJFCnBCoEDEGICmBBpEEFEIDlBBpEFEEJDkBBpEIBEKDjBBpENKEhBCrELLDhBCtEJMDgBCtEJvBCuEIvBCuEEBFtBCuEEDFrBCvEDGFoBBwEDJFlBBwEELFiBBvEFNFfCsEBCGPFcCpEFBHREaCsELTDYCxEHUCXCyEHUDVC0EGVDTC5EDVCSB8ECWCQB-ECVDOBgFBWCMCiFBWCKCjFBWDIClFBWCHC-FCFCgGCDChGCCCkGDlGCmGDmGCnGBj-G",
+      "solution": [
+        null,
+        null,
+        null,
+        {
+          "x": 2,
+          "d": 0,
+          "a": 0,
+          "arm": 2,
+          "flip": false
+        },
+        {
+          "x": 2,
+          "d": 2,
+          "a": 1,
+          "arm": 1,
+          "flip": false
+        }
+      ],
+      "cards": ["bagong", "petruk"],
+      "tale": "By the time Bagong finishes the story, Arjuna is not in it at all. Petruk laughs so hard he falls over. In Astina, nobody is laughing."
+    },
+    {
+      "id": "w2-6",
+      "index": 12,
+      "lakon": "Arjuna Wiwaha",
+      "title": "Duryudana's envy",
+      "scene": "In Astina the king hears of Arjuna and plots with his uncle.",
+      "weekday": 5,
+      "offered": ["sengkuni", "duryudana", "cakil", "arjuna", "yudhistira"],
+      "start": [
+        {
+          "x": 5,
+          "d": 4,
+          "a": 0,
+          "arm": 1,
+          "flip": true
+        },
+        {
+          "x": 0,
+          "d": 0,
+          "a": 0,
+          "arm": 1,
+          "flip": true
+        },
+        null,
+        {
+          "x": 4,
+          "d": 0,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        },
+        {
+          "x": 6,
+          "d": 3,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        }
+      ],
+      "par": 13,
+      "target": "0EB9EQZCwFRFCjGFmGBnGBzFBTByFBUBjFBNBUCiFBNBDCQChFBGBGBDCRCgFBECBCEBDCCCOC2EBIBECBECBDBDCPB3ECGBEBCICBDBQC1EFEBEBCEBDCBCCRC0EHCBDCCECCBCCCSC0EJDCDDCCBDBBUCzEECECCDEBCBCBCVCyEFDCBDDEBCBBBFUCxEFDCCCDEBCBJTCwEFDCCBBCBEBIECSCwEFCCBTZDuEFCCBTbCtEFCCBTcCsEFCCBSCCaCsEFBCBWbDGC8DFBFBCBVCHVCGE5DLBYFPLCFG3D9BBJDI1DoCBLzDbB6ByDZDHIODHBSxD6BDHCGHDxDIFVCCIHDDCOJEwDJETEDCNCTKEuDLDSFnBKDvDMBSGLDPTDvDfHBOMmEeYIqEGDLBIrFGEJBItFEFSsFGEGCJrFJCGEHrFREHrFQFFBBrFQFCBDsFQFCCDrFOBDDCBFqFPEECFpFPGLoFOENqFNEDCJqFLFDCKoFLGCFCuFKIB0FKJBoFCKECDKBnFFGFEBzFFEH4FGCH6FGBJ5FO7FM7FO5FQ3FM8FL8FK-FJ_FHhGGiGErqJ",
+      "solution": [
+        {
+          "x": 3,
+          "d": 1,
+          "a": 1,
+          "arm": 0,
+          "flip": false
+        },
+        {
+          "x": 2,
+          "d": 2,
+          "a": 1,
+          "arm": 0,
+          "flip": false
+        },
+        null,
+        {
+          "x": 5,
+          "d": 0,
+          "a": 6,
+          "arm": 1,
+          "flip": false
+        },
+        null
+      ],
+      "cards": ["duryudana", "sengkuni", "arjuna"],
+      "tale": "Duryudana cannot bear another tale of Arjuna. Sengkuni has a plan, as always. But a god is already on his way to the mountain."
+    },
+    {
+      "id": "w2-7",
+      "index": 13,
+      "lakon": "Arjuna Wiwaha",
+      "title": "Batara Guru's gift",
+      "scene": "The king of the gods tests Arjuna, then lends him the arrow to end the giant king.",
+      "weekday": 6,
+      "offered": ["buta", "arjuna", "bima", "duryudana", "guru"],
+      "start": [
+        {
+          "x": 2,
+          "d": 4,
+          "a": 0,
+          "arm": 2,
+          "flip": false
+        },
+        {
+          "x": 3,
+          "d": 4,
+          "a": 0,
+          "arm": 1,
+          "flip": false
+        },
+        null,
+        {
+          "x": 1,
+          "d": 0,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        },
+        {
+          "x": 0,
+          "d": 3,
+          "a": 0,
+          "arm": 0,
+          "flip": false
+        }
+      ],
+      "par": 16,
+      "target": "hCBGB1BBqEBGB1BBqEBGB1BBqEBGB1BBqEBGB1BBqEBGB1BBjEMCBIMhBBjEKEBIKjBBiEKFBHKkBBiEJGBHKkBBiEHBBGBGICCjBBiEJGBGIDCiBBiEJGBGJDCIBYBiEJGBGKDCGCYBiEJGBFJBCDCEEXBjEIGBFIEBDCCGWBjEIGBFIFBDJWBjEJFBFIGCCEBEVBjEJFBEKGDBCDETCjEJFBEJBBGCCCCFSCkEIFBEJCBEECBDFRCkEJEBEIEBCEBBCBDERCkEJEBDJFHBBCBCFQCkEJEBDJFLBBCFPCkEKDBDJENBBCFOBmEJDBDJDBECBHBBCEECIBmEJDBCKJCBHBBBLHBmEKCBCKKCBHBBBLGBmEKCBCJMCBHBNFBnEJCBCJMDCTFBnEJCBBKCEICCTEBnEKBBBQJXDBnEeJXCB3DDIjBHZCB1DFIkCBB1DEKjCBB1DEKuBCV1DFJoBJKDH2DFIkBDe2D7BFIDH2DJCwBGHDH2DzC1D_BBBCR1DMBzBDR2DIDlBCMER2DHDnBIEFR2DFFeBJICGR2DDFfKCGCIBBZrDCFfTBJBBZrDBERDNdBBUCDvDQGLeOKEsDQHLfMNDrDQHLgBLIBFDqDQHLhBKHDFEnDRHLiBKGDHDmDSFMiBLFDIClDkBiBBBKDHFBmDHBbjBBCKCHtDHBajBBDDBOtDhBkBBEQuDhBkBBEPvDgBlBBFNxDemBBFOwDdnBBFPvDcoBBEQvDLCPnBCGDCFCDuDKEOODWCGDDEDDuDJEOKMRCHDCKuDJEOGVMCHEDIuDKCPCdICIFCHuD-BBGJFBCBEuDmCJEBCBDuDpBCbKHCCtDmBMVLGCBtDjBXNNFwDefIQEvDbjBIREuDkBfDSEtDCGJHBHWNDSEsDCHKEBcJICSErDBIMBCvBBqEO6FN7FO6FS2FT1FU0FUtFFCTtFHBStFICNxFWyFV0FGBN8FL9FL9FL9FK_FJgGIhGFjGElGBkuD",
+      "solution": [
+        {
+          "x": 2,
+          "d": 3,
+          "a": 0,
+          "arm": 1,
+          "flip": false
+        },
+        {
+          "x": 2,
+          "d": 2,
+          "a": 2,
+          "arm": 1,
+          "flip": false
+        },
+        null,
+        null,
+        {
+          "x": 4,
+          "d": 2,
+          "a": 7,
+          "arm": 2,
+          "flip": true
+        }
+      ],
+      "cards": ["guru", "arjuna", "buta"],
+      "tale": "Batara Guru disguises himself as a hunter and fights Arjuna over a boar, then reveals himself and gives him the Pasopati arrow. With it, Arjuna ends the giant king. Next week the story starts again, and the old servant opens the screen."
+    }
   ]
- },
- "puzzles": [
-  {
-   "id": "w1-1",
-   "index": 0,
-   "lakon": "Bima Suci",
-   "title": "Semar opens the screen",
-   "scene": "Before every lakon the old servant steps out first. Cast his shadow.",
-   "weekday": 0,
-   "offered": [
-    "semar",
-    "gareng"
-   ],
-   "start": [
-    {
-     "x": 5,
-     "d": 3,
-     "a": 0,
-     "arm": 1,
-     "flip": true
-    },
-    null
-   ],
-   "par": 4,
-   "target": "2CCLBICwFCLBICwFCLBICwFCLBIBxFCLBIBxFBMBIBxFBDKEKsFBEHBBFHuFBDGDBEGwFBDFEBEFxFBDFEBEFxFBDGDBDGxFBDGDBDGxFBDGDBDHwFBEGCBCIwFBEGCBCHwFCEGCBCHwFCEHBBBIwFCEHBBBIwFCEHBBBIwFCFQxFCFSvFCFSvFZvFZuFauFJDOuFIFOtFIFOsFJFOsFJFPqFLCRqFfpFgBoFgBoFgBoFhBnFhBoFgBnFTEKnFSGJnFSGJpFQGJqFPGJrFPEKrFctFbuFZvFZwFXyFV0FT1FS3FEDK9FM7FN7FIBF6FHDE6FHED6FICE6FIBF7FO6FLBC6FKEB5FI_FFjGFjGEkGEkGDkGEkGDjGEkGE2iJ",
-   "solution": [
-    {
-     "x": 3,
-     "d": 4,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    },
-    null
-   ],
-   "cards": [
-    "semar"
-   ]
-  },
-  {
-   "id": "w1-2",
-   "index": 1,
-   "lakon": "Bima Suci",
-   "title": "Bima asks the way",
-   "scene": "Bima will search for the water of life, wherever it hides.",
-   "weekday": 1,
-   "offered": [
-    "bima",
-    "arjuna",
-    "buta"
-   ],
-   "start": [
-    {
-     "x": 4,
-     "d": 2,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    },
-    {
-     "x": 2,
-     "d": 3,
-     "a": 0,
-     "arm": 1,
-     "flip": false
-    },
-    null
-   ],
-   "par": 6,
-   "target": "0EBHC-FBHB_FBHB_FBHBnGBBB-FBGBBB5FHFBBIzFFGBBBCF1FEFBBBDE1FEFBBBDE1FFEBBBDE1FFEBBBDE2FEEBBBCF2FEEBBBCF2FFDBBBCE2FGDBBBBF3FFDBBBBF3FFDBBBBF3FGCBDF3FGCBCF5FFCBCF5FFCBCF5FGBBBG6FFBBBG6FFBH7FFBI3FCBQ1FT1FT2FR3FFCK3FFCK4FIDE5FIDE5FP5FP6FO6FO6FO5FP5FP5FGDG5FFEG5FFEG5FGCH5FP5FP5FO6FO8FBBK-FFiGFiGGhGH-FK_FJgGIhGHiGIhGJgGK-FL-FFCD9FBJB8FDJB6FC_yK",
-   "solution": [
-    {
-     "x": 6,
-     "d": 0,
-     "a": 0,
-     "arm": 0,
-     "flip": true
-    },
-    null,
-    null
-   ],
-   "cards": [
-    "bima"
-   ]
-  },
-  {
-   "id": "w1-3",
-   "index": 2,
-   "lakon": "Bima Suci",
-   "title": "The giant of the mountain",
-   "scene": "On Mount Reksamuka a giant guards the forest. Bima walks straight in.",
-   "weekday": 2,
-   "offered": [
-    "cakil",
-    "duryudana",
-    "buta",
-    "bima"
-   ],
-   "start": [
-    null,
-    null,
-    {
-     "x": 4,
-     "d": 1,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    },
-    {
-     "x": 6,
-     "d": 4,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    }
-   ],
-   "par": 8,
-   "target": "1DBFBLCiBBxEBFBLCiBBxEBFBLBjBBxEBFBKCjBBxEBFBKCjBBxEBFBKCjBBqELCBENCHVBqEJEBEMDFXBqEIFBDLFEYBpEHBBFBDJGFYBpEJFBDJGEZBpEJFBEIGEZBqEIFBEIGEZBqEHGBEIBBDFZBqEIFBEIBBDFZBqEIFBEIBBDEaBrEHFBEIBBDEaBrEHFBEHCBCFaBrEIEBDICBCFaBrEIEBDICBCFmFIEBDICInFIDBDICBBFaBtEIDBDIBCBFaBtEIDBCMBFaBtEJCBCSaBtEJCBCSaBuEICBCVXBuEJBBBVYBuEJBBBVYBuEJBBBVYBqEeCFYBqEeCEZBqEkBZBqENETZBrEMETZBrEMESaBrENCTaBrEiBaBrEiBaBsEhBaBsEiBZBsEaCGmFbBGYBsEcBGFJKBsEjBBSFBsEOFmBBEpEOGYEPpEOHUOJnEPGRWFnEPGLCBdClERENgBCkEiBmFkBlFkBkFnBhFlBjFcBHlFaCHlFKBXmFJDUoFIFToFJDUpFJBUqFYFCpFZEDoFZGCoFYwFYwFXyFV7FJgGJEB6FLBC7FM9FL8FN7FR3FS2FSwFECRwFGBQwFIBL0FU1FS3FECK-FK-FK-FJgGIhGHhGFkGDoxF",
-   "solution": [
-    null,
-    null,
-    {
-     "x": 4,
-     "d": 2,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    },
-    {
-     "x": 5,
-     "d": 0,
-     "a": 0,
-     "arm": 1,
-     "flip": false
-    }
-   ],
-   "cards": [
-    "bima",
-    "buta"
-   ]
-  },
-  {
-   "id": "w1-4",
-   "index": 3,
-   "lakon": "Bima Suci",
-   "title": "Bima against Cakil",
-   "scene": "A quick giant blocks the path. Only one of the two will stand.",
-   "weekday": 3,
-   "offered": [
-    "arjuna",
-    "bima",
-    "buta",
-    "cakil"
-   ],
-   "start": [
-    {
-     "x": 2,
-     "d": 3,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    },
-    {
-     "x": 3,
-     "d": 0,
-     "a": 0,
-     "arm": 1,
-     "flip": true
-    },
-    null,
-    {
-     "x": 3,
-     "d": 4,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    }
-   ],
-   "par": 10,
-   "target": "hDBBBJC6FBBBJBBB5FBBBJBBC4FBBBJBCC3FBBBJBDBwFBGBBBJBEBuFJBBGIBB-EBNHCBBBHGDB-ECKGEBBBGFGB7EBCCKFEBBBGEIB7EBCCJFEBBBFFJB7EBCCJFDBBBFFKB7EBCCIFDBBBFFKC7EBCCHFDBBBFFLC6ECDBGFDBBBEGMC6EBEBFGCBBBEFOB7EBEBFFBCBBEFPB7EBEBEFBBCBEFQB7EBEBDHCBDGRB1EBFBEBCHCBDGSBzECGBEBBHCBDGSFuECIBEBBHBBDGSDvEDJBEIBCBHQDyEFGCEKBHPC0EJDCDSND3EKBBDSMD7EKDPBBKDgFZBBJDkFWBBBBGDnFYFCrFVFDrFVFCsFVEDtFTFCuFUDCvFVBDwFUBCFBrFHBPFBrFWFCrFWECBBqFVEDsFbtFdrFSCJrFREIsFQFGtFGEGGEtFHEHFEtFHEHEFtFHEHDGtFRDHuFQEEwFQFByFQ4FQ4FR9FFBF9FGBF9FL9FM8FM8FN7FN7FN7FO4FLBE2FLBBBE1FKDBBEzFMDBBEyFNDBBEyFDCGFFzFCJCDFyFBLDCF_FCCEiGBBEjGFjGEkGEkGEkGDlGDkGEjGFjGFjGFjGFiGCBCiGCmGB5kG",
-   "solution": [
-    null,
-    {
-     "x": 3,
-     "d": 1,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    },
-    null,
-    {
-     "x": 3,
-     "d": 0,
-     "a": 7,
-     "arm": 1,
-     "flip": false
-    }
-   ],
-   "cards": [
-    "bima",
-    "cakil"
-   ]
-  },
-  {
-   "id": "w1-5",
-   "index": 4,
-   "lakon": "Bima Suci",
-   "title": "The brothers follow",
-   "scene": "Petruk and Gareng run after Bima, arguing all the way.",
-   "weekday": 4,
-   "offered": [
-    "petruk",
-    "semar",
-    "sengkuni",
-    "bagong",
-    "gareng"
-   ],
-   "start": [
-    {
-     "x": 3,
-     "d": 0,
-     "a": 0,
-     "arm": 1,
-     "flip": true
-    },
-    {
-     "x": 2,
-     "d": 1,
-     "a": 0,
-     "arm": 1,
-     "flip": true
-    },
-    {
-     "x": 1,
-     "d": 2,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    },
-    null,
-    null
-   ],
-   "par": 12,
-   "target": "0EBDCGB6FCDCFC6FCEBFC6FCEBFB7FCEBFB7FBFBFB5FJDH3FFBBEF3FEDBDE5FEDBCF5FEDBBG5FEDH5FBBECH5FGBDBE3FLCEEByFLBFCCyFEBFBBBFBCyFEBGBBBEBCyFECGBBBGzFECIBFzFEDOyFEDPxFEDBBBCKxFFCQxFEBCCPvFEBCDRsFEBCERrFHDGBBBKrFGDGBBCKqFGDIDJlFBEGCKDJlFCCGCGBQkFLBFCRjFRCSiFRCCBQhFFCKCCCNjFGCIDCDOhFHCHDCEHBH_EQDCFHCG-EHDHCCHFEF-EHDJJFEF_EFFIJGCG-EHDJJGCG9ESMM9ESNM8ERPM7ERTG-EQXE8EDDKYG5EDEGBCYI3EEFEBCZK0EFEEBCZMyEIBEBCaMxENBCbLzELBCdJ1EJBCbBCJ0EJBCcDBH1EIBBdECF1EIBBeD8EEBDBBeD9EDCEfB-EDCEfB-EECD9FFDC6FBCGCD2FFBHBE4FP9FL9FHBC_FGBChGHgGCCDgGCDD_FBDF-FBDECB8FBCEEB7FBBEHB4FCBEgGGhGFiGEiGEjGDkGDkGDl-G",
-   "solution": [
-    {
-     "x": 4,
-     "d": 2,
-     "a": 1,
-     "arm": 2,
-     "flip": false
-    },
-    null,
-    null,
-    null,
-    {
-     "x": 5,
-     "d": 3,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    }
-   ],
-   "cards": [
-    "petruk",
-    "gareng"
-   ]
-  },
-  {
-   "id": "w1-6",
-   "index": 5,
-   "lakon": "Bima Suci",
-   "title": "Sengkuni's errand",
-   "scene": "The quest was a trap: Sengkuni and his king hope Bima drowns.",
-   "weekday": 5,
-   "offered": [
-    "sengkuni",
-    "yudhistira",
-    "duryudana",
-    "bima",
-    "arjuna"
-   ],
-   "start": [
-    null,
-    null,
-    {
-     "x": 2,
-     "d": 0,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    },
-    {
-     "x": 3,
-     "d": 3,
-     "a": 0,
-     "arm": 1,
-     "flip": false
-    },
-    null
-   ],
-   "par": 11,
-   "target": "jBBCBDB3BCIB-DBCBDB3BCIB-DBCBDB3BCIB-DBCBDB3BCIB-DBBBEB4BBnEBBBEB4BBhERaBRIBBFH2DGBBBFdBQFCBBBGF2DECBBBBEfBPEDBBBFE4DECBBBBEbCDBOEDBBBFE5DDCBBGcCDBGBGEDBBBFE5DDCBBEBBZCCCDBECGFCBBBEF5DDCBBEBCZCDBDBCEFFCBBBEF5DDCBBEBCbBDBCIFECBBBEE6DEBBBEBCcCCBCDBEEECBBBEE6DEBBBEBBeCCCBCCEDFBBBBDF6DEBBBEBBgBBBDBCCDDFBBBBDF6DEBIhBCBCBCBECFBBBBDF7DDBIgBFBBBCBECGBBDF7DDBFBCfJBCBEBGBBCG7DMeCEIBDBGBBCG7DMlBRCBCG7DMmBRBBCG5DOnBQBBBH4DPlBCCQBFBB3DQmBTBFBB3DICFpBXBC2DHDFqBZ3DFFErBY3DOsBW4DOuBPBE4DOvBT4DOwBGCK4DOxBR4DHCFyBQ5DFEEzBP5DFEEyBT2DFDFyBU1DNyBQCC2DMzBOEB4DIBBzBPCC4DIBBzBFCM3DJBByBGDJ5DLyBGEH6DLyBHCJ5DLzBS4DLzBQBC3DLzBQCC2DLzBSBCDCwDLzBSCEyDL4BFBMzDL5BUwDL5BPCDzDI6BOCD0DH5BNFC0DDBD5BLHB1DDBE4BMGB1DI5BLGB1DJ1BKBE6DK0BICBBE6DKxBLCBBD7DLwBKDBBD8DGBDvBDCGDF1DNCDuBBJBDE2DNCDtBBJDCE2DNCD5BCBE3DDBICC9BD8DIBD9BD8DIBD9BD8DIBD9BD8DGBBBC9BD9DGBE9BD-DFBE8BE_DDCD9BE_DCDD9BEkED8BFkEC9BElEC8BBpEC7BBoEEkGElGDuyH",
-   "solution": [
-    {
-     "x": 3,
-     "d": 1,
-     "a": 7,
-     "arm": 0,
-     "flip": true
-    },
-    null,
-    {
-     "x": 0,
-     "d": 1,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    },
-    {
-     "x": 3,
-     "d": 0,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    },
-    null
-   ],
-   "cards": [
-    "sengkuni",
-    "duryudana",
-    "bima"
-   ]
-  },
-  {
-   "id": "w1-7",
-   "index": 6,
-   "lakon": "Bima Suci",
-   "title": "The god in the sea",
-   "scene": "In the deep ocean Bima meets a god the size of his thumb.",
-   "weekday": 6,
-   "offered": [
-    "guru",
-    "bima",
-    "semar",
-    "dewaruci",
-    "bagong"
-   ],
-   "start": [
-    {
-     "x": 3,
-     "d": 1,
-     "a": 0,
-     "arm": 0,
-     "flip": true
-    },
-    {
-     "x": 0,
-     "d": 2,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    },
-    null,
-    {
-     "x": 5,
-     "d": 0,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    },
-    null
-   ],
-   "par": 16,
-   "target": "8BBvBGPBGCQEmDBzBSGBREmDBjCSIEmDBjBBfCGBGPmDBBBhBBfCGBRDnDBBBhBBfCFCSCgDGBBBBFHVBZFBCEGOChDFCBBBFFXBZECCEEQD_CEEBBBFEYBZDDCEDQE_CFDBBBEFYBZDDCEDQDhDEDBBBEEZBZECCDEQDhDEDBBBEEZBZECCDEQDhDEDBBBEEZBaDBDDEQDhDFEBDFZBaHDDQEhDFEBDFZBaHCEQEiDEBBCBDFZBaHCEQEiDGCBDEaBaHCEQEiDGCBCFaBbGCEPEjDGCBCFaBbEBBBFQEiDGCBCFaBbEBBBEREjDFCBCFaBbGBEREjDFCBBG2BLLECFiDFCBBF1BPGOiDGBBBF0BQEQJB4CGBBBFaBZBBODRHC5COaBZlBCG3CTXBZlBBH3CTXBZpBBE2CSYBZcBLDD2CSYBZbDKDE2CKCFYBcXFQ2CKCEZBcXFQ2CFCJZBcXFS1CECJZBSjBBWzCPZBMLFEEqBxCOaBZBCEBdCFEGwCOaBZCBNDTOCwCOaBZQESOCwCOaBZQESgDOaBZQDTgDPZBZkBiDGDGZBbBFDCWjDGEFZBhBEBVkDGDGFJYOIXmDHCGBSfgBnDqBgBWoDXEPgBGELpDUOJgBFHDCCqDQWFdH5DKCBdCaIgEFgBCYJgEF6BCCDjEG3BBHChEH_BCgEK-FIgGHhGH-FJ-FI-FK9FL9FCCG9FCIC8FBJDnGC01K",
-   "solution": [
-    null,
-    {
-     "x": 1,
-     "d": 0,
-     "a": 0,
-     "arm": 1,
-     "flip": false
-    },
-    {
-     "x": 5,
-     "d": 2,
-     "a": 6,
-     "arm": 1,
-     "flip": false
-    },
-    {
-     "x": 4,
-     "d": 4,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    },
-    null
-   ],
-   "cards": [
-    "dewaruci",
-    "bima",
-    "semar"
-   ]
-  },
-  {
-   "id": "w2-1",
-   "index": 7,
-   "lakon": "Arjuna Wiwaha",
-   "title": "Arjuna on Indrakila",
-   "scene": "Arjuna climbs the mountain alone to sit in stillness.",
-   "weekday": 0,
-   "offered": [
-    "nakula",
-    "arjuna"
-   ],
-   "start": [
-    null,
-    {
-     "x": 3,
-     "d": 2,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    }
-   ],
-   "par": 4,
-   "target": "zBBCBEB_FBCBEB_FBCBEB_FBCBEB_FBCBEB_FBCBEB5FIBJ3FGBI4FECBBBBF5FDDBBBBF5FECBBBBE6FECBBG6FECBBG7FDCBBG7FDCBBG7FEBBBEBC6FEBBBEBC6FEBBBEBC6FEBBBEBC6FEBJ6FEBJ7FN7FM8FM6FO4FQ4FQ4FQ4FFDI4FFEH4FFDI4FQ4FQ4FQ5FHCG5FGEF5FGEF5FGEF6FO6FO6FO6FO8FJBB9FL9FL9FL9FL9FECF9FECF9FECF9FL9FL9FL9FL9FL9FLhGHhGHiGGiGHhGIgGIgGIgGK-FJ_FK-FK4FBDICC3FNCD2FNCC4FMCC5FEBDBCBD6FCGCBDiGBCCjGBCCjGBBDjGBBCkGBBCkGBBCkGEkGDlGDlGDlGCmGCmGBmGDlGDlGCmGCmGC35F",
-   "solution": [
-    null,
-    {
-     "x": 1,
-     "d": 2,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    }
-   ],
-   "cards": [
-    "arjuna"
-   ]
-  },
-  {
-   "id": "w2-2",
-   "index": 8,
-   "lakon": "Arjuna Wiwaha",
-   "title": "The eldest brother's blessing",
-   "scene": "Yudhistira lets his brother go with a quiet word.",
-   "weekday": 1,
-   "offered": [
-    "sadewa",
-    "yudhistira",
-    "sengkuni"
-   ],
-   "start": [
-    {
-     "x": 6,
-     "d": 3,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    },
-    {
-     "x": 2,
-     "d": 4,
-     "a": 0,
-     "arm": 1,
-     "flip": true
-    },
-    {
-     "x": 1,
-     "d": 4,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    }
-   ],
-   "par": 7,
-   "target": "MCCBCCgGBCBCCgGBCBCCgGBCBCCgGBCCBCgGBCCBC7FU1FHBBBI4FFBBBCBF6FDBBBCCE6FDBBBCCE6FFBCCE6FFBBDE6FFBBDD7FFBBCE7FFBBCE8FGCE8FGCE4FBDGCE5FBCGBF5FCBGBF5FJBE6FJBE6FJBE6FO6FP5FR4FR3FR3FR3FR3FICH3FHEG3FICH3FR3FR4FQ4FGBI5FFDH5FFDH5FFCI5FO6FO6FO6FO7FM8FK-FK-FL9FL9FFBF8FFDE8FEEE8FFDE8FM8FM8FM8FM8FM9FL_FFiGFiGGiGGhGH-FHBC-FHBC8FJBC7FKBC8FJBC-FHhGHiGIBB-FIBC9FM9FGEDoGBmyI",
-   "solution": [
-    null,
-    {
-     "x": 0,
-     "d": 3,
-     "a": 0,
-     "arm": 0,
-     "flip": true
-    },
-    null
-   ],
-   "cards": [
-    "yudhistira"
-   ]
-  },
-  {
-   "id": "w2-3",
-   "index": 9,
-   "lakon": "Arjuna Wiwaha",
-   "title": "The twins keep watch",
-   "scene": "Nakula and Sadewa guard the camp while Arjuna is away.",
-   "weekday": 2,
-   "offered": [
-    "arjuna",
-    "sadewa",
-    "gareng",
-    "nakula"
-   ],
-   "start": [
-    {
-     "x": 2,
-     "d": 2,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    },
-    {
-     "x": 2,
-     "d": 2,
-     "a": 0,
-     "arm": 1,
-     "flip": false
-    },
-    null,
-    {
-     "x": 2,
-     "d": 4,
-     "a": 0,
-     "arm": 1,
-     "flip": false
-    }
-   ],
-   "par": 9,
-   "target": "8BCECCB9FCECCB9FCECCB-FBFBCB-FBFBCB-FBFBCB6FLBKaC4EHBBCIbB7EFBBCBBGaBEB3EBBFCBDEZBEB4EBBGBBDEPBIBDC5EBBGBBDEPCGBDCFB0EBBGBBDEOEEBDCFC0EBBGBBCFNGCBDCFB2EBBGBBCEOIDBGB2ECCFBBCENECDCBGB3ECCFBBCEMEDBCCGB5EBCFBBCELEDBCDFB6EBCFBBCEKFCBCCBCDB7ECBFBBBFKECBCJ8ECBFBBBFJECBCJ9EIBBBFIFBBBHBE8EKBEDBEFBJBCCC7EKBECKBJBCgFPCJBJBChFPBSCCiFhBCCjFgBBDkFjBlFhBnFgBoFfpFTBKrFSBJsFIBJCHtFIBJBHuFZvFYwFXxFFBQyFVzFT1FS2FR3FQ4FQ4FBBO4FBBO4FBBL1FBFBBLzFEENyFFEOxFFDJCExFFCJCFxFFBR0FU0FUzFVyFWyFWyFHBO0FECO1FCDO0FCCQzFCCN2FCBFBI2FHDI1FGEI1FFGI0FEHJzFEIJwFFKJvFEKMtFEMLDDnFCNMCF1FDBHCG0FEBHCG0FDCPzFECJBFzFECJBE1FDCJDB2FDCI7FDCI7FEBCBF8FDBCCD9FDBCiGDBCjGFjGFjGFjGFkGEkGEkGElGDlGDlGDlGDmGCmGDlGDlGDlGElGDlGDmGC17C",
-   "solution": [
-    null,
-    {
-     "x": 2,
-     "d": 4,
-     "a": 0,
-     "arm": 2,
-     "flip": true
-    },
-    null,
-    {
-     "x": 2,
-     "d": 2,
-     "a": 1,
-     "arm": 2,
-     "flip": false
-    }
-   ],
-   "cards": [
-    "nakula",
-    "sadewa"
-   ]
-  },
-  {
-   "id": "w2-4",
-   "index": 10,
-   "lakon": "Arjuna Wiwaha",
-   "title": "The flower battle",
-   "scene": "Cakil leaps from the forest. Arjuna does not even draw his keris at first.",
-   "weekday": 3,
-   "offered": [
-    "buta",
-    "bima",
-    "cakil",
-    "arjuna"
-   ],
-   "start": [
-    null,
-    {
-     "x": 2,
-     "d": 1,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    },
-    {
-     "x": 6,
-     "d": 2,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    },
-    {
-     "x": 2,
-     "d": 1,
-     "a": 0,
-     "arm": 0,
-     "flip": true
-    }
-   ],
-   "par": 9,
-   "target": "1DBJBDB5FBJBDBvCBpDBJBDBvCCoDBJBDBwCBoDBJBDBtCBDBnDBJBDBuCBDB9CKJBDCEJ8BBEBCC-CGBBJBDCGG-BBDCCBFB6CGJBDCIF-BBDCCBDC7CFJBDCJE_BBDBDBBC8CFJBDCIEhCCCBDD9CEJBEBIEiCCCBBE9CEJBEBHFjCCCF9CEJBEBHElCDBF8CFIBEBGFmCCBGCB5CEIBEBFFmCEBGCB4CFHBEBFFlCDBCBFCC3CFHBEBEFlCECCBFBC4CEHBEBEFkCFDCBFBC3CFGBEBDFnCFCCBI2CFGBEBDFoCFCL1CFGBEBCFqCGBL1CFFBEBCFsCFCJ1CFFBEBBFuCGBJ0CFFBEHvCQ0CFEBEHxCPzCFEBEGzCPyCFEBEG0COyCGDBDG2CFBIxCGDBDG1CFDIwCHBCCG2CFDJvCHBCCG2CGBECFuCBBFBCBGCCzCKEFtCBBIBJ1CJEFsCOCF2CJCGsCNEE4CRqCOCF5CRqCU6CSoCKBJ8CRnCKCH_CICGmCJDHgDBCFCGlCJDHkDECGlCKBIlDLlCTlDLEBCB9BTmDS9BTnDR9BToDECK9BCBMCDoDCECBH8BCBMCDvDJ8BPCDwDH9BQBEwDH8BQBDyDG8BICKzDF8BHEIzDG9BGEI0DE-BGEHyDG_BHCIyDG_BQzDFgCQ4FP5FBBN5FBBN5FBBN5FP5FJ_FIgGI5FBFJ5FP5FP7FN-FK6FBCL9FOCC1FU0FDBQzFEBCBCBKzFDCCEKzFDCCEH2FDCCGE4FDBCiGDBCiGDBCjGCBCjGFjGDBBjGDBBkGCBBkGEkGElGDlGDlGDmGCmGCmGDlGDlGDmGDoGBs_D",
-   "solution": [
-    null,
-    null,
-    {
-     "x": 4,
-     "d": 3,
-     "a": 0,
-     "arm": 2,
-     "flip": true
-    },
-    {
-     "x": 0,
-     "d": 1,
-     "a": 7,
-     "arm": 0,
-     "flip": false
-    }
-   ],
-   "cards": [
-    "arjuna",
-    "cakil"
-   ]
-  },
-  {
-   "id": "w2-5",
-   "index": 11,
-   "lakon": "Arjuna Wiwaha",
-   "title": "Bagong tells it wrong",
-   "scene": "Bagong retells the battle to Petruk, and wins it himself.",
-   "weekday": 4,
-   "offered": [
-    "sengkuni",
-    "gareng",
-    "semar",
-    "bagong",
-    "petruk"
-   ],
-   "start": [
-    null,
-    null,
-    null,
-    {
-     "x": 4,
-     "d": 2,
-     "a": 0,
-     "arm": 1,
-     "flip": false
-    },
-    null
-   ],
-   "par": 10,
-   "target": "xDCEC_FCEC_FCEC_FCECJC0FCECJC0FCEBLB1FBDCLB1FCCCLB1FCCEJBwBCjECCGHBwBCBBhECCIFBfBRBBCgECCKDBgBCPBBCgECCMBBhBDNEgECCBCGDDiBDLEgECBCCGECjBEJEgECBCCHDClBEHEgECBCDGDClBGFEgECBCDHCCGBfEGEhEGBHCCHCdFFEhEPBCFGbFFEhEPBCEJZFGDhESDMYEGEgESCKBEWFFCBD-DSBLbFFCCE8DebFFCEE5DECYcGECFF4DddFECFH2DceFECFF4DceFDDEH4DafGCDEG5DcdGCECHyDDEecFCECHzDECMDQbFBFCH1DGBJFObLBH4DECIHMbLBH7DMHLcKBH-DKHLbRhEKFLUCFRiELDIBCUEDRkEVXFBGBKmETXWoETWWnEUXVlEWXUmEVYUnEUZTnEEDFBJXOCDoEEDGBKUODEnEEDGDJTIDDDFmEPDJQIFBCIlEQDIRHFKnEPFHPIEKoEPHGNLBKqEJDBJFMVuEIMGKV0EDNGIVlFGHVnFGFVoFHDVqFGCFEIBDrFGBFFHDBtFLFGzFKFF0FLDF2FR3FQ5FO7FMkFBWMnFBTMpFCQLsFDMHCDuFEJGFBwFFBEBG4FO8FL9FK-FJ_FJ_FIhGHiGEmGBnGDlGDlGDlGCnGBnGBnGBx-F",
-   "solution": [
-    null,
-    null,
-    null,
-    {
-     "x": 3,
-     "d": 3,
-     "a": 1,
-     "arm": 1,
-     "flip": false
-    },
-    {
-     "x": 4,
-     "d": 4,
-     "a": 1,
-     "arm": 1,
-     "flip": true
-    }
-   ],
-   "cards": [
-    "bagong",
-    "petruk"
-   ]
-  },
-  {
-   "id": "w2-6",
-   "index": 12,
-   "lakon": "Arjuna Wiwaha",
-   "title": "Duryudana's envy",
-   "scene": "In Astina the king hears of Arjuna and plots with his uncle.",
-   "weekday": 5,
-   "offered": [
-    "sengkuni",
-    "duryudana",
-    "cakil",
-    "arjuna",
-    "yudhistira"
-   ],
-   "start": [
-    {
-     "x": 3,
-     "d": 4,
-     "a": 0,
-     "arm": 2,
-     "flip": true
-    },
-    null,
-    {
-     "x": 5,
-     "d": 2,
-     "a": 0,
-     "arm": 1,
-     "flip": false
-    },
-    {
-     "x": 2,
-     "d": 2,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    },
-    null
-   ],
-   "par": 13,
-   "target": "zEBCBkBB_EBCBkBB_EBCBkBBxCBtCBCBkBByCBsCBCBkBBzCBrCBCBkBBtCCFBjBCfIBJcBuCBGBhBChBGBIeBvCBGBfChBECBBBBEgBBrCBEBGBEBYCFBcDDBBBBDhBBsCBEBFCCCXCEDcECBBBBDhBBtCBDCFEXCECeECBBFhBBuCBDCFDWCECfECBBFgBCvCBDCDENBHCECGCZDCBBFgBCwCBDBCGKEFCECGCaDCBBFgBByCBDJIGDCECGCbEBBBECBeBzCBDBBEBCHHBCDCHCcEBBBECBeB0CCCBBEBDEKDCHCdEBBBEBCeB0CCCHBCDFDDCCHCeEBBBEBCeBzCECHBCBFDCDCHCfEBJeByCEBBCHBHCCDCGChBEBJeBxCEDBCGCFDBCFECjBNeBwCFECBLDBCCBECCkBMfByCEECBKCCBCBIlBMfByCGDCBJBCBLkBOfBzCGDNBIBEhBQfB0CHCUBCCCgBQfB2CHBSBClBQfB3CXCCmBFDIfB2CXCCnBFEHfB1CYBCoBFDIfB0CbpBPfCzCcpBPfCzCdoBPfCyCfoBHCFfBzCfoBGEEfByChBnBGEEfBxCjBmBGEEfBxCkBmBNfBwCdDGlBNfBwCJCREFBBkBNfBvCIDSFECBjBMgBBvCIDSEGBCkBJhBBwCHDTCLjBKgBBvCTCXiBKgBBuCTFWhBKgBBtCTIVgBKgBBsCSLVfECEgBBmCDBTODBQeECFfBkCYTRdECFIKNBjCYVRcLETHCjCCEOBCXRbWENCCjCCENBCZTYSONhCCEMBCbUWPYBBFgCDDOdLBKTLgBDgCTfLCKRKlDRhBEBSUEpDOjBCEKCFTFqDLrBKDDUEpDLtBKCETFnDLvBKCDTIjDCBHxBLCDSHjDCCGzBLBDSIhDCDF2BKBDRK-CCEE2BJBGQJ2CCGCCH1BLBFQI5CHCH0BOBFPH8CEDIzBOCEJBDI-CPxBFCIDEHM7CSyBFDIDDHM6CFCNxBEFHEDHK7CEDN7BGFEGEBD9CDENlCEHCiDDDJECkCErDCDDCErCErDCCCDF6FCBCDF8FDCF-FCBF_FCBF_FHgGGhGFiGEiGFhGEjGEjGEitG",
-   "solution": [
-    {
-     "x": 2,
-     "d": 4,
-     "a": 1,
-     "arm": 2,
-     "flip": false
-    },
-    {
-     "x": 3,
-     "d": 2,
-     "a": 7,
-     "arm": 2,
-     "flip": false
-    },
-    null,
-    {
-     "x": 5,
-     "d": 2,
-     "a": 0,
-     "arm": 1,
-     "flip": false
-    },
-    null
-   ],
-   "cards": [
-    "duryudana",
-    "sengkuni",
-    "arjuna"
-   ]
-  },
-  {
-   "id": "w2-7",
-   "index": 13,
-   "lakon": "Arjuna Wiwaha",
-   "title": "Batara Guru's gift",
-   "scene": "The king of the gods tests Arjuna, then lends him the arrow to end the giant king.",
-   "weekday": 6,
-   "offered": [
-    "buta",
-    "arjuna",
-    "bima",
-    "duryudana",
-    "guru"
-   ],
-   "start": [
-    {
-     "x": 2,
-     "d": 4,
-     "a": 0,
-     "arm": 2,
-     "flip": false
-    },
-    {
-     "x": 3,
-     "d": 4,
-     "a": 0,
-     "arm": 1,
-     "flip": false
-    },
-    null,
-    {
-     "x": 1,
-     "d": 0,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    },
-    {
-     "x": 0,
-     "d": 3,
-     "a": 0,
-     "arm": 0,
-     "flip": false
-    }
-   ],
-   "par": 16,
-   "target": "hCBGB1BBqEBGB1BBqEBGB1BBqEBGB1BBqEBGB1BBqEBGB1BBjEMCBIMhBBjEKEBIKjBBiEKFBHKkBBiEJGBHKkBBiEHBBGBGICCjBBiEJGBGIDCiBBiEJGBGJDCIBYBiEJGBGKDCGCYBiEJGBFJBCDCEEXBjEIGBFIEBDCCGWBjEIGBFIFBDJWBjEJFBFIGCCEBEVBjEJFBEKGDBCDETCjEJFBEJBBGCCCCFSCkEIFBEJCBEECBDFRCkEJEBEIEBCEBBCBDERCkEJEBDJFHBBCBCFQCkEJEBDJFLBBCFPCkEKDBDJENBBCFOBmEJDBDJDBECBHBBCEECIBmEJDBCKJCBHBBBLHBmEKCBCKKCBHBBBLGBmEKCBCJMCBHBNFBnEJCBCJMDCTFBnEJCBBKCEICCTEBnEKBBBQJXDBnEeJXCB3DDIjBHZCB1DFIkCBB1DEKjCBB1DEKuBCV1DFJoBJKDH2DFIkBDe2D7BFIDH2DJCwBGHDH2DzC1D_BBBCR1DMBzBDR2DIDlBCMER2DHDnBIEFR2DFFeBJICGR2DDFfKCGCIBBZrDCFfTBJBBZrDBERDNdBBUCDvDQGLeOKEsDQHLfMNDrDQHLgBLIBFDqDQHLhBKHDFEnDRHLiBKGDHDmDSFMiBLFDIClDkBiBBBKDHFBmDHBbjBBCKCHtDHBajBBDDBOtDhBkBBEQuDhBkBBEPvDgBlBBFNxDemBBFOwDdnBBFPvDcoBBEQvDLCPnBCGDCFCDuDKEOODWCGDDEDDuDJEOKMRCHDCKuDJEOGVMCHEDIuDKCPCdICIFCHuD-BBGJFBCBEuDmCJEBCBDuDpBCbKHCCtDmBMVLGCBtDjBXNNFwDefIQEvDbjBIREuDkBfDSEtDCGJHBHWNDSEsDCHKEBcJICSErDBIMBCvBBqEO6FN7FO6FS2FT1FU0FUtFFCTtFHBStFICNxFWyFV0FGBN8FL9FL9FL9FK_FJgGIhGFjGElGBkuD",
-   "solution": [
-    {
-     "x": 2,
-     "d": 3,
-     "a": 0,
-     "arm": 1,
-     "flip": false
-    },
-    {
-     "x": 2,
-     "d": 2,
-     "a": 2,
-     "arm": 1,
-     "flip": false
-    },
-    null,
-    null,
-    {
-     "x": 4,
-     "d": 2,
-     "a": 7,
-     "arm": 2,
-     "flip": true
-    }
-   ],
-   "cards": [
-    "guru",
-    "arjuna",
-    "buta"
-   ]
-  }
- ]
 }

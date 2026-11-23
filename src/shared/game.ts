@@ -1,17 +1,23 @@
 import {
+  MAX_OIL,
   emptyProfile,
   rankFor,
+  type BoardRow,
+  type Tomorrow,
   type CardGrade,
   type Profile,
   type SolveResponse,
+  type TodayResponse,
   type TodaySolve,
 } from './api.ts';
 import { WARMUP, puzzleById, puzzleForDay, BANK } from './bank.ts';
-import { figure, FIGURES, SETS } from './figures.ts';
+import { FIGURES, SETS } from './figures.ts';
 import {
+  LEVELS,
   dateLabel,
   hintsFor,
   isSolved,
+  toPublic,
   type PuzzleDef,
   type Slot,
 } from './puzzle.ts';
@@ -24,16 +30,31 @@ export type KV = {
   hGet(key: string, field: string): Promise<string | undefined | null>;
   hSet(key: string, fields: Record<string, string>): Promise<unknown>;
   hLen(key: string): Promise<number>;
+  zAdd(
+    key: string,
+    ...members: { member: string; score: number }[]
+  ): Promise<unknown>;
+  zRange(
+    key: string,
+    start: number,
+    stop: number,
+    options: { by: 'rank' }
+  ): Promise<{ member: string; score: number }[]>;
+  zRank(key: string, member: string): Promise<number | undefined>;
 };
 
-export type PostInfo = { day: number; index: number };
+/** which puzzle a post shows: a bank day, or a player-made shadow (`ugc`) */
+export type PostInfo = { day: number; index: number; ugc?: string };
 
 const k = {
+  ugc: (id: string) => `ugc:${id}`,
+  ugcWeek: (week: number) => `ugcweek:${week}`,
   post: (postId: string) => `post:${postId}`,
   profile: (user: string) => `profile:${user}`,
   players: (postId: string) => `players:${postId}`,
   solvers: (postId: string) => `solvers:${postId}`,
   hints: (postId: string) => `hints:${postId}`,
+  board: (postId: string) => `board:${postId}`,
 };
 
 export const savePostInfo = async (kv: KV, postId: string, info: PostInfo) => {
@@ -50,7 +71,9 @@ export const postInfo = async (
     try {
       const v = JSON.parse(raw) as Partial<PostInfo>;
       if (typeof v.day === 'number' && typeof v.index === 'number')
-        return { day: v.day, index: v.index };
+        return typeof v.ugc === 'string'
+          ? { day: v.day, index: v.index, ugc: v.ugc }
+          : { day: v.day, index: v.index };
     } catch {
       /* fall through */
     }
@@ -60,6 +83,40 @@ export const postInfo = async (
 
 export const puzzleOfPost = (info: PostInfo): PuzzleDef =>
   BANK.puzzles[info.index] ?? puzzleForDay(info.day);
+
+/** a player-made shadow, kept by its id */
+export type UgcPuzzle = PuzzleDef & { author: string; created: number };
+
+export const isUgc = (def: PuzzleDef): boolean => def.id.startsWith('u-');
+
+export const saveUgc = (kv: KV, p: UgcPuzzle) =>
+  kv.set(k.ugc(p.id), JSON.stringify(p));
+
+export const loadUgc = async (
+  kv: KV,
+  id: string
+): Promise<UgcPuzzle | null> => {
+  const raw = await kv.get(k.ugc(id));
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as UgcPuzzle;
+  } catch {
+    return null;
+  }
+};
+
+/** the puzzle a post shows (bank or player-made) */
+export const loadPuzzle = async (kv: KV, info: PostInfo): Promise<PuzzleDef> =>
+  (info.ugc ? await loadUgc(kv, info.ugc) : null) ?? puzzleOfPost(info);
+
+/** player-made shadows posted in a week, by post id, for Sunday's pick */
+export const addUgcPost = (kv: KV, week: number, postId: string) =>
+  kv.zAdd(k.ugcWeek(week), { member: postId, score: Date.now() });
+
+export const ugcPostsOfWeek = async (kv: KV, week: number) =>
+  (await kv.zRange(k.ugcWeek(week), 0, -1, { by: 'rank' })).map(
+    (m) => m.member
+  );
 
 export const loadProfile = async (kv: KV, user: string): Promise<Profile> => {
   const raw = await kv.get(k.profile(user));
@@ -154,6 +211,65 @@ export const flairText = (cards: Record<string, CardGrade>): string => {
   return `${rankFor(n)} · ${n} wayang${sets > 0 ? ` · ${sets} gunungan` : ''}`;
 };
 
+/** fewest moves first, then whoever solved first */
+const boardScore = (moves: number, order: number) => moves * 100_000 + order;
+
+export const board = async (
+  kv: KV,
+  postId: string,
+  user: string | null
+): Promise<{ board: BoardRow[]; myRank: number | null }> => {
+  const top = await kv.zRange(k.board(postId), 0, 4, { by: 'rank' });
+  const rows: BoardRow[] = [];
+  for (const t of top) {
+    const s = await solveOf(kv, postId, t.member);
+    rows.push({
+      name: t.member,
+      moves: Math.floor(t.score / 100_000),
+      gold: !!s?.gold,
+    });
+  }
+  const r = user ? await kv.zRank(k.board(postId), user) : undefined;
+  return {
+    board: rows,
+    myRank: r === undefined || r === null ? null : r + 1,
+  };
+};
+
+const recordOnBoard = async (
+  kv: KV,
+  postId: string,
+  user: string,
+  record: TodaySolve
+) => {
+  await kv.hSet(k.solvers(postId), { [user]: JSON.stringify(record) });
+  const order = await kv.hLen(k.solvers(postId));
+  await kv.zAdd(k.board(postId), {
+    member: user,
+    score: boardScore(record.moves, order),
+  });
+};
+
+/** tomorrow's newcomer, as a silhouette to wonder about */
+export const tomorrowOf = (info: PostInfo): Tomorrow => {
+  const today = info.ugc ? puzzleForDay(info.day) : puzzleOfPost(info);
+  const at = Math.max(0, BANK.puzzles.indexOf(today));
+  const next = BANK.puzzles[(at + 1) % BANK.puzzles.length]!;
+  return {
+    figure: next.cards.find((c) => !today.cards.includes(c)) ?? next.cards[0]!,
+    lakon: next.lakon,
+    level: LEVELS[next.weekday]!,
+  };
+};
+
+/** a share-card trail: one value 0..3 per move, at most 60 */
+export const cleanTrail = (t: unknown): number[] =>
+  Array.isArray(t)
+    ? t
+        .slice(0, 60)
+        .filter((v): v is number => Number.isInteger(v) && v >= 0 && v <= 3)
+    : [];
+
 /**
  * Records a solve: cards (gold at par with no hints), streak, counts.
  * A second solve of the same post changes nothing.
@@ -167,6 +283,7 @@ export const recordSolve = async (
     def: PuzzleDef;
     slots: Slot[];
     moves: number;
+    trail?: number[] | undefined;
   }
 ): Promise<SolveResponse> => {
   const { postId, user, info, def, slots } = args;
@@ -186,6 +303,11 @@ export const recordSolve = async (
       sceneCards: [],
       cards: profile.cards,
       rank: rankFor(Object.keys(profile.cards).length),
+      tale: null,
+      oil: profile.oil,
+      oilUsed: 0,
+      board: [],
+      myRank: null,
       ...c,
     };
   }
@@ -194,6 +316,7 @@ export const recordSolve = async (
   const hints = isWarmup ? 0 : await hintsUsed(kv, postId, user);
   const gold = moves <= def.par && hints === 0;
   const newCards: string[] = [];
+  let oilUsed = 0;
   if (!prior) {
     for (const id of def.cards) {
       const had = profile.cards[id];
@@ -204,14 +327,40 @@ export const recordSolve = async (
     }
     if (isWarmup) {
       profile.warmupDone = true;
+    } else if (isUgc(def)) {
+      // a player-made shadow: on its board, but no cards, streak or oil
+      await recordOnBoard(kv, postId, user, {
+        moves,
+        par: def.par,
+        gold,
+        slots,
+        trail: cleanTrail(args.trail),
+        hints,
+      });
     } else {
-      if (profile.lastDay === info.day - 1) profile.streak += 1;
-      else if (profile.lastDay !== info.day) profile.streak = 1;
-      profile.lastDay = Math.max(profile.lastDay ?? info.day, info.day);
+      const last = profile.lastDay;
+      const missed = last === null ? 0 : info.day - last - 1;
+      if (last === null) profile.streak = 1;
+      else if (missed === 0) profile.streak += 1;
+      else if (missed > 0 && missed <= MAX_OIL && profile.oil >= missed) {
+        // the lamp burned through the nights you missed
+        profile.oil -= missed;
+        oilUsed = missed;
+        profile.streak += 1;
+      } else if (missed > 0) profile.streak = 1;
+      // missed < 0: an older post, or today's again; the streak stands
+      if (gold) profile.oil = Math.min(MAX_OIL, profile.oil + 1);
+      profile.lastDay = Math.max(last ?? info.day, info.day);
       profile.bestStreak = Math.max(profile.bestStreak, profile.streak);
       profile.solves += 1;
-      const record: TodaySolve = { moves, par: def.par, gold, slots };
-      await kv.hSet(k.solvers(postId), { [user]: JSON.stringify(record) });
+      await recordOnBoard(kv, postId, user, {
+        moves,
+        par: def.par,
+        gold,
+        slots,
+        trail: cleanTrail(args.trail),
+        hints,
+      });
     }
     await saveProfile(kv, user, profile);
   }
@@ -226,24 +375,59 @@ export const recordSolve = async (
     sceneCards: [...def.cards],
     cards: profile.cards,
     rank: rankFor(Object.keys(profile.cards).length),
+    tale: def.tale || null,
+    oil: profile.oil,
+    oilUsed,
+    ...(isWarmup ? { board: [], myRank: null } : await board(kv, postId, user)),
     ...c,
   };
 };
 
-export const shareText = (
-  def: PuzzleDef,
-  day: number,
-  s: TodaySolve,
-  streak: number
-): string => {
-  const cards = def.cards.map((id) => figure(id).name).join(', ');
-  const lines = [
-    `**Dalang · ${dateLabel(day)} · ${def.title}**`,
-    '',
-    `Shadow matched 100% in ${s.moves} moves (par ${s.par})${s.gold ? ', gold card' : ''}.`,
-    `Wayang kept: ${cards}${streak > 1 ? ` · ${streak}-day streak` : ''}`,
-  ];
-  return lines.join('\n');
+export { shareText } from './share.ts';
+
+/** Everything the post needs when it opens (the server and local play share this). */
+export const todayFor = async (
+  kv: KV,
+  a: {
+    postId: string;
+    user: string | null;
+    info: PostInfo;
+    peek: boolean;
+    subredditName: string | null;
+  }
+): Promise<TodayResponse> => {
+  const { postId, user, info } = a;
+  const def = await loadPuzzle(kv, info);
+  if (user && !a.peek) await markPlayer(kv, postId, user);
+  const [profile, solved, hints, n, b] = await Promise.all([
+    user ? loadProfile(kv, user) : Promise.resolve(emptyProfile()),
+    user ? solveOf(kv, postId, user) : Promise.resolve(null),
+    user ? shownHints(kv, postId, user, def) : Promise.resolve([]),
+    counts(kv, postId),
+    board(kv, postId, user),
+  ]);
+  const ugc = info.ugc ? await loadUgc(kv, info.ugc) : null;
+  return {
+    type: 'today',
+    username: user,
+    postId,
+    day: info.day,
+    dateLabel: dateLabel(info.day),
+    puzzle: toPublic(def),
+    warmup: toPublic(WARMUP),
+    profile,
+    solved,
+    sceneCards: solved ? [...def.cards] : [],
+    hints,
+    players: n.players,
+    solvers: n.solvers,
+    subredditName: a.subredditName,
+    tale: solved ? def.tale || null : null,
+    tomorrow: tomorrowOf(info),
+    board: b.board,
+    myRank: b.myRank,
+    author: ugc?.author ?? null,
+  };
 };
 
 export { puzzleById };

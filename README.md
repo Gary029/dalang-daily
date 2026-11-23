@@ -51,7 +51,12 @@ hints and the card turns to gold leaf.
   never the solve).
 - Two story weeks (14 puzzles), Monday gentle to Sunday fiendish:
   _Bima Suci_ and _Arjuna Wiwaha_. After the second week the calendar
-  starts again.
+  starts again. Each solve unlocks that day's chapter of the story, which
+  ends on tomorrow's hook.
+- The week gets harder by rule, not just by par: from Wednesday puppets
+  overlap and hide each other's carved holes; from Thursday the match meter
+  is gone and one decoy almost fits; at the weekend shadow that spills
+  outside the outline is no longer marked red.
 - 15 wayang in five sets (Punakawan, Pandawa, Kurawa, Dewa, Raksasa), gold
   cards, a gunungan badge for a full set, ranks (Penonton → Dalang Muda →
   Dalang Agung) shown as user flair.
@@ -60,13 +65,27 @@ hints and the card turns to gold leaf.
   a real lamp casts your matched shadow onto the cloth. It loads only after
   a solve, and falls back to a flat flip without WebGL or with reduced
   motion.
-- Streaks, "% solved today", a result card shared as a comment.
+- Streaks with lamp oil: every gold solve adds a drop (up to 3), and the
+  lamp burns one drop per missed day to keep the streak alive.
+- A leaderboard on every post (fewest moves, then first to solve), shown on
+  the result card and the feed card.
+- Tomorrow's newcomer as a mystery silhouette on the feed and result cards.
+- A spoiler-free result card (moves, par, gold, streak and a row of squares
+  showing how close each move came), posted as a comment or copied.
+- Player-made shadows: pose wayang from your album, keep a decoy, and Semar
+  (the solver) must find exactly one answer before you can post it. One per
+  player per day, posted as the player. On Sunday the week's most upvoted
+  player shadow gets its own post.
+- Vinyl-toy 3D wayang made in Blender for the reveal and the cards (see Art
+  pipeline).
 - A daily post from the Devvit scheduler, a mod menu to post today's puzzle
   or the "start here" demo post, and a demo post on install.
-- Gamelan made with WebAudio (saron, kecrek, gong); nothing is downloaded.
+- Gamelan made with WebAudio, ported from the Dalang VR synth: the same
+  pelog-flavoured tuning, saron and bonang partials, gong with its ombak
+  beating, kendang and the cempala knock on every move. Nothing is
+  downloaded.
 
-**Not built yet** (planned P1): two-lamp puzzles, the weekend story riddle,
-player-made puzzles voted into Sunday.
+**Not built yet:** two-lamp puzzles, the weekend story riddle.
 
 ## Project layout
 
@@ -128,9 +147,31 @@ scheduler posts a new one every day at 00:00 UTC.
     Secrets and variables → Actions). Without the secret the job skips
     itself. Uploading never publishes the app.
 
+## Art pipeline
+
+The puppets you see in the reveal and on the cards are built in Blender from
+the same polygons that cast the scored shadows, in the chunky vinyl-toy style
+of Dalang VR: each part a rounded slab in its colour, the carved holes cut
+clean through, sphere eyes, gold (or Semar's red) bracelets.
+
+```bash
+node --experimental-strip-types scripts/export-figures.ts     # -> tools/blender/figures.json
+blender -b --python tools/blender/build_wayang.py              # -> public/models/*.glb, public/art/*.webp
+blender -b --python tools/blender/build_wayang.py -- --only semar,bima --no-art
+```
+
+- `scripts/export-figures.ts` tags every polygon (skin, face, cloth, hair,
+  gold...) and gives the colours; if a figure in `src/shared/figures.ts`
+  gains or loses a polygon, update its tag list there (the script checks).
+- Models: one GLB per figure with nodes `body`, `arm0`, `arm1`, `arm2`, in
+  figure units, meshopt-compressed without normals (three.js recomputes them),
+  about 40 KB each. They are only for show: in the reveal an invisible plane
+  with the exact scored silhouette casts the shadow.
+- Card art: `<id>-<arm>.webp`, 360×480, every figure at the same scale.
+
 ## Credits
 
 Characters and stories come from traditional Javanese wayang (the Mahabharata
-and its Javanese tales). All puppet artwork is drawn in code for this game.
+and its Javanese tales). All puppet artwork is made for this game: drawn in code and modelled in Blender from the same shapes.
 Fonts: Yatra One, Lora and Nunito (SIL Open Font License, in `public/fonts`).
 Built from Reddit's Devvit React template (BSD-3-Clause).

@@ -10,10 +10,12 @@ import {
 } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { CardGrade, SolveResponse, TodayResponse } from '../shared/api.ts';
-import { RANKS, rankFor } from '../shared/api.ts';
+import { MAX_OIL, RANKS, rankFor } from '../shared/api.ts';
+import { shareText } from '../shared/share.ts';
 import { FIGURES, SETS, figure } from '../shared/figures.ts';
 import { decodeMask, equal, matchRatio } from '../shared/grid.ts';
 import {
+  LEVELS,
   WEEKDAYS,
   shadowOf,
   shapesOf,
@@ -21,11 +23,7 @@ import {
   type Slot,
 } from '../shared/puzzle.ts';
 import {
-  ANGLES,
-  ARMS,
   DEFAULT_POSE,
-  DEPTHS,
-  SLOTS,
   placedPolys,
   puppetMask,
   type Pose,
@@ -33,32 +31,16 @@ import {
 import { api } from './api.ts';
 import { isMuted, setMuted, solvedPhrase, tick, wrongPhrase } from './audio.ts';
 import { Kelir } from './board.tsx';
+import { Builder } from './builder.tsx';
 import { Reveal } from './reveal.tsx';
+import {
+  applyTool,
+  closeness,
+  showsMeter,
+  showsOverflow,
+  type Tool,
+} from './stage.ts';
 import { Icon, KAWUNG, Modal, PuppetArt } from './ui.tsx';
-
-type Tool =
-  'left' | 'right' | 'far' | 'near' | 'tiltL' | 'tiltR' | 'arm' | 'flip';
-
-const applyTool = (p: Pose, t: Tool): Pose | null => {
-  switch (t) {
-    case 'left':
-      return p.x > 0 ? { ...p, x: p.x - 1 } : null;
-    case 'right':
-      return p.x < SLOTS - 1 ? { ...p, x: p.x + 1 } : null;
-    case 'far':
-      return p.d > 0 ? { ...p, d: p.d - 1 } : null;
-    case 'near':
-      return p.d < DEPTHS - 1 ? { ...p, d: p.d + 1 } : null;
-    case 'tiltL':
-      return { ...p, a: (p.a + 1) % ANGLES };
-    case 'tiltR':
-      return { ...p, a: (p.a + ANGLES - 1) % ANGLES };
-    case 'arm':
-      return { ...p, arm: (p.arm + 1) % ARMS };
-    case 'flip':
-      return { ...p, flip: !p.flip };
-  }
-};
 
 // --- Semar's tips: shown once each, when the tool first matters ---------------
 
@@ -96,6 +78,16 @@ const warmupCoach = (
 /** the first daily tip this player has not seen yet */
 const firstTip = (puzzle: PuzzlePublic): string | null => {
   const tips: [string, string, boolean][] = [
+    [
+      'nometer',
+      'From Thursday the lamp shows no match meter. Trust the outline: it only lights up when the shadow is exact.',
+      !showsMeter(puzzle.weekday),
+    ],
+    [
+      'nooverflow',
+      'At the weekend the screen no longer marks shadow that spills outside the outline in red.',
+      !showsOverflow(puzzle.weekday),
+    ],
     [
       'decoy',
       'Not every puppet in the chest belongs in the scene. Send decoys back.',
@@ -137,6 +129,10 @@ const App = () => {
   /** solved, now showing the dalang's side before the result */
   const [reveal, setReveal] = useState<SolveResponse | null>(null);
   const [replay, setReplay] = useState(false);
+  const [make, setMake] = useState(false);
+  /** how close each move came, for the share card */
+  const trail = useRef<number[]>([]);
+  const [sentTrail, setSentTrail] = useState<number[]>([]);
   const [hints, setHints] = useState<string[]>([]);
   const [showHints, setShowHints] = useState(false);
   const [album, setAlbum] = useState(false);
@@ -178,6 +174,11 @@ const App = () => {
             players: d.players,
             solvers: d.solvers,
             rank: rankFor(Object.keys(d.profile.cards).length),
+            tale: d.tale,
+            oil: d.profile.oil,
+            oilUsed: 0,
+            board: d.board,
+            myRank: d.myRank,
           });
         } else if (!d.profile.warmupDone && !seen('warmup')) {
           setMode('warmup');
@@ -226,7 +227,7 @@ const App = () => {
     };
     raf = requestAnimationFrame(step);
     api
-      .solve({ puzzleId: puzzle.id, slots, moves })
+      .solve({ puzzleId: puzzle.id, slots, moves, trail: trail.current })
       .then((r) => {
         if (!r.ok) {
           wrongPhrase();
@@ -234,6 +235,7 @@ const App = () => {
           return;
         }
         setCards(r.cards);
+        setSentTrail([...trail.current]);
         setTimeout(() => {
           if (mode === 'warmup') markSeen('warmup');
           setReveal(r);
@@ -250,6 +252,10 @@ const App = () => {
     if (result || solvedNow) return;
     const next = fn(slots);
     if (!next) return;
+    if (puzzle && target)
+      trail.current.push(
+        closeness(matchRatio(shadowOf(puzzle.offered, next), target))
+      );
     tick();
     setSlots(next);
     setMoves((m) => m + 1);
@@ -326,6 +332,7 @@ const App = () => {
     setResult(null);
     setGlow(0);
     setMoves(0);
+    trail.current = [];
     setSel(null);
     if (data.solved) {
       setSlots(data.solved.slots);
@@ -368,6 +375,7 @@ const App = () => {
     mode === 'warmup' ? warmupCoach(sel, slots[0] ?? null, solvedNow) : tip;
   const disabled = sel === null || !selSlot || solvedNow || !!result;
   const owned = Object.keys(cards).length;
+  const meter = mode === 'warmup' || showsMeter(puzzle.weekday);
 
   return (
     <div className="screen" style={{ backgroundImage: KAWUNG }}>
@@ -421,22 +429,39 @@ const App = () => {
         target={puzzle.targetShapes}
         selected={result ? null : selShape}
         glow={glow}
+        overflow={mode === 'warmup' || showsOverflow(puzzle.weekday)}
         pickable={pickable}
         onPick={(k) => setSel(k)}
-        label={`Shadow screen, ${Math.round(match * 100)} percent match`}
+        label={
+          meter
+            ? `Shadow screen, ${Math.round(match * 100)} percent match`
+            : 'Shadow screen'
+        }
       />
 
-      <div className="status">
-        <div className="meter" aria-hidden="true">
-          <div
-            className="meter-fill"
-            style={{ width: `${Math.round(match * 100)}%` }}
-          />
+      {meter ? (
+        <div className="status">
+          <div className="meter" aria-hidden="true">
+            <div
+              className="meter-fill"
+              style={{ width: `${Math.round(match * 100)}%` }}
+            />
+          </div>
+          <span className={`pct ${solvedNow ? 'done' : ''}`}>
+            {solvedNow ? '100% match' : `${Math.floor(match * 100)}%`}
+          </span>
         </div>
-        <span className={`pct ${solvedNow ? 'done' : ''}`}>
-          {solvedNow ? '100% match' : `${Math.floor(match * 100)}%`}
-        </span>
-      </div>
+      ) : (
+        <div className="status">
+          <span className="no-meter">
+            {LEVELS[puzzle.weekday]} · no meter
+            {showsOverflow(puzzle.weekday) ? '' : ', no red'}
+          </span>
+          <span className={`pct ${solvedNow ? 'done' : ''}`}>
+            {solvedNow ? '100% match' : '?'}
+          </span>
+        </div>
+      )}
 
       <p className="coach" aria-live="polite">
         {coach ?? (mode === 'daily' ? puzzle.scene : '')}
@@ -591,11 +616,37 @@ const App = () => {
           onClose={() => setResult(null)}
           onCard={setCard}
           onBehind={() => setReplay(true)}
+          hints={hints.length}
+          trail={sentTrail}
+          canMake={!!data.username && owned >= 2}
+          onMake={() => setMake(true)}
+          onCopy={(text) => {
+            void navigator.clipboard
+              ?.writeText(text)
+              .then(() => say('Result copied'))
+              .catch(() => say('Copy blocked by the browser'));
+          }}
         />
       )}
 
+      {make && (
+        <Builder cards={cards} onClose={() => setMake(false)} say={say} />
+      )}
+
       {album && (
-        <Album cards={cards} onClose={() => setAlbum(false)} onCard={setCard} />
+        <Album
+          cards={cards}
+          onClose={() => setAlbum(false)}
+          onCard={setCard}
+          onMake={
+            data.username && owned >= 2
+              ? () => {
+                  setAlbum(false);
+                  setMake(true);
+                }
+              : null
+          }
+        />
       )}
       {card && (
         <CardView id={card} grade={cards[card]} onClose={() => setCard(null)} />
@@ -618,8 +669,26 @@ const ResultCard = (props: {
   onClose: () => void;
   onCard: (id: string) => void;
   onBehind: () => void;
+  hints: number;
+  trail: number[];
+  canMake: boolean;
+  onMake: () => void;
+  onCopy: (text: string) => void;
 }) => {
   const { data, puzzle, result } = props;
+  const copyText = shareText(
+    puzzle,
+    data.day,
+    {
+      moves: result.moves,
+      par: result.par,
+      gold: result.gold,
+      slots: [],
+      trail: data.solved?.trail ?? props.trail,
+      hints: data.solved?.hints ?? props.hints,
+    },
+    result.streak
+  ).replace(/\*\*/g, '');
   const pct =
     result.players > 0
       ? Math.round((result.solvers / result.players) * 100)
@@ -628,7 +697,9 @@ const ResultCard = (props: {
   return (
     <Modal onClose={props.onClose} className="result">
       <p className="eyebrow">
-        {data.dateLabel} · {puzzle.lakon}
+        {data.author
+          ? `Player shadow by u/${data.author}`
+          : `${data.dateLabel} · ${puzzle.lakon}`}
       </p>
       <h2 className="display">
         {result.gold ? 'Gold at par' : 'The shadow is true'}
@@ -671,18 +742,79 @@ const ResultCard = (props: {
           ))}
         </div>
       )}
+      {result.tale && (
+        <div className="tale">
+          <p className="eyebrow">The story so far</p>
+          <p>{result.tale}</p>
+        </div>
+      )}
+      {result.board.length > 0 && (
+        <ol className="board" aria-label="Today's best dalang">
+          {result.board.map((r, n) => (
+            <li key={r.name} className={r.name === data.username ? 'me' : ''}>
+              <span className="place">{n + 1}</span>
+              <span className="who">u/{r.name}</span>
+              <span className="mv">
+                {r.moves}
+                {r.gold ? ' ★' : ''}
+              </span>
+            </li>
+          ))}
+          {result.myRank !== null && result.myRank > result.board.length && (
+            <li className="me">
+              <span className="place">{result.myRank}</span>
+              <span className="who">you</span>
+              <span className="mv">{result.moves}</span>
+            </li>
+          )}
+        </ol>
+      )}
+      <p className="oil" aria-label={`Lamp oil ${result.oil} of ${MAX_OIL}`}>
+        <span className="oil-drops">
+          {Array.from({ length: MAX_OIL }, (_, n) => (
+            <span key={n} className={n < result.oil ? 'full' : ''} />
+          ))}
+        </span>
+        {result.oilUsed > 0
+          ? `Your lamp burned ${result.oilUsed} oil through the nights you missed. Streak kept.`
+          : 'Lamp oil: each gold solve adds one. It keeps your streak if you miss a day.'}
+      </p>
+      {!data.author && (
+        <div className="tomorrow">
+          <PuppetArt
+            id={data.tomorrow.figure}
+            style="locked"
+            className="tomorrow-art"
+          />
+          <div>
+            <p className="eyebrow">Tomorrow · {data.tomorrow.level}</p>
+            <p>
+              Who steps onto the screen next? New shadow at 07:00 WIB (00:00
+              UTC).
+            </p>
+          </div>
+        </div>
+      )}
       <p className="muted small">
-        {result.rank} · next shadow at 07:00 WIB (00:00 UTC).{' '}
-        {result.gold ? '' : 'Match at par with no hints for gold.'}
+        {result.rank}
+        {result.gold ? '' : ' · match at par with no hints for gold'}
       </p>
       <div className="row">
         <button className="btn" onClick={props.onShare}>
-          Share in the comments
+          Comment
+        </button>
+        <button className="btn ghost" onClick={() => props.onCopy(copyText)}>
+          Copy
         </button>
         <button className="btn ghost" onClick={props.onAlbum}>
           Album
         </button>
       </div>
+      {props.canMake && (
+        <button className="btn ghost wide" onClick={props.onMake}>
+          Make a shadow for others
+        </button>
+      )}
       <button className="link-btn behind" onClick={props.onBehind}>
         See the dalang's side
       </button>
@@ -701,6 +833,7 @@ const Album = (props: {
   cards: Record<string, CardGrade>;
   onClose: () => void;
   onCard: (id: string) => void;
+  onMake: (() => void) | null;
 }) => {
   const owned = Object.keys(props.cards).length;
   const rank = rankFor(owned);
@@ -723,6 +856,11 @@ const Album = (props: {
           </div>
         </div>
       </header>
+      {props.onMake && (
+        <button className="btn ghost wide album-make" onClick={props.onMake}>
+          Make a shadow for others
+        </button>
+      )}
       <div className="sets">
         {SETS.map((s) => {
           const members = FIGURES.filter((f) => f.set === s.id);

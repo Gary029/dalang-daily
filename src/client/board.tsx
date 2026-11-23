@@ -14,6 +14,7 @@ type Props = {
   target: PlacedPolys[] | null;
   selected: PlacedPolys | null;
   glow?: number;
+  overflow?: boolean;
   /** puppet masks in stage order, for tapping a shadow to pick it */
   pickable?: { index: number; mask: Mask }[];
   onPick?: (index: number | null) => void;
@@ -49,7 +50,7 @@ export const Kelir = (props: Props) => {
     return () => ro.disconnect();
   }, [props.maxWidth]);
 
-  const { shadow, target, selected, glow } = props;
+  const { shadow, target, selected, glow, overflow } = props;
   useEffect(() => {
     const c = canvas.current;
     if (!c || size.w === 0) return;
@@ -57,8 +58,14 @@ export const Kelir = (props: Props) => {
     const pw = Math.min(1400, Math.round(size.w * dpr));
     c.width = pw;
     c.height = Math.round((pw * GH) / GW);
-    drawKelir(c, { shadow, target, selected, glow: glow ?? 0 });
-  }, [shadow, target, selected, glow, size]);
+    drawKelir(c, {
+      shadow,
+      target,
+      selected,
+      glow: glow ?? 0,
+      overflow: overflow ?? true,
+    });
+  }, [shadow, target, selected, glow, overflow, size]);
 
   const onPointer = (e: PointerEvent<HTMLCanvasElement>) => {
     if (!props.onPick || !canvas.current) return;

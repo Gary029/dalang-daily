@@ -1,6 +1,9 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+import { figure } from '../shared/figures.ts';
 import { GH, GW } from '../shared/grid.ts';
-import { DEPTH_SCALE, LAMP_X } from '../shared/shadow.ts';
+import { DEPTH_SCALE, LAMP_X, UNIT, poseAffine } from '../shared/shadow.ts';
 import type { PaintedPuppet } from './paint.ts';
 
 /**
@@ -11,7 +14,14 @@ import type { PaintedPuppet } from './paint.ts';
  *
  * World units are kelir cells; the cloth is the plane z = 0, the lamp is at
  * z = LAMP_Z on the dalang's side.
+ *
+ * The puppets on show are the Blender-built vinyl figures (public/models,
+ * tools/blender/build_wayang.py). They never cast the shadow: an invisible
+ * plane with the exact scored silhouette does. Until a model loads, or if it
+ * cannot, the painted plane from paint.ts stands in.
  */
+
+const modelUrl = (id: string) => `${import.meta.env.BASE_URL}models/${id}.glb`;
 
 const LAMP_Z = 160;
 const LAMP_Y = 30;
@@ -174,6 +184,76 @@ export const startReveal = (
 
   // the puppets, each where its shadow says it must be
   const faded: THREE.Material[] = [];
+  let disposed = false;
+  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  /** swap the painted stand-in for the 3D figure once it arrives */
+  const loadModel = (
+    p: PaintedPuppet,
+    m: number,
+    z: number,
+    standIns: THREE.Object3D[]
+  ) => {
+    loader.load(
+      modelUrl(p.id),
+      (gltf) => {
+        const model = gltf.scene;
+        if (disposed) {
+          model.traverse((o) => {
+            if (o instanceof THREE.Mesh) {
+              o.geometry.dispose();
+              (o.material as THREE.Material).dispose();
+            }
+          });
+          return;
+        }
+        for (const k of [0, 1, 2]) {
+          const arm = model.getObjectByName(`arm${k}`);
+          if (arm) arm.visible = k === p.pose.arm;
+        }
+        const opacity = (faded[0] as THREE.Material | undefined)?.opacity ?? 0;
+        model.traverse((o) => {
+          if (!(o instanceof THREE.Mesh)) return;
+          const g = o.geometry as THREE.BufferGeometry;
+          if (!g.getAttribute('normal')) g.computeVertexNormals();
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          for (const mat of mats as THREE.Material[]) {
+            mat.side = THREE.DoubleSide;
+            mat.transparent = true;
+            mat.opacity = opacity;
+            faded.push(mat);
+          }
+        });
+        // figure units -> kelir (the pose) -> world (back along the lamp's rays)
+        const a = poseAffine(figure(p.id), p.pose);
+        const s = DEPTH_SCALE[p.pose.d]! * UNIT;
+        model.matrixAutoUpdate = false;
+        model.matrix.set(
+          a.a / m,
+          a.c / m,
+          0,
+          LAMP_X + (a.e - LAMP_X) / m,
+          a.b / m,
+          a.d / m,
+          0,
+          LAMP_Y + (a.f - LAMP_Y) / m,
+          0,
+          0,
+          s / m,
+          z,
+          0,
+          0,
+          0,
+          1
+        );
+        scene.add(model);
+        for (const o of standIns) o.visible = false;
+      },
+      undefined,
+      () => {
+        /* keep the painted stand-in */
+      }
+    );
+  };
   /** what the final shot must hold: the lamp, the puppets, their shadows */
   const keep: THREE.Vector3[] = [
     lamp.position.clone(),
@@ -201,14 +281,24 @@ export const startReveal = (
     });
     const mesh = new THREE.Mesh(geo, front);
     mesh.position.set((ax + bx) / 2, (ay + by) / 2, z);
-    mesh.castShadow = true;
-    // the shadow comes from the exact silhouette, not the gilt rim
-    mesh.customDistanceMaterial = new THREE.MeshDistanceMaterial({
-      map: new THREE.CanvasTexture(p.mask),
-      alphaTest: 0.5,
-      side: THREE.DoubleSide,
-    });
     scene.add(mesh);
+    // the shadow comes from the exact scored silhouette, drawn by nothing
+    // three.js copies map and alphaTest from this material into the shadow
+    // pass, so the exact mask lives here; the material itself draws nothing
+    const caster = new THREE.Mesh(
+      geo,
+      new THREE.MeshBasicMaterial({
+        map: new THREE.CanvasTexture(p.mask),
+        alphaTest: 0.5,
+        colorWrite: false,
+        depthWrite: false,
+        // a one-sided caster would cast from its back faces only
+        side: THREE.DoubleSide,
+      })
+    );
+    caster.position.copy(mesh.position);
+    caster.castShadow = true;
+    scene.add(caster);
     // the leather's thickness, seen when the camera swings round
     const back = new THREE.MeshBasicMaterial({
       map: colorTex,
@@ -222,6 +312,7 @@ export const startReveal = (
     edge.position.set(mesh.position.x + 0.15, mesh.position.y, z - 0.6);
     scene.add(edge);
     faded.push(front, back);
+    loadModel(p, m, z, [mesh, edge]);
     for (const [x, y] of [
       [p.box.x0, p.box.y0],
       [p.box.x1, p.box.y1],
@@ -317,6 +408,7 @@ export const startReveal = (
 
   return {
     dispose: () => {
+      disposed = true;
       cancelAnimationFrame(raf);
       ro.disconnect();
       scene.traverse((o) => {
@@ -328,12 +420,6 @@ export const startReveal = (
               if (v instanceof THREE.Texture) v.dispose();
             mat.dispose();
           }
-        }
-        const dist: unknown =
-          o instanceof THREE.Mesh ? o.customDistanceMaterial : undefined;
-        if (dist instanceof THREE.MeshDistanceMaterial) {
-          dist.map?.dispose();
-          dist.dispose();
         }
       });
       renderer.dispose();

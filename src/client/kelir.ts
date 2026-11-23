@@ -12,6 +12,8 @@ export type KelirLayers = {
   selected: PlacedPolys | null;
   /** 0..1, warms the cloth when solved */
   glow?: number;
+  /** paint shadow that falls outside the outline red (off on the hardest days) */
+  overflow?: boolean;
 };
 
 let clothCache: { w: number; h: number; c: HTMLCanvasElement } | null = null;
@@ -170,7 +172,8 @@ export const drawKelir = (canvas: HTMLCanvasElement, layers: KelirLayers) => {
   ctx.drawImage(shadow, 0, 0);
   ctx.restore();
   if (target) {
-    ctx.drawImage(outside(shadow, target, '#6b1414'), 0, 0);
+    if (layers.overflow !== false)
+      ctx.drawImage(outside(shadow, target, '#6b1414'), 0, 0);
     ctx.drawImage(outline(target, '#a8621c', Math.max(1, 1.3 * px)), 0, 0);
   }
   if (layers.selected) {

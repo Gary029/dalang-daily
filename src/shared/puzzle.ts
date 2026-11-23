@@ -44,6 +44,8 @@ export type PuzzlePublic = {
 
 export type PuzzleDef = Omit<PuzzlePublic, 'targetShapes'> & {
   solution: Slot[];
+  /** the story chapter, told only after the solve */
+  tale: string;
   /** characters whose cards this scene unlocks */
   cards: string[];
 };

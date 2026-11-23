@@ -33,6 +33,7 @@ for (const p of all) {
     p.offered.length !== p.solution.length
   )
     fail(p, 'slot count mismatch');
+  if (p.index >= 0 && p.tale.length < 40) fail(p, 'missing story chapter');
   for (const c of p.cards)
     if (!p.solution[p.offered.indexOf(c)])
       fail(p, `card ${c} is not in the answer`);

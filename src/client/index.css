@@ -808,3 +808,194 @@ button:focus-visible {
   display: block;
   margin: 10px auto 0;
 }
+
+/* ---------- harder days: no meter ---------- */
+.no-meter {
+  flex: 1;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- result card: story, board, oil, tomorrow ---------- */
+.tale {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--gold-dim);
+  background: rgba(224, 179, 90, 0.07);
+  border-radius: 0 10px 10px 0;
+}
+.tale p:last-child {
+  font-family: 'Lora', serif;
+  margin: 0;
+}
+.board {
+  list-style: none;
+  margin: 10px 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+.board li {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: #1a1222;
+  font-size: 14px;
+}
+.board li.me {
+  outline: 1px solid var(--gold-dim);
+}
+.board .place {
+  color: var(--gold);
+  font-weight: 700;
+}
+.board .who {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.board .mv {
+  color: var(--cream);
+  font-variant-numeric: tabular-nums;
+}
+.oil {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 8px 0;
+}
+.oil-drops {
+  display: inline-flex;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+.oil-drops span {
+  width: 10px;
+  height: 14px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  border: 1px solid var(--gold-dim);
+}
+.oil-drops span.full {
+  background: radial-gradient(circle at 50% 70%, #ffd77a, #c88a2a);
+  box-shadow: 0 0 6px rgba(255, 200, 100, 0.6);
+}
+.tomorrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #120c18;
+  border: 1px dashed #3a2c47;
+}
+.tomorrow p {
+  margin: 0;
+}
+.tomorrow-art {
+  width: 46px;
+  height: 62px;
+  flex: 0 0 auto;
+}
+.tomorrow-art.small {
+  width: 26px;
+  height: 36px;
+}
+.btn.wide {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* ---------- feed card extras ---------- */
+.splash-leader {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--gold);
+  text-align: center;
+}
+.splash-tomorrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+/* ---------- the builder ---------- */
+.builder {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.builder > * {
+  max-width: 720px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.builder .kelir-box {
+  min-height: 190px;
+}
+.builder-pick {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.chip.small {
+  flex: 0 0 64px;
+  height: 70px;
+  font-size: 11px;
+}
+.builder-post {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 12px;
+}
+.builder-post p {
+  margin: 0;
+}
+.title-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #3a2c47;
+  background: #120c18;
+  color: var(--cream);
+  font: inherit;
+  font-size: 16px;
+}
+.title-input:focus {
+  outline: 2px solid var(--gold);
+}
+.warn-text {
+  color: #ff9b7a;
+}
+.modal .tale p:last-child,
+.modal .tomorrow p:not(.eyebrow) {
+  font-size: 14px;
+  line-height: 1.4;
+}
+.modal p.oil {
+  font-size: 12px;
+  line-height: 1.35;
+}
+.tomorrow-art {
+  filter: brightness(2.4) drop-shadow(0 0 5px rgba(224, 179, 90, 0.55));
+}
+
+.album-make {
+  max-width: 720px;
+  margin: 4px auto 8px;
+}

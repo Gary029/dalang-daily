@@ -53,14 +53,32 @@ kelir. You are the dalang.
 Solve it and the screen turns around. In 3D, the camera swings from the
 audience's side of the kelir to the dalang's side: the painted leather
 puppets stand in exactly the pose you set, the blencong lamp flickers, and
-a real light casts the very shadow you just matched onto the cloth.
+a real light casts the very shadow you just matched onto the cloth. Then the
+story moves on: each solve unlocks the day's chapter, which ends on
+tomorrow's hook, and tomorrow's newcomer waits as a mystery silhouette.
 
 Then the scene's wayang join your album: 15 characters in five sets
 (Punakawan, Pandawa, Kurawa, Dewa, Raksasa), each with a short card telling
 who they are. Solve at par with no hints and the card turns to gold leaf.
 Finish a set to earn the gunungan. Your rank (Penonton → Dalang Muda →
-Dalang Agung) shows as user flair, your result card posts as a comment in one
-tap, and streaks and "% solved today" keep the community coming back.
+Dalang Agung) shows as user flair.
+
+**Why come back tomorrow:**
+
+- **The serial story** and tomorrow's silhouette ("who is this?").
+- **Lamp oil**: every gold solve adds a drop, and a drop keeps your streak
+  alive through a missed day, so one busy day does not end it.
+- **A leaderboard on every post**: fewest moves, then first to solve.
+- **A spoiler-free result card** for the comments: moves against par, gold,
+  streak, and a row of squares showing how close each move came.
+- **Player-made shadows**: pose wayang from your album, keep a decoy, and
+  the solver must prove exactly one answer before you can post it. The
+  week's most upvoted player shadow gets its own post on Sunday.
+
+**It gets harder by rule, not just by par:** from Wednesday puppets overlap
+and hide each other's carved holes; from Thursday the match meter is gone
+and one decoy almost fits; at the weekend shadow that spills outside the
+outline is no longer marked red.
 
 The week follows one lakon (story), one scene a day, harder from Monday to
 Sunday: _Bima Suci_ (Bima's search for the water of life) and _Arjuna
@@ -96,8 +114,16 @@ tool matters, and Semar gives up to three hints a day.
 - **Reddit features**: interactive post with a fast inline splash and an
   expanded game view, user flair for ranks, one-tap result comments, daily
   scheduled posts.
-- **Sound**: a small WebAudio gamelan (saron in slendro, kecrek, gong), no
-  audio files.
+- **Sound**: the Dalang VR gamelan synth ported to WebAudio: the same
+  tuning, saron and bonang partials, gong with its ombak beating, kendang
+  and the cempala knock. No audio files.
+- **3D wayang made in Blender**: a script turns each figure's polygons into
+  a vinyl-toy part model (rounded slabs, flat colours, holes cut through)
+  and renders the card art. three.js places each model by inverting the
+  lamp's projection, and an invisible plane holding the exact scored
+  silhouette casts the shadow.
+- **Player-made shadows** reuse the same solver on the server before
+  posting, and Redis sorted sets keep each post's leaderboard.
 - **CI/CD** on GitHub Actions: typecheck, lint, unit tests and a puzzle-bank
   gate on every push; on main, a playable browser demo goes to GitHub Pages
   and a new private version is uploaded with `devvit upload`.
@@ -136,9 +162,8 @@ streak.
 
 ### What's next for Dalang
 
-- **Next, after judging:** two-lamp puzzles (two screens at once) and the
-  weekend story riddle; player-made puzzles with a builder, solver-checked and
-  voted into Sunday's slot; App Review and publishing.
+- **Next, after judging:** two-lamp puzzles (two screens at once), the
+  weekend story riddle, App Review and publishing.
 - **Later:** more lakon (Ramayana, Sawerigading, Purbasari), other wayang
   forms such as wayang golek, and subreddit events where a whole community
   solves one long lakon together.

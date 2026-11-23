@@ -1,10 +1,12 @@
 import type {
+  CreateResponse,
   HintResponse,
   ShareResponse,
   SolveRequest,
   SolveResponse,
   TodayResponse,
 } from '../shared/api.ts';
+import type { CreateRequest } from '../shared/ugc.ts';
 
 /**
  * Talks to the Devvit server. `npm run local` builds with VITE_LOCAL=1 and
@@ -39,4 +41,8 @@ export const api = {
       : post('/api/solve', req),
   share: async (): Promise<ShareResponse> =>
     LOCAL ? (await import('./local.ts')).local.share() : post('/api/share', {}),
+  create: async (req: CreateRequest): Promise<CreateResponse> =>
+    LOCAL
+      ? (await import('./local.ts')).local.create(req)
+      : post('/api/create', req),
 };

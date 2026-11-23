@@ -24,7 +24,9 @@ import {
 import {
   DEFAULT_POSE,
   DEPTHS,
+  POSES,
   SLOTS,
+  poseFromIndex,
   puppetMask,
   type Pose,
 } from '../src/shared/shadow.ts';
@@ -36,6 +38,8 @@ type Spec = {
   scene: string;
   cast: string[];
   decoys: string[];
+  /** the chapter told after the solve; it ends on tomorrow's hook */
+  tale: string;
 };
 
 const W1 = 'Bima Suci';
@@ -49,6 +53,7 @@ export const STORY: Spec[] = [
       'Before every lakon the old servant steps out first. Cast his shadow.',
     cast: ['semar'],
     decoys: ['gareng'],
+    tale: 'Semar bows to the lamp and the night begins. Far away in Astina, the teacher Durna has a strange errand for Bima. Who will he send into the dark?',
   },
   {
     lakon: W1,
@@ -56,6 +61,7 @@ export const STORY: Spec[] = [
     scene: 'Bima will search for the water of life, wherever it hides.',
     cast: ['bima'],
     decoys: ['arjuna', 'buta'],
+    tale: 'Durna tells Bima that the water of life lies under Mount Reksamuka. Bima does not ask why. He simply walks. But the mountain is not empty.',
   },
   {
     lakon: W1,
@@ -64,6 +70,7 @@ export const STORY: Spec[] = [
       'On Mount Reksamuka a giant guards the forest. Bima walks straight in.',
     cast: ['bima', 'buta'],
     decoys: ['cakil', 'duryudana'],
+    tale: 'Two giants, Rukmuka and Rukmakala, rush down the mountain. Bima breaks them with his bare hands, and where they fall, two gods rise up. One small giant is still watching from the trees.',
   },
   {
     lakon: W1,
@@ -71,6 +78,7 @@ export const STORY: Spec[] = [
     scene: 'A quick giant blocks the path. Only one of the two will stand.',
     cast: ['bima', 'cakil'],
     decoys: ['arjuna', 'buta'],
+    tale: 'Cakil dances in, all knives and laughter. Bima does not dance. The forest goes quiet. Somewhere behind, two familiar voices are arguing.',
   },
   {
     lakon: W1,
@@ -78,6 +86,7 @@ export const STORY: Spec[] = [
     scene: 'Petruk and Gareng run after Bima, arguing all the way.',
     cast: ['petruk', 'gareng'],
     decoys: ['bagong', 'semar', 'sengkuni'],
+    tale: 'Petruk and Gareng find no water on the mountain, only broken rocks. Durna was wrong, or Durna lied. Back in the palace, someone is smiling.',
   },
   {
     lakon: W1,
@@ -85,6 +94,7 @@ export const STORY: Spec[] = [
     scene: 'The quest was a trap: Sengkuni and his king hope Bima drowns.',
     cast: ['sengkuni', 'duryudana', 'bima'],
     decoys: ['yudhistira', 'arjuna'],
+    tale: 'Sengkuni whispers to Duryudana: send Bima to the bottom of the sea, and he will never come back. Bima hears the new order and walks into the waves.',
   },
   {
     lakon: W1,
@@ -92,6 +102,7 @@ export const STORY: Spec[] = [
     scene: 'In the deep ocean Bima meets a god the size of his thumb.',
     cast: ['dewaruci', 'bima', 'semar'],
     decoys: ['guru', 'bagong'],
+    tale: "In the deep, a god no bigger than Bima's thumb asks him to step inside his ear. Inside, Bima sees the whole world, and himself. Next week a new story begins on a mountain.",
   },
   {
     lakon: W2,
@@ -99,6 +110,7 @@ export const STORY: Spec[] = [
     scene: 'Arjuna climbs the mountain alone to sit in stillness.',
     cast: ['arjuna'],
     decoys: ['nakula'],
+    tale: 'Arjuna leaves his brothers to sit in stillness on Mount Indrakila. Before he goes, the eldest brother has one thing to say.',
   },
   {
     lakon: W2,
@@ -106,6 +118,7 @@ export const STORY: Spec[] = [
     scene: 'Yudhistira lets his brother go with a quiet word.',
     cast: ['yudhistira'],
     decoys: ['sadewa', 'sengkuni'],
+    tale: 'Yudhistira, who has never told a lie, gives Arjuna his blessing and a warning: the gods will test you. While Arjuna is gone, the camp needs guards.',
   },
   {
     lakon: W2,
@@ -113,6 +126,7 @@ export const STORY: Spec[] = [
     scene: 'Nakula and Sadewa guard the camp while Arjuna is away.',
     cast: ['nakula', 'sadewa'],
     decoys: ['arjuna', 'gareng'],
+    tale: 'Nakula and Sadewa watch the camp all night, and nothing comes. Up on the mountain, something does.',
   },
   {
     lakon: W2,
@@ -121,6 +135,7 @@ export const STORY: Spec[] = [
       'Cakil leaps from the forest. Arjuna does not even draw his keris at first.',
     cast: ['arjuna', 'cakil'],
     decoys: ['bima', 'buta'],
+    tale: 'Cakil leaps at the meditating Arjuna. Arjuna moves only once. The giant falls on his own keris, as every Cakil always does. Down in the village, Bagong heard the story too.',
   },
   {
     lakon: W2,
@@ -128,6 +143,7 @@ export const STORY: Spec[] = [
     scene: 'Bagong retells the battle to Petruk, and wins it himself.',
     cast: ['bagong', 'petruk'],
     decoys: ['gareng', 'semar', 'sengkuni'],
+    tale: 'By the time Bagong finishes the story, Arjuna is not in it at all. Petruk laughs so hard he falls over. In Astina, nobody is laughing.',
   },
   {
     lakon: W2,
@@ -135,6 +151,7 @@ export const STORY: Spec[] = [
     scene: 'In Astina the king hears of Arjuna and plots with his uncle.',
     cast: ['duryudana', 'sengkuni', 'arjuna'],
     decoys: ['yudhistira', 'cakil'],
+    tale: 'Duryudana cannot bear another tale of Arjuna. Sengkuni has a plan, as always. But a god is already on his way to the mountain.',
   },
   {
     lakon: W2,
@@ -143,6 +160,7 @@ export const STORY: Spec[] = [
       'The king of the gods tests Arjuna, then lends him the arrow to end the giant king.',
     cast: ['guru', 'arjuna', 'buta'],
     decoys: ['bima', 'duryudana'],
+    tale: 'Batara Guru disguises himself as a hunter and fights Arjuna over a boar, then reveals himself and gives him the Pasopati arrow. With it, Arjuna ends the giant king. Next week the story starts again, and the old servant opens the screen.',
   },
 ];
 
@@ -194,6 +212,28 @@ const visibleShares = (cast: string[], poses: Pose[]): number[] =>
     return count(own) / total;
   });
 
+/** the best share of a decoy's shadow that can lie inside the target */
+const bestFit = (id: string, target: Mask): number => {
+  let best = 0;
+  const tmp = emptyMask();
+  for (let i = 0; i < POSES; i++) {
+    const m = puppetMask(id, poseFromIndex(i));
+    const total = count(m);
+    if (total === 0) continue;
+    tmp.set(m);
+    andNotInto(tmp, target);
+    best = Math.max(best, 1 - count(tmp) / total);
+  }
+  return best;
+};
+
+/** from Wednesday, puppets overlap: one hides part of another (and its holes) */
+const OVERLAP_FROM = 2;
+const MIN_HIDDEN = 0.15;
+/** from Thursday, at least one decoy almost fits */
+const NEAR_MISS_FROM = 3;
+const NEAR_MISS = 0.86;
+
 const build = (
   spec: Spec,
   index: number,
@@ -209,7 +249,7 @@ const build = (
     [offered[k], offered[n]] = [offered[n]!, offered[k]!];
   }
   const [lo, hi] = PAR[weekday]!;
-  for (let attempt = 0; attempt < 4000; attempt++) {
+  for (let attempt = 0; attempt < 20000; attempt++) {
     const goal: Pose[] = spec.cast.map(() => ({
       x: Math.floor(r() * SLOTS),
       d: Math.floor(r() * DEPTHS),
@@ -219,7 +259,14 @@ const build = (
     }));
     if (goal.some((g, k) => touchesEdge(puppetMask(spec.cast[k]!, g))))
       continue;
-    if (visibleShares(spec.cast, goal).some((s) => s < 0.45)) continue;
+    const shares = visibleShares(spec.cast, goal);
+    if (shares.some((s) => s < 0.45)) continue;
+    if (
+      weekday >= OVERLAP_FROM &&
+      spec.cast.length > 1 &&
+      Math.max(...shares.map((s) => 1 - s)) < MIN_HIDDEN
+    )
+      continue;
     const solution: Slot[] = offered.map((id) => {
       const k = spec.cast.indexOf(id);
       return k >= 0 ? goal[k]! : null;
@@ -241,6 +288,11 @@ const build = (
     if (par < lo || par > hi) continue;
     const target = shadowOf(offered, solution);
     if (count(shadowOf(offered, start)) === 0) continue;
+    if (
+      weekday >= NEAR_MISS_FROM &&
+      Math.max(...spec.decoys.map((d) => bestFit(d, target))) < NEAR_MISS
+    )
+      continue;
     const { solutions } = solve(offered, target, 2);
     if (solutions.length !== 1) continue;
     const id =
@@ -263,6 +315,7 @@ const build = (
       target: encodeMask(target),
       solution,
       cards: [...spec.cast],
+      tale: spec.tale,
     };
   }
   throw new Error(`no unique puzzle found for ${spec.title}`);
@@ -288,6 +341,7 @@ const warmup = (): PuzzleDef => {
     target: encodeMask(target),
     solution,
     cards: ['semar'],
+    tale: 'That is all a dalang does: light, a puppet, and a shadow that tells the story.',
   };
 };
 

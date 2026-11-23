@@ -9,13 +9,26 @@ export type Profile = {
   cards: Record<string, CardGrade>;
   warmupDone: boolean;
   solves: number;
+  /** lamp oil: earned with gold, burned to keep a streak across missed days */
+  oil: number;
 };
+
+export const MAX_OIL = 3;
+
+/** one row of a post's leaderboard */
+export type BoardRow = { name: string; moves: number; gold: boolean };
+
+/** what the feed card and result card show about tomorrow, without spoiling it */
+export type Tomorrow = { figure: string; lakon: string; level: string };
 
 export type TodaySolve = {
   moves: number;
   par: number;
   gold: boolean;
   slots: Slot[];
+  /** how close each move came (0..3), for the spoiler-free share card */
+  trail?: number[];
+  hints?: number;
 };
 
 export type TodayResponse = {
@@ -34,11 +47,23 @@ export type TodayResponse = {
   players: number;
   solvers: number;
   subredditName: string | null;
+  /** the story chapter, once solved */
+  tale: string | null;
+  tomorrow: Tomorrow;
+  board: BoardRow[];
+  myRank: number | null;
+  /** who made this shadow, on a player-made post */
+  author: string | null;
 };
 
 export type HintResponse = { type: 'hint'; hints: string[] };
 
-export type SolveRequest = { puzzleId: string; slots: Slot[]; moves: number };
+export type SolveRequest = {
+  puzzleId: string;
+  slots: Slot[];
+  moves: number;
+  trail?: number[];
+};
 
 export type SolveResponse = {
   type: 'solve';
@@ -55,6 +80,12 @@ export type SolveResponse = {
   players: number;
   solvers: number;
   rank: string;
+  tale: string | null;
+  oil: number;
+  /** oil burned by this solve to save the streak */
+  oilUsed: number;
+  board: BoardRow[];
+  myRank: number | null;
 };
 
 export type ShareResponse = {
@@ -62,6 +93,14 @@ export type ShareResponse = {
   ok: boolean;
   message: string;
   text: string;
+};
+
+export type CreateResponse = {
+  type: 'create';
+  ok: boolean;
+  message: string;
+  /** the new post, to open it */
+  url?: string;
 };
 
 export type ErrorResponse = { status: 'error'; message: string };
@@ -87,4 +126,5 @@ export const emptyProfile = (): Profile => ({
   cards: {},
   warmupDone: false,
   solves: 0,
+  oil: 0,
 });

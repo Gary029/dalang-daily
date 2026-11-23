@@ -13,7 +13,7 @@ import type { TodayResponse } from '../shared/api.ts';
 import { LEVELS, shapesOf } from '../shared/puzzle.ts';
 import { api } from './api.ts';
 import { Kelir } from './board.tsx';
-import { KAWUNG } from './ui.tsx';
+import { KAWUNG, PuppetArt } from './ui.tsx';
 
 const LOCAL = import.meta.env.VITE_LOCAL === '1';
 
@@ -52,7 +52,9 @@ const Splash = () => {
       {p ? (
         <>
           <p className="eyebrow">
-            {data.dateLabel} · {LEVELS[p.weekday]} · {p.lakon}
+            {data.author
+              ? `Player shadow by u/${data.author} · ${LEVELS[p.weekday]}`
+              : `${data.dateLabel} · ${LEVELS[p.weekday]} · ${p.lakon}`}
           </p>
           <div className="splash-kelir">
             <Kelir
@@ -71,6 +73,22 @@ const Splash = () => {
               ? ` · your streak ${data.profile.streak}`
               : ''}
           </p>
+          {data.board[0] && (
+            <p className="splash-leader">
+              Best today: u/{data.board[0].name} in {data.board[0].moves} moves
+              {data.board[0].gold ? ' ★' : ''}
+            </p>
+          )}
+          {solved && !data.author && (
+            <div className="splash-tomorrow">
+              <PuppetArt
+                id={data.tomorrow.figure}
+                style="locked"
+                className="tomorrow-art small"
+              />
+              <span>Tomorrow, 07:00 WIB: who is this?</span>
+            </div>
+          )}
           <button className="btn play" onClick={play}>
             {solved
               ? `Solved in ${solved.moves} · see result`

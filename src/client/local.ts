@@ -1,4 +1,5 @@
 import type {
+  CreateResponse,
   HintResponse,
   ShareResponse,
   SolveRequest,
@@ -7,22 +8,34 @@ import type {
 } from '../shared/api.ts';
 import { WARMUP, BANK } from '../shared/bank.ts';
 import {
-  counts,
   loadProfile,
+  loadPuzzle,
   markPlayer,
-  puzzleOfPost,
   recordSolve,
   revealHint,
   savePostInfo,
+  saveUgc,
   shareText,
-  shownHints,
   solveOf,
+  todayFor,
   type PostInfo,
+  type UgcPuzzle,
 } from '../shared/game.ts';
 import { memoryKV } from '../shared/memkv.ts';
-import { dateLabel, dayNumber, toPublic } from '../shared/puzzle.ts';
+import { dayNumber } from '../shared/puzzle.ts';
+import {
+  checkShadow,
+  newUgcId,
+  toUgc,
+  type CreateRequest,
+} from '../shared/ugc.ts';
 
-/** The server's logic running in the page, for local play only. */
+/**
+ * The server's logic running in the page, for local play only.
+ * ?day=N picks a day, ?warm=done skips the warm-up, ?user= names you,
+ * ?ugc=<id> plays a shadow you made in this browser, ?album=all gives you
+ * every card (to try the builder).
+ */
 const kv = memoryKV();
 const params = new URLSearchParams(location.search);
 const USER = params.get('user') ?? 'local_player';
@@ -35,9 +48,38 @@ const info: PostInfo = {
   index:
     ((day % BANK.puzzles.length) + BANK.puzzles.length) % BANK.puzzles.length,
 };
+const UGC_KEY = 'dalang:ugc:';
+const ugcId = params.get('ugc');
+if (ugcId) {
+  try {
+    const raw = localStorage.getItem(UGC_KEY + ugcId);
+    if (raw) {
+      await saveUgc(kv, JSON.parse(raw) as UgcPuzzle);
+      info.ugc = ugcId;
+    }
+  } catch {
+    /* storage blocked: play the day's puzzle */
+  }
+}
 await savePostInfo(kv, POST, info);
-// a few pretend players so the counts look alive
+
+// a few pretend players so the counts and the board look alive
+const def0 = await loadPuzzle(kv, info);
+const PRETEND = ['wayang_fan', 'blencong', 'kelir_kid', 'gamelan_gran'];
 for (let k = 0; k < 9; k++) await markPlayer(kv, POST, `p${k}`);
+for (const [k, name] of PRETEND.entries()) {
+  await markPlayer(kv, POST, name);
+  if (k === 3 || ugcId) continue;
+  await recordSolve(kv, {
+    postId: POST,
+    user: name,
+    info,
+    def: def0,
+    slots: def0.solution,
+    moves: def0.par + [0, 2, 5][k]!,
+    trail: [0, 1, 1, 2, 2, 3],
+  });
+}
 if (params.get('warm') === 'done') {
   await recordSolve(kv, {
     postId: 't3_w',
@@ -48,35 +90,29 @@ if (params.get('warm') === 'done') {
     moves: WARMUP.par,
   });
 }
+if (params.get('album') === 'all') {
+  const p = await loadProfile(kv, USER);
+  for (const f of BANK.puzzles.flatMap((q) => q.cards)) p.cards[f] = 'card';
+  p.warmupDone = true;
+  await kv.set(`profile:${USER}`, JSON.stringify(p));
+}
 
 export const local = {
-  today: async (): Promise<TodayResponse> => {
-    const def = puzzleOfPost(info);
-    await markPlayer(kv, POST, USER);
-    const n = await counts(kv, POST);
-    return {
-      type: 'today',
-      username: USER,
+  today: async (): Promise<TodayResponse> =>
+    todayFor(kv, {
       postId: POST,
-      day: info.day,
-      dateLabel: dateLabel(info.day),
-      puzzle: toPublic(def),
-      warmup: toPublic(WARMUP),
-      profile: await loadProfile(kv, USER),
-      solved: await solveOf(kv, POST, USER),
-      sceneCards: (await solveOf(kv, POST, USER)) ? [...def.cards] : [],
-      hints: await shownHints(kv, POST, USER, def),
-      players: n.players,
-      solvers: n.solvers,
+      user: USER,
+      info,
+      peek: false,
       subredditName: 'dalang_daily',
-    };
-  },
+    }),
   hint: async (): Promise<HintResponse> => ({
     type: 'hint',
-    hints: await revealHint(kv, POST, USER, puzzleOfPost(info)),
+    hints: await revealHint(kv, POST, USER, await loadPuzzle(kv, info)),
   }),
   solve: async (req: SolveRequest): Promise<SolveResponse> => {
-    const def = req.puzzleId === WARMUP.id ? WARMUP : puzzleOfPost(info);
+    const def =
+      req.puzzleId === WARMUP.id ? WARMUP : await loadPuzzle(kv, info);
     return recordSolve(kv, {
       postId: POST,
       user: USER,
@@ -84,6 +120,7 @@ export const local = {
       def,
       slots: req.slots,
       moves: req.moves,
+      trail: req.trail,
     });
   },
   share: async (): Promise<ShareResponse> => {
@@ -98,9 +135,34 @@ export const local = {
     const p = await loadProfile(kv, USER);
     return {
       type: 'share',
+      ok: false,
+      message: 'Local play: result copied',
+      text: shareText(await loadPuzzle(kv, info), info.day, s, p.streak),
+    };
+  },
+  create: async (req: CreateRequest): Promise<CreateResponse> => {
+    const p = await loadProfile(kv, USER);
+    const check = checkShadow(req, Object.keys(p.cards));
+    if (!check.ok) return { type: 'create', ok: false, message: check.message };
+    const def = toUgc(req, check, USER, newUgcId());
+    try {
+      localStorage.setItem(UGC_KEY + def.id, JSON.stringify(def));
+    } catch {
+      return {
+        type: 'create',
+        ok: false,
+        message: 'Local play needs browser storage to keep your shadow.',
+      };
+    }
+    const url = new URL(location.href);
+    url.searchParams.set('ugc', def.id);
+    url.searchParams.set('user', 'friend');
+    url.searchParams.set('warm', 'done');
+    return {
+      type: 'create',
       ok: true,
-      message: 'Result posted in the comments',
-      text: shareText(puzzleOfPost(info), info.day, s, p.streak),
+      message: 'Shadow saved. Opening it as a friend would see it.',
+      url: url.toString(),
     };
   },
 };

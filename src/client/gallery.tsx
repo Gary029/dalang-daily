@@ -4,6 +4,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { FIGURES } from '../shared/figures.ts';
 import { shapesOf } from '../shared/puzzle.ts';
+import { DEFAULT_POSE } from '../shared/shadow.ts';
 import { Kelir } from './board.tsx';
 import { PuppetArt } from './ui.tsx';
 
@@ -28,7 +29,7 @@ const Gallery = () => (
           <Kelir
             shadow={shapesOf(
               [f.id],
-              [{ x: 3, d: 4, a: 0, arm: 1, flip: false }]
+              [{ ...DEFAULT_POSE, d: 4, arm: 1, elbow: 1, back: 2, head: 2 }]
             )}
             target={null}
             selected={null}

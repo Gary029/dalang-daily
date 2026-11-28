@@ -11,7 +11,7 @@ Dalang: Bayang Harian
 
 ## Elevator pitch (max 200 characters)
 
-A daily wayang shadow-puppet logic puzzle inside a Reddit post. Pick the puppets, set their depth and pose, match the shadow exactly, and keep every wayang you solve.
+A daily wayang shadow-puppet puzzle in a Reddit post. Pick the puppets, set their depth and bend their arms until the shadow fits the outline, and earn the story's heirlooms.
 
 ## Category
 
@@ -25,150 +25,150 @@ gamelan identity carry over, the code is new).
 
 ### Inspiration
 
-Wayang kulit has always been a shadow puzzle. A dalang sits behind a cloth
-screen with a lamp and a chest of flat leather puppets, and every shadow the
-audience sees is a decision: which puppet, how close to the lamp, which way it
-faces, where its arm points. UNESCO recognised Indonesian wayang as a
-Masterpiece of the Oral and Intangible Heritage of Humanity in 2003.
+Wayang kulit has always been a shadow puzzle. The dalang sits behind a cloth
+screen with an oil lamp and a chest of flat leather puppets, and every shadow
+the audience sees comes from choices he makes: which puppet, how near the
+lamp, which way it faces, where its arms point. UNESCO recognised Indonesian
+wayang as a Masterpiece of the Oral and Intangible Heritage of Humanity in 2003.
 
-We had already built Dalang for Meta Quest, a VR shadow play with stories from
-across Indonesia. For Reddit we asked a different question: what if the
-shadow _itself_ were the puzzle, one a day, with exactly one right answer?
+We had already made Dalang for Meta Quest, a VR shadow play with stories from
+across Indonesia. For Reddit we turned the shadow itself into the puzzle: one
+scene a day, and only one way to cast it.
 
 ### What it does
 
-Every day a new post shows a scene from a wayang story: a gold outline on the
-kelir. You are the dalang.
+Each day's post shows a gold outline on the kelir (the screen) and a chest of
+puppets. You play the dalang:
 
-- **Place**: each puppet snaps to one of 7 rod slots and 5 depths (closer to
-  the lamp makes a bigger shadow), tilts in 45° steps, raises its arm down,
-  forward or up, and flips to face the other way.
-- **Pierce**: every puppet has its own carved holes. Light shines through
-  them, so the holes in the outline tell you who belongs in the scene.
-- **Cast**: the chest holds more puppets than the scene needs. Decoys look
-  right and never fit.
-- **Match**: only a 100% match solves it. Par is the fewest taps, worked out
-  by our solver, and every live puzzle is proved to have exactly one answer.
+- **Place** a puppet in one of 7 rod slots and 5 depths. Nearer the lamp,
+  the shadow grows. Tilt it in 45° steps or turn it round.
+- **Pose** it. In real wayang kulit the legs are carved with the body and
+  only the arms move, so here too: each arm bends at the shoulder and the
+  elbow, and the head bows or lifts. Monday gives you one shoulder; by the
+  weekend you have both arms and the head.
+- **Read the holes.** Every puppet has its own carved holes, and light shows
+  through them, so the holes in the outline tell you who is in the scene.
+- **Leave out the decoys.** The chest holds more puppets than the scene
+  needs.
+- **Match it.** Only an exact match counts. Par is the fewest taps, and our
+  solver has checked that every puzzle has one answer.
 
-Solve it and the screen turns around. In 3D, the camera swings from the
-audience's side of the kelir to the dalang's side: the painted leather
-puppets stand in exactly the pose you set, the blencong lamp flickers, and
-a real light casts the very shadow you just matched onto the cloth. Then the
-story moves on: each solve unlocks the day's chapter, which ends on
-tomorrow's hook, and tomorrow's newcomer waits as a mystery silhouette.
+When the shadow matches, the screen turns around. The camera swings in 3D to
+the dalang's side, where the puppets stand in your pose under a flickering
+lamp, and a real light throws the shadow you just made onto the cloth.
 
-Then the scene's wayang join your album: 15 characters in five sets
-(Punakawan, Pandawa, Kurawa, Dewa, Raksasa), each with a short card telling
-who they are. Solve at par with no hints and the card turns to gold leaf.
-Finish a set to earn the gunungan. Your rank (Penonton → Dalang Muda →
-Dalang Agung) shows as user flair.
+You then get the scene's pusaka, an heirloom from the story: Bima's club
+Rujakpolo, Arjuna's keris Pulanggeni, the arrow Pasopati, Sinta's hairpin.
+Match at par without hints and it turns to gold leaf. Your book, Serat
+Dalang, keeps the pusaka you have found (the rest show as silhouettes), the
+wayang you have met and the story chapters you have unlocked. Collect every
+pusaka of a story and you earn its gunungan. Your rank shows as user flair.
 
-**Why come back tomorrow:**
+Each week tells one lakon, a scene a day: _Bima Suci_ (Bima looks for the
+water of life), _Arjuna Wiwaha_ (Arjuna meditates on Mount Indrakila and the
+gods test him) and _Hanoman Duta_ (Hanoman carries Rama's ring to Sinta, from
+the Ramayana). Monday is gentle. From Wednesday the puppets overlap and hide
+each other's holes. From Thursday there is no match meter and one decoy
+nearly fits. At the weekend, shadow outside the outline is no longer marked
+in red. Sunday has a second lamp, so every puppet throws two faint shadows,
+and the gap between them gives away how near the lamps it stands. After
+Sunday's puzzle the puppets you posed act out the week's story to the
+gamelan.
 
-- **The serial story** and tomorrow's silhouette ("who is this?").
-- **Lamp oil**: every gold solve adds a drop, and a drop keeps your streak
-  alive through a missed day, so one busy day does not end it.
-- **A leaderboard on every post**: fewest moves, then first to solve.
-- **A spoiler-free result card** for the comments: moves against par, gold,
-  streak, and a row of squares showing how close each move came.
-- **Player-made shadows**: pose wayang from your album, keep a decoy, and
-  the solver must prove exactly one answer before you can post it. The
-  week's most upvoted player shadow gets its own post on Sunday.
+What brings people back the next day:
 
-**It gets harder by rule, not just by par:** from Wednesday puppets overlap
-and hide each other's carved holes; from Thursday the match meter is gone
-and one decoy almost fits; at the weekend shadow that spills outside the
-outline is no longer marked red. **Sunday is a two-lamp night**: every
-puppet casts two half-dark shadows, and how far apart they fall tells you
-how close it stands to the lamps.
+- Each solve tells the next chapter, which ends on a hook, and the feed
+  card shows tomorrow's newcomer as a silhouette.
+- Gold solves fill the lamp with oil, and oil keeps your streak alive
+  through a missed day.
+- Every post has a leaderboard: fewest moves, then first to finish.
+- The result comment gives nothing away: moves against par, gold or not,
+  your streak, and a row of squares for how close each move came.
+- You can make a shadow for the subreddit from the wayang you have met.
+  The solver has to find one answer before it can be posted, and the
+  week's most upvoted one gets its own post on Sunday.
 
-The week follows one lakon (story), one scene a day, harder from Monday to
-Sunday: _Bima Suci_ (Bima's search for the water of life) and _Arjuna
-Wiwaha_ (Arjuna's meditation and the giant king).
-
-New players start with a 30-second warm-up where Semar, the wise clown-servant,
-coaches them one tap at a time. After that, tips appear only the first time a
-tool matters, and Semar gives up to three hints a day.
+First-time players get a 30-second warm-up with Semar, the clown-servant,
+telling them one tap at a time what to do. After that a tip appears only the
+first time a tool matters, and Semar gives up to three hints a day.
 
 ### How we built it
 
-- **Devvit Web** with a React + TypeScript post (Vite) and a Hono server.
-- **The puzzle engine** lives in shared TypeScript used by both the post and
-  the server: each wayang is a set of polygons with carved holes, a posable
-  arm and its rods; a pose is rasterised onto a 200×120 shadow grid; a match
-  is an exact bit-for-bit comparison. The kelir is drawn from the same
-  polygons with a lamp-lit cloth and a soft penumbra, so what you see is
-  exactly what is scored.
-- **The solver** enumerates every pose of every offered puppet whose shadow
-  fits inside the target (shadows only add up, so this prunes hard), then
-  searches combinations. It rejects any puzzle with zero or two answers and
-  computes par. A seeded generator rolls each story scene until it is unique
-  and its par fits the weekday.
-- **The reveal** uses three.js, loaded only after a solve so the feed card
-  stays light. Each puppet is painted onto a plane in its exact pose, with
-  its carved holes cut out. We place it by inverting the lamp's projection,
-  so a real point light gives a shadow that matches the scored one. Without
-  WebGL, or with reduced motion on, the kelir flips flat instead.
-- **Server**: Redis keeps profiles (album, gold cards, streaks), per-post
-  solve counts and hints. The answer never ships in the post; the server
-  re-checks every solve. The Devvit scheduler creates the daily post; a mod
-  menu creates the "start here" demo post.
-- **Reddit features**: interactive post with a fast inline splash and an
-  expanded game view, user flair for ranks, one-tap result comments, daily
-  scheduled posts.
-- **Sound**: the Dalang VR gamelan synth ported to WebAudio: the same
-  tuning, saron and bonang partials, gong with its ombak beating, kendang
-  and the cempala knock. No audio files.
-- **3D wayang made in Blender**: a script turns each figure's polygons into
-  a vinyl-toy part model (rounded slabs, flat colours, holes cut through)
-  and renders the card art. three.js places each model by inverting the
-  lamp's projection, and an invisible plane holding the exact scored
-  silhouette casts the shadow.
-- **Player-made shadows** reuse the same solver on the server before
-  posting, and Redis sorted sets keep each post's leaderboard.
-- **CI/CD** on GitHub Actions: typecheck, lint, unit tests and a puzzle-bank
-  gate on every push; on main, a playable browser demo goes to GitHub Pages
-  and a new private version is uploaded with `devvit upload`.
+It is a Devvit Web app: a React and TypeScript post built with Vite, and a
+Hono server.
+
+The puzzle engine is shared TypeScript that runs in the post and on the
+server. Each wayang is a set of polygons with carved holes, two jointed arms
+and a head that turns about the neck, plus its rods. A pose is rasterised
+onto a 200×120 grid, and a match is a bit-for-bit comparison. The kelir is
+drawn from the same polygons with a lamp-lit cloth and a soft edge, so what
+you see is what gets scored.
+
+The solver lists every pose of every puppet whose shadow fits inside the
+outline (shadows only add, so most poses drop out), then searches the
+combinations and rejects any puzzle with no answer or more than one. A
+puppet's shadow is its body, holes cut, plus two arms, so the solver checks
+each piece on its own first. The arms and head multiply the poses by 243;
+the hardest Sunday still solves in under a second. A seeded generator
+rerolls each scene until it has one answer and a par that suits the
+weekday.
+
+The 3D reveal uses three.js and only loads after you solve, so the feed card
+stays light. Each puppet is placed by running the lamp's projection
+backwards, so a real point light lands its shadow on the scored one. A
+Blender script turns each figure's polygons into a jointed 3D model and
+renders the card art. Without WebGL, or with reduced motion on, the screen
+flips flat instead.
+
+The server keeps profiles, solve counts, hints and leaderboards in Redis.
+The answers never ship in the post, and the server re-checks every solve and
+every player-made shadow. The Devvit scheduler makes the daily post; a mod
+menu makes the "start here" post. The sound is the Dalang VR gamelan synth
+ported to WebAudio (saron, bonang, gong, kendang and the dalang's wooden
+knocker), with no audio files.
+
+GitHub Actions run the typecheck, lint, unit tests and a puzzle-bank check
+on every push. On main, a playable browser version goes to GitHub Pages and
+a private build is uploaded with `devvit upload`.
 
 ### Challenges we ran into
 
-- **Exact but fair.** A 100% match is only fair if every position snaps and
-  the answer is unique. The solver made that a test we can run on every
-  puzzle, in CI, instead of a hope.
+- **Exact but fair.** An exact match is only fair if every position snaps
+  and only one answer exists. The solver turned that into a check that runs
+  on every puzzle in CI.
 - **Looking like wayang at phone size.** Our first silhouettes read as stick
-  figures. The rods (the central gapit and the arm tuding), long arms that
-  reach past the knee and the flared dodot are what make a shadow read as
-  wayang, so they became part of every figure, and of the puzzle.
-- **Drawing what is scored.** Drawing the grid looked blocky; drawing smooth
-  vectors risked a shadow that looks right but is not. Both now come from the
-  same polygons, and the grid decides.
-- **Par with the chest.** Lifting a puppet out and placing it back resets its
-  pose, which is sometimes the shortest path. The par calculation and a
-  one-time tip both account for it.
+  figures. What makes a shadow read as wayang is the rods, arms that reach
+  past the knee and the flared dodot cloth, so those went into every figure,
+  and into the puzzle.
+- **Drawing what is scored.** Drawing the grid looked blocky, and smooth
+  vectors could show a shadow that looks right but isn't. Now both come from
+  the same polygons and the grid decides.
+- **Par and the chest.** Putting a puppet back in the chest and taking it
+  out again resets its pose, which is sometimes the shortest route. Par and
+  a one-time tip both account for it.
 
 ### Accomplishments that we're proud of
 
-- Every live puzzle is proved to have exactly one answer.
-- A first-time player goes from the feed to a solved warm-up in about 30
-  seconds, with no wall of instructions.
-- The whole game fits a phone post with no scrolling.
-- It teaches something real: who Semar, Bima, Arjuna and Cakil are, and how
-  a dalang thinks about light.
+- The solver has checked every puzzle in the game for a single answer.
+- A new player gets from the feed to a solved warm-up in about 30 seconds,
+  without a page of rules.
+- The whole game fits in a phone post without scrolling.
+- Players come away knowing who Semar, Bima, Arjuna and Hanoman are, and
+  how a dalang works the light.
 
 ### What we learned
 
-Small rules make deep puzzles: five snapped controls and carved holes give a
-surprisingly rich logic space. And a daily game is mostly about the loop
-around the puzzle: the outline in the feed, the result card, the album, the
-streak.
+A few snapped controls and carved holes were enough to make puzzles we
+ourselves get stuck on. And most of a daily game happens around the puzzle:
+the outline in the feed, the result comment, the book and the streak.
 
 ### What's next for Dalang
 
-- **Next, after judging:** the weekend story riddle, two-lamp player
-  shadows, App Review and publishing.
-- **Later:** more lakon (Ramayana, Sawerigading, Purbasari), other wayang
-  forms such as wayang golek, and subreddit events where a whole community
-  solves one long lakon together.
+- **After judging:** a weekend story riddle, two-lamp player shadows, then
+  App Review and publishing.
+- **Later:** more lakon (Sawerigading, Purbasari), other wayang forms such as
+  wayang golek, and subreddit events where a whole community plays one long
+  lakon together.
 
 ---
 

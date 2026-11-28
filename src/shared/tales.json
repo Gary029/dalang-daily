@@ -1,0 +1,178 @@
+[
+ {
+  "id": "warmup",
+  "lakon": "Warm-up",
+  "title": "Wake Semar",
+  "weekday": 0,
+  "tale": "That is all a dalang does: a lamp, a puppet, and a shadow that tells the story. In Java a show like this runs from dusk until dawn.",
+  "pusaka": "blencong"
+ },
+ {
+  "id": "w1-1",
+  "lakon": "Bima Suci",
+  "title": "Semar greets the night",
+  "weekday": 0,
+  "tale": "Semar laughs and the night begins. In Astina, King Duryudana wants Bima gone before the great war, and the teacher Durna has an idea: send him to find the water of life. Who will Durna call?",
+  "pusaka": "kayon"
+ },
+ {
+  "id": "w1-2",
+  "lakon": "Bima Suci",
+  "title": "Durna's errand",
+  "weekday": 1,
+  "tale": "Durna swears the water, Tirta Pawitra, lies in a cave on Mount Candramuka. Bima's brothers smell a trap. Bima bows to his teacher and simply walks. But the mountain is not empty.",
+  "pusaka": "rujakpolo"
+ },
+ {
+  "id": "w1-3",
+  "lakon": "Bima Suci",
+  "title": "The giants of Candramuka",
+  "weekday": 2,
+  "tale": "The giants Rukmuka and Rukmakala rush at him, and Bima knocks their heads together. Where they fall, the gods Indra and Bayu stand, freed from Batara Guru's curse. “There is no water here,” they say. On the way down, another giant waits in the trees.",
+  "pusaka": "pancanaka"
+ },
+ {
+  "id": "w1-4",
+  "lakon": "Bima Suci",
+  "title": "Bima against Cakil",
+  "weekday": 3,
+  "tale": "Cakil spins in, all twirls and knife. Bima does not dance. Like every Cakil, the giant ends on his own keris. Bima stamps back to Astina, and somewhere behind him two familiar voices are arguing.",
+  "pusaka": "keris-cakil"
+ },
+ {
+  "id": "w1-5",
+  "lakon": "Bima Suci",
+  "title": "Goro-goro on the mountain",
+  "weekday": 4,
+  "tale": "Gareng says the water was a trick; Petruk says a teacher never lies. They settle it with a song and a fall. In Astina, Durna tells Bima the mountain was only a test: the real water lies at the bottom of the sea. Someone in the palace is smiling.",
+  "pusaka": "kentongan"
+ },
+ {
+  "id": "w1-6",
+  "lakon": "Bima Suci",
+  "title": "The Kurawa court",
+  "weekday": 5,
+  "tale": "Sengkuni whispers to Duryudana: no man comes back from the deep. Bima walks into the waves anyway, and the naga Nemburnawa coils around him. He tears it apart with his thumbnail Pancanaka. Then, in the quiet of the deep, someone small speaks his name.",
+  "pusaka": "dadu"
+ },
+ {
+  "id": "w1-7",
+  "lakon": "Bima Suci",
+  "title": "Dewaruci in the sea",
+  "weekday": 6,
+  "tale": "Dewaruci tells Bima to enter his left ear. Inside lies a world wider than the sea, and there Bima learns the water of life was never outside him. He comes home calm. Next week, on Mount Indrakila, another Pandawa sits down to be still.",
+  "pusaka": "tirta"
+ },
+ {
+  "id": "w2-1",
+  "lakon": "Arjuna Wiwaha",
+  "title": "Arjuna on Indrakila",
+  "weekday": 0,
+  "tale": "Mpu Kanwa told it in Old Javanese almost a thousand years ago: Arjuna goes up the mountain to ask the gods for a weapon, so his brothers can win back what the Kurawa took. Before he goes, the eldest brother has one thing to say.",
+  "pusaka": "pulanggeni"
+ },
+ {
+  "id": "w2-2",
+  "lakon": "Arjuna Wiwaha",
+  "title": "The eldest brother's blessing",
+  "weekday": 1,
+  "tale": "Yudhistira gives Arjuna his blessing and a warning: the gods will test you. While Arjuna is gone, the camp needs guards.",
+  "pusaka": "kalimasada"
+ },
+ {
+  "id": "w2-3",
+  "lakon": "Arjuna Wiwaha",
+  "title": "The twins keep watch",
+  "weekday": 2,
+  "tale": "Nakula and Sadewa watch all night, and nothing comes. On the mountain, Indra sends seven nymphs of heaven, Supraba and Tilotama among them, to break Arjuna's stillness. He does not open his eyes. Then something less lovely comes out of the forest.",
+  "pusaka": "gandewa"
+ },
+ {
+  "id": "w2-4",
+  "lakon": "Arjuna Wiwaha",
+  "title": "The flower battle",
+  "weekday": 3,
+  "tale": "Cakil spins and slashes; Arjuna barely moves. As in every flower battle, the giant falls on his own keris. Then an old brahmin climbs the path and asks Arjuna why he wants a weapon. Arjuna answers well, and the old man is Indra. Down in the village, Bagong heard it all wrong.",
+  "pusaka": "wijayakusuma"
+ },
+ {
+  "id": "w2-5",
+  "lakon": "Arjuna Wiwaha",
+  "title": "Bagong tells it wrong",
+  "weekday": 4,
+  "tale": "By the time Bagong finishes, Arjuna is not in the story and all seven nymphs wanted Bagong. Petruk laughs so hard he falls over. In Astina, nobody is laughing.",
+  "pusaka": "kendhi"
+ },
+ {
+  "id": "w2-6",
+  "lakon": "Arjuna Wiwaha",
+  "title": "Duryudana's envy",
+  "weekday": 5,
+  "tale": "Duryudana fears what Arjuna will bring down from the mountain. Sengkuni has a plan, as always. But the gods have their own: the giant king Niwatakawaca threatens heaven, and only a man can kill him. Someone is already hunting on Indrakila.",
+  "pusaka": "gada-inten"
+ },
+ {
+  "id": "w2-7",
+  "lakon": "Arjuna Wiwaha",
+  "title": "Batara Guru's gift",
+  "weekday": 6,
+  "tale": "Arjuna and the hunter shoot the same boar, quarrel and fight, until the hunter shows his true face: Batara Guru, who gives him the arrow Pasopati. With Supraba's help Arjuna learns the giant king's secret and shoots him through the tip of his tongue. Next week, across the sea, a prince has lost everything.",
+  "pusaka": "pasopati"
+ },
+ {
+  "id": "w3-1",
+  "lakon": "Hanoman Duta",
+  "title": "Rama's grief",
+  "weekday": 0,
+  "tale": "The dying bird Jatayu told him: the giant king of Alengka took her. Now Rama waits in his camp at Maliawan with the monkey king Sugriwa and his army. One white monkey steps forward and bows.",
+  "pusaka": "guwawijaya"
+ },
+ {
+  "id": "w3-2",
+  "lakon": "Hanoman Duta",
+  "title": "The white monkey's vow",
+  "weekday": 1,
+  "tale": "Rama puts his ring in Hanoman's hand: show her this, and she will know you come from me. Hanoman climbs a mountain by the shore. Between him and Alengka lies the whole sea.",
+  "pusaka": "ampal"
+ },
+ {
+  "id": "w3-3",
+  "lakon": "Hanoman Duta",
+  "title": "Across the sea",
+  "weekday": 2,
+  "tale": "The sea giant opens its mouth; Hanoman flies in and out again. On the far shore the lovely Sayempraba feeds him, and her food blinds him, until the old bird Sempati gives him back his sight. Ahead, Alengka glows. Somewhere inside is a garden.",
+  "pusaka": "poleng"
+ },
+ {
+  "id": "w3-4",
+  "lakon": "Hanoman Duta",
+  "title": "The garden of Argasoka",
+  "weekday": 3,
+  "tale": "Sinta weeps, then laughs, then takes a jewel from her hair: give him this, and tell him I wait. Hanoman could carry her home, but she says Rama himself must come. Then Hanoman lets the giants see him.",
+  "pusaka": "konde"
+ },
+ {
+  "id": "w3-5",
+  "lakon": "Hanoman Duta",
+  "title": "Hanoman Obong",
+  "weekday": 4,
+  "tale": "Hanoman slips his bonds and leaps from roof to roof with his burning tail, and Alengka burns. The dalang calls this night Hanoman Obong. From his throne, the giant king watches his city glow.",
+  "pusaka": "obor"
+ },
+ {
+  "id": "w3-6",
+  "lakon": "Hanoman Duta",
+  "title": "The giant king's rage",
+  "weekday": 5,
+  "tale": "Rahwana swears that no monkey and no prince will take what he has taken. His brother Wibisana begs him to give Sinta back, and is driven out. But the monkey is already over the sea.",
+  "pusaka": "mahkota"
+ },
+ {
+  "id": "w3-7",
+  "lakon": "Hanoman Duta",
+  "title": "Hanoman returns",
+  "weekday": 6,
+  "tale": "Rama holds Sinta's jewel and, for the first time in many nights, weeps and smiles. The monkeys begin a causeway across the sea, and the war for Alengka can begin. Next week the dalang lights the lamp again, and Semar steps out to greet the night.",
+  "pusaka": "astagina"
+ }
+]

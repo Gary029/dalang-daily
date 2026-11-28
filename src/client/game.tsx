@@ -10,9 +10,10 @@ import {
 } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { CardGrade, SolveResponse, TodayResponse } from '../shared/api.ts';
-import { MAX_OIL, RANKS, rankFor } from '../shared/api.ts';
+import { MAX_OIL, rankFor } from '../shared/api.ts';
 import { shareText } from '../shared/share.ts';
-import { FIGURES, SETS, figure } from '../shared/figures.ts';
+import { SETS, figure } from '../shared/figures.ts';
+import { PUSAKA, pusaka } from '../shared/pusaka.ts';
 import { decodeMask, equal, matchRatio } from '../shared/grid.ts';
 import {
   LEVELS,
@@ -31,16 +32,27 @@ import {
 import { api } from './api.ts';
 import { isMuted, setMuted, solvedPhrase, tick, wrongPhrase } from './audio.ts';
 import { Kelir } from './board.tsx';
+import { Book, PusakaView } from './book.tsx';
 import { Builder } from './builder.tsx';
+import { Finale } from './finale.tsx';
 import { Reveal } from './reveal.tsx';
 import {
   applyTool,
   closeness,
   showsMeter,
   showsOverflow,
+  toolsFor,
+  type Side,
   type Tool,
 } from './stage.ts';
-import { Icon, KAWUNG, Modal, PuppetArt } from './ui.tsx';
+import {
+  Icon,
+  KAWUNG,
+  Modal,
+  PuppetArt,
+  PusakaArt,
+  type IconName,
+} from './ui.tsx';
 
 // --- Semar's tips: shown once each, when the tool first matters ---------------
 
@@ -85,7 +97,7 @@ const firstTip = (puzzle: PuzzlePublic): string | null => {
     ],
     [
       'nometer',
-      'From Thursday the lamp shows no match meter. Trust the outline: it only lights up when the shadow is exact.',
+      'From Thursday there is no match meter. The outline lights up only when the shadow is exact.',
       !showsMeter(puzzle.weekday),
     ],
     [
@@ -105,7 +117,7 @@ const firstTip = (puzzle: PuzzlePublic): string | null => {
     ],
     [
       'par',
-      `Par is the fewest taps that solve it: ${puzzle.par}. Match at par with no hints for a gold card.`,
+      `Par is ${puzzle.par}, the fewest taps for this scene. Match it at par without hints and the pusaka is gold.`,
       true,
     ],
     [
@@ -128,6 +140,10 @@ const App = () => {
   const [mode, setMode] = useState<'warmup' | 'daily'>('daily');
   const [slots, setSlots] = useState<Slot[]>([]);
   const [sel, setSel] = useState<number | null>(null);
+  /** which arm Shoulder and Elbow work */
+  const [side, setSide] = useState<Side>('front');
+  /** earlier scenes, for Undo */
+  const [history, setHistory] = useState<Slot[][]>([]);
   const [moves, setMoves] = useState(0);
   const [result, setResult] = useState<SolveResponse | null>(null);
   const [glow, setGlow] = useState(0);
@@ -141,7 +157,18 @@ const App = () => {
   const [hints, setHints] = useState<string[]>([]);
   const [showHints, setShowHints] = useState(false);
   const [album, setAlbum] = useState(false);
+  /** a pusaka opened from the book or the result */
   const [card, setCard] = useState<string | null>(null);
+  /** a wayang opened from the book */
+  const [wayang, setWayang] = useState<string | null>(null);
+  const [book, setBook] = useState<{
+    met: Record<string, true>;
+    read: string[];
+  }>({
+    met: {},
+    read: [],
+  });
+  const [finale, setFinale] = useState(false);
   const [muted, setMute] = useState(isMuted());
   const [toast, setToast] = useState<Toast | null>(null);
   const [tip, setTip] = useState<string | null>(null);
@@ -160,6 +187,7 @@ const App = () => {
       .then((d) => {
         setData(d);
         setCards(d.profile.cards);
+        setBook({ met: d.profile.met ?? {}, read: d.profile.read ?? [] });
         setHints(d.hints);
         if (d.solved) {
           setMode('daily');
@@ -180,6 +208,8 @@ const App = () => {
             solvers: d.solvers,
             rank: rankFor(Object.keys(d.profile.cards).length),
             tale: d.tale,
+            met: d.profile.met ?? {},
+            read: d.profile.read ?? [],
             oil: d.profile.oil,
             oilUsed: 0,
             board: d.board,
@@ -240,6 +270,7 @@ const App = () => {
           return;
         }
         setCards(r.cards);
+        setBook({ met: r.met, read: r.read });
         setSentTrail([...trail.current]);
         setTimeout(() => {
           if (mode === 'warmup') markSeen('warmup');
@@ -264,15 +295,32 @@ const App = () => {
         )
       );
     tick();
+    setHistory((h) => [...h.slice(-60), slots]);
     setSlots(next);
     setMoves((m) => m + 1);
     setTip(null);
   };
 
+  /** step back one move; it still counts as a move */
+  const undo = () => {
+    if (result || solvedNow || !puzzle || !target) return;
+    const prev = history[history.length - 1];
+    if (!prev) return;
+    setHistory(history.slice(0, -1));
+    trail.current.push(
+      closeness(
+        matchRatio(shadowOf(puzzle.offered, prev, puzzle.lamps), target)
+      )
+    );
+    tick();
+    setSlots(prev);
+    setMoves((m) => m + 1);
+  };
+
   const runTool = (t: Tool) =>
     act((s) => {
       if (sel === null || !s[sel]) return null;
-      const p = applyTool(s[sel]!, t);
+      const p = applyTool(s[sel]!, t, side);
       if (!p) return null;
       const out = [...s];
       out[sel] = p;
@@ -300,6 +348,7 @@ const App = () => {
 
   const reset = () => {
     if (!puzzle || result) return;
+    setHistory((h) => [...h, slots]);
     setSlots(puzzle.start);
     setSel(null);
     say('Back to the opening scene. Your move count stays.');
@@ -340,6 +389,8 @@ const App = () => {
     setGlow(0);
     setMoves(0);
     trail.current = [];
+    setHistory([]);
+    setSide('front');
     setSel(null);
     if (data.solved) {
       setSlots(data.solved.slots);
@@ -390,9 +441,9 @@ const App = () => {
         <button
           className="icon-btn"
           onClick={() => setAlbum(true)}
-          aria-label="Your wayang album"
+          aria-label="Your book, Serat Dalang"
         >
-          <Icon name="album" />
+          <Icon name="book" />
           <span className="badge">{owned}</span>
         </button>
         <div className="title-block">
@@ -497,38 +548,34 @@ const App = () => {
           )}
         </div>
         <div className="pad">
-          <button onClick={() => runTool('left')} disabled={disabled}>
-            <Icon name="left" />
-            <span>Left</span>
-          </button>
-          <button onClick={() => runTool('right')} disabled={disabled}>
-            <Icon name="right" />
-            <span>Right</span>
-          </button>
-          <button onClick={() => runTool('far')} disabled={disabled}>
-            <Icon name="far" />
-            <span>Farther</span>
-          </button>
-          <button onClick={() => runTool('near')} disabled={disabled}>
-            <Icon name="near" />
-            <span>Closer</span>
-          </button>
-          <button onClick={() => runTool('tiltL')} disabled={disabled}>
-            <Icon name="tiltL" />
-            <span>Tilt</span>
-          </button>
-          <button onClick={() => runTool('tiltR')} disabled={disabled}>
-            <Icon name="tiltR" />
-            <span>Tilt</span>
-          </button>
-          <button onClick={() => runTool('arm')} disabled={disabled}>
-            <Icon name="arm" />
-            <span>Arm</span>
-          </button>
-          <button onClick={() => runTool('flip')} disabled={disabled}>
-            <Icon name="flip" />
-            <span>Flip</span>
-          </button>
+          {toolsFor(mode === 'warmup' ? 0 : puzzle.joints).map((t) => (
+            <button
+              key={t.tool}
+              onClick={() => runTool(t.tool)}
+              disabled={disabled}
+            >
+              <Icon name={t.icon as IconName} />
+              <span>
+                {(t.tool === 'shoulder' || t.tool === 'elbow') &&
+                puzzle.joints >= 2 &&
+                mode !== 'warmup'
+                  ? `${side === 'front' ? 'Front' : 'Back'} ${t.label.toLowerCase()}`
+                  : t.label}
+              </span>
+            </button>
+          ))}
+          {mode !== 'warmup' && puzzle.joints >= 2 && (
+            <button
+              className={`side-switch ${side}`}
+              onClick={() => setSide(side === 'front' ? 'back' : 'front')}
+              disabled={disabled}
+              aria-pressed={side === 'back'}
+              aria-label={`Working the ${side} arm. Switch arm`}
+            >
+              <Icon name="swap" />
+              <span>{side === 'front' ? 'Front arm' : 'Back arm'}</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -544,6 +591,15 @@ const App = () => {
             <span>{figure(id).name}</span>
           </button>
         ))}
+        <button
+          className="chip reset"
+          onClick={undo}
+          aria-label="Undo the last move"
+          disabled={history.length === 0 || !!result || solvedNow}
+        >
+          <Icon name="undo" />
+          <span>Undo</span>
+        </button>
         {mode === 'daily' && (
           <button
             className="chip reset"
@@ -563,7 +619,7 @@ const App = () => {
             <div>
               <h2>Semar says</h2>
               <p className="muted">
-                Each hint costs the gold card, not the solve.
+                A hint costs you the gold pusaka, never the solve.
               </p>
             </div>
           </div>
@@ -627,7 +683,10 @@ const App = () => {
           onBehind={() => setReplay(true)}
           hints={hints.length}
           trail={sentTrail}
-          canMake={!!data.username && owned >= 2}
+          canMake={!!data.username && Object.keys(book.met).length >= 2}
+          onFinale={
+            puzzle.weekday === 6 && !data.author ? () => setFinale(true) : null
+          }
           onMake={() => setMake(true)}
           onCopy={(text) => {
             void navigator.clipboard
@@ -639,16 +698,19 @@ const App = () => {
       )}
 
       {make && (
-        <Builder cards={cards} onClose={() => setMake(false)} say={say} />
+        <Builder met={book.met} onClose={() => setMake(false)} say={say} />
       )}
 
       {album && (
-        <Album
+        <Book
           cards={cards}
+          met={book.met}
+          read={book.read}
           onClose={() => setAlbum(false)}
-          onCard={setCard}
+          onPusaka={setCard}
+          onWayang={setWayang}
           onMake={
-            data.username && owned >= 2
+            data.username && Object.keys(book.met).length >= 2
               ? () => {
                   setAlbum(false);
                   setMake(true);
@@ -658,7 +720,21 @@ const App = () => {
         />
       )}
       {card && (
-        <CardView id={card} grade={cards[card]} onClose={() => setCard(null)} />
+        <PusakaView
+          id={card}
+          grade={cards[card]}
+          onClose={() => setCard(null)}
+        />
+      )}
+      {wayang && <CardView id={wayang} onClose={() => setWayang(null)} />}
+      {finale && result && (
+        <Finale
+          offered={puzzle.offered}
+          slots={slots}
+          lamps={puzzle.lamps}
+          lakon={puzzle.lakon}
+          onDone={() => setFinale(false)}
+        />
       )}
       {toast && (
         <div className="toast" role="status">
@@ -683,6 +759,7 @@ const ResultCard = (props: {
   canMake: boolean;
   onMake: () => void;
   onCopy: (text: string) => void;
+  onFinale: (() => void) | null;
 }) => {
   const { data, puzzle, result } = props;
   const copyText = shareText(
@@ -741,12 +818,12 @@ const ResultCard = (props: {
               className={`mini-card ${result.cards[id] === 'gold' ? 'gold' : ''}`}
               onClick={() => props.onCard(id)}
             >
-              <PuppetArt
+              <PusakaArt
                 id={id}
-                style={result.cards[id] === 'gold' ? 'gold' : 'painted'}
+                grade={result.cards[id]}
                 className="mini-art"
               />
-              <span>{figure(id).name}</span>
+              <span>{pusaka(id).name}</span>
             </button>
           ))}
         </div>
@@ -816,9 +893,14 @@ const ResultCard = (props: {
           Copy
         </button>
         <button className="btn ghost" onClick={props.onAlbum}>
-          Album
+          Book
         </button>
       </div>
+      {props.onFinale && (
+        <button className="btn wide" onClick={props.onFinale}>
+          Watch the week's finale
+        </button>
+      )}
       {props.canMake && (
         <button className="btn ghost wide" onClick={props.onMake}>
           Make a shadow for others
@@ -838,107 +920,21 @@ const ResultCard = (props: {
   );
 };
 
-const Album = (props: {
-  cards: Record<string, CardGrade>;
-  onClose: () => void;
-  onCard: (id: string) => void;
-  onMake: (() => void) | null;
-}) => {
-  const owned = Object.keys(props.cards).length;
-  const rank = rankFor(owned);
-  const next = RANKS.find((r) => r.min > owned);
-  return (
-    <div className="album" style={{ backgroundImage: KAWUNG }}>
-      <header className="topbar">
-        <button
-          className="icon-btn"
-          onClick={props.onClose}
-          aria-label="Back to the screen"
-        >
-          <Icon name="back" />
-        </button>
-        <div className="title-block">
-          <div className="brand">Your wayang</div>
-          <div className="sub">
-            {rank} · {owned} of {FIGURES.length}
-            {next ? ` · ${next.name} at ${next.min}` : ''}
-          </div>
-        </div>
-      </header>
-      {props.onMake && (
-        <button className="btn ghost wide album-make" onClick={props.onMake}>
-          Make a shadow for others
-        </button>
-      )}
-      <div className="sets">
-        {SETS.map((s) => {
-          const members = FIGURES.filter((f) => f.set === s.id);
-          const done = members.every((f) => props.cards[f.id]);
-          return (
-            <section key={s.id} className="set">
-              <h3>
-                {s.name} <span className="muted">{s.blurb}</span>
-                {done && (
-                  <span
-                    className="gunungan"
-                    title="Set complete: the gunungan is yours"
-                  >
-                    Gunungan
-                  </span>
-                )}
-              </h3>
-              <div className="cards">
-                {members.map((f) => {
-                  const g = props.cards[f.id];
-                  return (
-                    <button
-                      key={f.id}
-                      className={`mini-card ${g === 'gold' ? 'gold' : ''} ${g ? '' : 'locked'}`}
-                      onClick={() => g && props.onCard(f.id)}
-                      aria-label={g ? f.name : 'Not yet found'}
-                    >
-                      <PuppetArt
-                        id={f.id}
-                        style={g === 'gold' ? 'gold' : g ? 'painted' : 'locked'}
-                        className="mini-art"
-                      />
-                      <span>{g ? f.name : '?'}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-const CardView = (props: {
-  id: string;
-  grade: CardGrade | undefined;
-  onClose: () => void;
-}) => {
+const CardView = (props: { id: string; onClose: () => void }) => {
   const f = figure(props.id);
+  const owned = PUSAKA.filter((q) => q.owner === f.id);
   return (
-    <Modal
-      onClose={props.onClose}
-      className={`card-view ${props.grade === 'gold' ? 'gold' : ''}`}
-    >
-      <PuppetArt
-        id={f.id}
-        style={props.grade === 'gold' ? 'gold' : 'painted'}
-        arm={2}
-        className="card-art"
-      />
+    <Modal onClose={props.onClose} className="card-view">
+      <PuppetArt id={f.id} arm={2} className="card-art" />
       <p className="eyebrow">
         {SETS.find((s) => s.id === f.set)?.name} · {f.role}
       </p>
       <h2 className="display">{f.name}</h2>
       <p>{f.story}</p>
-      {props.grade === 'gold' && (
-        <p className="muted small">Gold prada: solved at par with no hints.</p>
+      {owned.length > 0 && (
+        <p className="muted small">
+          Carries: {owned.map((q) => q.name).join(', ')}
+        </p>
       )}
       <button className="btn" onClick={props.onClose}>
         Close

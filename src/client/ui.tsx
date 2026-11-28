@@ -67,7 +67,7 @@ export const PuppetArt = (props: {
   );
 };
 
-type IconName =
+export type IconName =
   | 'left'
   | 'right'
   | 'near'
@@ -83,7 +83,12 @@ type IconName =
   | 'mute'
   | 'back'
   | 'reset'
-  | 'close';
+  | 'close'
+  | 'elbow'
+  | 'head'
+  | 'swap'
+  | 'undo'
+  | 'book';
 
 const PATHS: Record<IconName, string> = {
   left: 'M15 5l-7 7 7 7',
@@ -102,6 +107,11 @@ const PATHS: Record<IconName, string> = {
   back: 'M15 5l-7 7 7 7',
   reset: 'M4 4v6h6M5.5 15a8 8 0 1 0 1.9-8.3L4 10',
   close: 'M6 6l12 12M18 6L6 18',
+  elbow: 'M5 20l7-7 7 3M12 13l-1-7',
+  head: 'M12 4a4 4 0 1 1 0 8a4 4 0 1 1 0-8zM8 20c0-4 8-4 8 0M7 7l-3-2M17 7l3-2',
+  swap: 'M7 7h11l-3-3M17 17H6l3 3',
+  undo: 'M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3',
+  book: 'M4 5c3-1 5-1 8 1c3-2 5-2 8-1v14c-3-1-5-1-8 1c-3-2-5-2-8-1zM12 6v14',
 };
 
 export const Icon = (props: { name: IconName; size?: number }) => (
@@ -140,3 +150,27 @@ export const Modal = (props: {
 export const KAWUNG = `url("data:image/svg+xml,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><g fill="none" stroke="#d8a84a" stroke-opacity="0.09" stroke-width="1.2"><ellipse cx="18" cy="9" rx="5" ry="8"/><ellipse cx="18" cy="27" rx="5" ry="8"/><ellipse cx="9" cy="18" rx="8" ry="5"/><ellipse cx="27" cy="18" rx="8" ry="5"/><circle cx="18" cy="18" r="1.5"/></g></svg>'
 )}")`;
+
+/** a pusaka's picture: a dark silhouette until found, gold leaf at par */
+export const PusakaArt = (props: {
+  id: string;
+  grade?: 'card' | 'gold' | undefined;
+  className?: string;
+}) => (
+  <img
+    src={`${import.meta.env.BASE_URL}pusaka/${props.id}.svg`}
+    alt=""
+    aria-hidden="true"
+    draggable={false}
+    className={props.className ?? 'puppet-art'}
+    style={{
+      objectFit: 'contain',
+      minWidth: 0,
+      ...(props.grade === 'gold'
+        ? GOLD_LEAF
+        : props.grade
+          ? {}
+          : { filter: 'brightness(0) opacity(0.55)' }),
+    }}
+  />
+);

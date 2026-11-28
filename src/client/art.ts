@@ -1,4 +1,4 @@
-import { armPolys, figure } from '../shared/figures.ts';
+import { REST, figure, figureParts } from '../shared/figures.ts';
 import type { Poly } from '../shared/grid.ts';
 
 /**
@@ -18,7 +18,8 @@ export const drawPuppet = (
   const h = canvas.height;
   const ctx = canvas.getContext('2d')!;
   ctx.clearRect(0, 0, w, h);
-  const parts = [...f.body, ...armPolys(f, arm)];
+  const fp = figureParts(f, { ...REST, arm });
+  const parts = [...fp.body, ...fp.arms];
   let minX = Infinity;
   let maxX = -Infinity;
   for (const p of parts)
@@ -72,8 +73,16 @@ export const drawPuppet = (
   }
   // carved holes
   g.globalCompositeOperation = 'destination-out';
-  g.fill(path(f.holes), 'nonzero');
+  g.fill(path(fp.holes), 'nonzero');
   g.globalCompositeOperation = 'source-over';
+  // the arms are held in front of the body, so the holes never cut them
+  if (style === 'locked') {
+    g.fillStyle = '#2a2235';
+    g.fill(path(fp.arms), 'nonzero');
+  } else {
+    g.fillStyle = f.skin;
+    g.fill(path(fp.arms), 'nonzero');
+  }
   if (style === 'gold') {
     ctx.shadowColor = 'rgba(255, 205, 90, 0.85)';
     ctx.shadowBlur = w / 10;

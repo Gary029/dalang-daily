@@ -1,4 +1,4 @@
-import { armPolys, figure } from '../shared/figures.ts';
+import { figure, figureParts } from '../shared/figures.ts';
 import type { Poly } from '../shared/grid.ts';
 import { placedPolys, poseAffine, type Pose } from '../shared/shadow.ts';
 
@@ -44,7 +44,7 @@ export const paintPuppet = (id: string, pose: Pose): PaintedPuppet => {
   let y0 = Infinity;
   let x1 = -Infinity;
   let y1 = -Infinity;
-  for (const q of placed.solids)
+  for (const q of placed.flatMap((pp) => pp.solids))
     for (let k = 0; k < q.length; k += 2) {
       x0 = Math.min(x0, q[k]!);
       x1 = Math.max(x1, q[k]!);
@@ -72,16 +72,22 @@ export const paintPuppet = (id: string, pose: Pose): PaintedPuppet => {
       PX * (m.e - x0),
       PX * (y1 - m.f)
     );
-  const solid = pathOf([...f.body, ...armPolys(f, pose.arm)]);
-  const holes = pathOf(f.holes);
+  const parts = figureParts(f, pose);
+  const solid = pathOf([...parts.body, ...parts.arms]);
+  const bodyPath = pathOf(parts.body);
+  const armsPath = pathOf(parts.arms);
+  const holes = pathOf(parts.holes);
 
   const mask = canvas(w, h);
   const mg = mask.getContext('2d')!;
   setPose(mg);
   mg.fillStyle = '#000';
-  mg.fill(solid, 'nonzero');
+  mg.fill(bodyPath, 'nonzero');
   mg.globalCompositeOperation = 'destination-out';
   mg.fill(holes, 'nonzero');
+  // the arms in front are not holed (that is how the shadow is scored)
+  mg.globalCompositeOperation = 'source-over';
+  mg.fill(armsPath, 'nonzero');
 
   // gilt rim: the silhouette in gold, stamped around, under the leather
   const sil = canvas(w, h);
@@ -103,11 +109,11 @@ export const paintPuppet = (id: string, pose: Pose): PaintedPuppet => {
   grad.addColorStop(0.52, f.cloth);
   grad.addColorStop(1, f.cloth);
   g.fillStyle = grad;
-  g.fill(solid, 'nonzero');
+  g.fill(bodyPath, 'nonzero');
   // a fine gold line inside the edge, like tooled leather
   g.lineWidth = 0.006;
   g.strokeStyle = 'rgba(240, 200, 110, 0.55)';
-  g.stroke(solid);
+  g.stroke(bodyPath);
   g.globalCompositeOperation = 'destination-out';
   g.fill(holes, 'nonzero');
   // gold around each carved hole
@@ -116,6 +122,12 @@ export const paintPuppet = (id: string, pose: Pose): PaintedPuppet => {
   g.strokeStyle = '#e0b35a';
   g.stroke(holes);
   g.globalCompositeOperation = 'source-over';
+  // the arms, held in front
+  g.fillStyle = f.skin;
+  g.fill(armsPath, 'nonzero');
+  g.lineWidth = 0.006;
+  g.strokeStyle = 'rgba(240, 200, 110, 0.55)';
+  g.stroke(armsPath);
 
   return { id, pose, box: { x0, y0, x1, y1 }, color, mask };
 };

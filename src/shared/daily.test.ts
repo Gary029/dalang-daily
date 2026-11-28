@@ -102,7 +102,7 @@ test("tomorrow's newcomer is a wayang from the next scene", () => {
   for (let day = 0; day < BANK.puzzles.length; day++) {
     const t = tomorrowOf({ day, index: day });
     const next = BANK.puzzles[(day + 1) % BANK.puzzles.length]!;
-    assert.ok(next.cards.includes(t.figure));
+    assert.ok(next.cast.includes(t.figure));
   }
 });
 
@@ -198,4 +198,23 @@ test('a second lamp splits each shadow, wider the closer the puppet stands', asy
 test('Sundays are two-lamp nights, the rest of the week one lamp', () => {
   for (const p of BANK.puzzles) assert.equal(p.lamps, p.weekday === 6 ? 2 : 1);
   assert.equal(BANK.warmup.lamps, 1);
+});
+
+test('a solve fills the book: the pusaka, the wayang met and the chapter', async () => {
+  const kv = memoryKV();
+  const def = BANK.puzzles[2]!;
+  const r = await recordSolve(kv, {
+    postId: 't3_book',
+    user: 'u',
+    info: { day: 2, index: 2 },
+    def,
+    slots: def.solution,
+    moves: 99,
+  });
+  assert.deepEqual(r.newCards, def.cards);
+  assert.equal(r.cards[def.cards[0]!], 'card');
+  for (const id of def.cast) assert.equal(r.met[id], true);
+  for (const id of def.offered.filter((_, k) => !def.solution[k]))
+    assert.equal(r.met[id], undefined, 'decoys are not met');
+  assert.deepEqual(r.read, [def.id]);
 });

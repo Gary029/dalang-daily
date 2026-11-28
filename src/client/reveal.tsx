@@ -120,8 +120,8 @@ export const Reveal = ({ offered, slots, onDone, lamps = 1 }: Props) => {
         <p className="eyebrow">Behind the kelir</p>
         <h2 className="display">The dalang's side</h2>
         <p>
-          {names(puppets)}, lit by the blencong. Every shadow you matched came
-          from here.
+          {names(puppets)} under the blencong, the dalang's lamp. This is where
+          your shadow came from.
         </p>
         <button
           className="btn"

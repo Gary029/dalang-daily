@@ -92,7 +92,11 @@ if (params.get('warm') === 'done') {
 }
 if (params.get('album') === 'all') {
   const p = await loadProfile(kv, USER);
-  for (const f of BANK.puzzles.flatMap((q) => q.cards)) p.cards[f] = 'card';
+  for (const q of BANK.puzzles) {
+    for (const c of q.cards) p.cards[c] = 'card';
+    for (const id of q.cast) p.met[id] = true;
+    if (!p.read.includes(q.id)) p.read.push(q.id);
+  }
   p.warmupDone = true;
   await kv.set(`profile:${USER}`, JSON.stringify(p));
 }
@@ -142,7 +146,7 @@ export const local = {
   },
   create: async (req: CreateRequest): Promise<CreateResponse> => {
     const p = await loadProfile(kv, USER);
-    const check = checkShadow(req, Object.keys(p.cards));
+    const check = checkShadow(req, Object.keys(p.met));
     if (!check.ok) return { type: 'create', ok: false, message: check.message };
     const def = toUgc(req, check, USER, newUgcId());
     try {

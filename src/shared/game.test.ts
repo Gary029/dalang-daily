@@ -164,10 +164,10 @@ test('answers from the post are validated before use', () => {
 });
 
 test('flair and comment text read well', () => {
-  assert.equal(flairText({}), 'Penonton · 0 wayang');
+  assert.equal(flairText({}), 'Penonton · 0 pusaka');
   assert.match(
     flairText({ a: 'card', b: 'card', c: 'gold' }),
-    /^Dalang Muda · 3 wayang/
+    /^Dalang Muda · 3 pusaka/
   );
   const t = shareText(
     def,

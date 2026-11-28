@@ -11,8 +11,14 @@ import {
 } from './grid.ts';
 import {
   ANGLES,
+  ARMS,
+  BASES,
   DEFAULT_POSE,
-  POSES,
+  JOINT_KEYS,
+  JOINT_LEVELS,
+  JOINT_SETS,
+  jointChoices,
+  partMask,
   poseFromIndex,
   puppetMask,
   placedByLamp,
@@ -38,6 +44,8 @@ export type PuzzlePublic = {
   par: number;
   /** 1, or 2 on two-lamp nights (every puppet casts two shadows) */
   lamps: number;
+  /** which joints move: 0 front shoulder, 1 + elbow, 2 + back arm, 3 + head */
+  joints: number;
   /** run-length encoded target shadow: what the match is checked against */
   target: string;
   /** the same target as outlines, only for drawing it smoothly */
@@ -48,8 +56,10 @@ export type PuzzleDef = Omit<PuzzlePublic, 'targetShapes'> & {
   solution: Slot[];
   /** the story chapter, told only after the solve */
   tale: string;
-  /** characters whose cards this scene unlocks */
+  /** the pusaka this scene gives */
   cards: string[];
+  /** the wayang in the answer (kept on the server: it names the decoys) */
+  cast: string[];
 };
 
 export const WEEKDAYS = [
@@ -83,6 +93,7 @@ export const toPublic = (p: PuzzleDef): PuzzlePublic => ({
   start: p.start,
   par: p.par,
   lamps: p.lamps,
+  joints: p.joints,
   target: p.target,
   targetShapes: shapesOf(p.offered, p.solution, p.lamps),
 });
@@ -130,11 +141,16 @@ export const isSolved = (
  */
 export const poseDistance = (a: Pose, b: Pose): number => {
   const da = Math.abs(a.a - b.a);
+  // every joint taps forward through its three positions
+  const joints = JOINT_KEYS.reduce(
+    (n, k) => n + ((b[k] - a[k] + ARMS) % ARMS),
+    0
+  );
   return (
     Math.abs(a.x - b.x) +
     Math.abs(a.d - b.d) +
     Math.min(da, ANGLES - da) +
-    ((b.arm - a.arm + 3) % 3) +
+    joints +
     (a.flip === b.flip ? 0 : 1)
   );
 };
@@ -173,13 +189,38 @@ export const solve = (
   offered: readonly string[],
   target: Mask,
   limit = 2,
-  lamps = 1
+  lamps = 1,
+  level = JOINT_LEVELS - 1
 ): SolveResult => {
-  const cands: { pose: number; mask: Mask }[][] = offered.map((id) => {
-    const out: { pose: number; mask: Mask }[] = [];
-    for (let i = 0; i < POSES; i++) {
-      const m = puppetMask(id, poseFromIndex(i), lamps);
-      if (count(m) > 0 && subsetOf(m, target)) out.push({ pose: i, mask: m });
+  const choice = jointChoices(level);
+  const fits = (m: Mask) => count(m) > 0 && subsetOf(m, target);
+  // per puppet: every pose whose body and both arms each fit inside the target
+  const cands: { pose: Pose; mask: Mask }[][] = offered.map((id) => {
+    const out: { pose: Pose; mask: Mask }[] = [];
+    for (let b = 0; b < BASES; b++) {
+      const base = poseFromIndex(b * JOINT_SETS);
+      const heads = choice.head.filter((head) =>
+        fits(partMask(id, { ...base, head }, 'body', lamps))
+      );
+      if (heads.length === 0) continue;
+      const fronts: [number, number][] = [];
+      for (const arm of choice.arm)
+        for (const elbow of choice.elbow)
+          if (fits(partMask(id, { ...base, arm, elbow }, 'front', lamps)))
+            fronts.push([arm, elbow]);
+      if (fronts.length === 0) continue;
+      const backs: [number, number][] = [];
+      for (const back of choice.back)
+        for (const backElbow of choice.backElbow)
+          if (fits(partMask(id, { ...base, back, backElbow }, 'back', lamps)))
+            backs.push([back, backElbow]);
+      if (backs.length === 0) continue;
+      for (const head of heads)
+        for (const [arm, elbow] of fronts)
+          for (const [back, backElbow] of backs) {
+            const pose: Pose = { ...base, head, arm, elbow, back, backElbow };
+            out.push({ pose, mask: puppetMask(id, pose, lamps) });
+          }
     }
     return out;
   });
@@ -210,7 +251,7 @@ export const solve = (
     for (const c of cands[k]!) {
       const next = new Uint32Array(acc);
       orInto(next, c.mask);
-      chosen[k] = poseFromIndex(c.pose);
+      chosen[k] = c.pose;
       walk(k + 1, next);
       if (solutions.length >= limit) break;
     }
@@ -245,6 +286,8 @@ export const dateLabel = (day: number): string => {
 // --- Semar's hints ----------------------------------------------------------------
 
 const ARM_WORD = ['hanging down', 'reaching forward', 'raised'];
+const ELBOW_WORD = ['straight', 'bent', 'folded back'];
+const HEAD_WORD = ['', ', head bowed', ', head raised'];
 const DEPTH_WORD = [
   'far from the lamp',
   'a little far',
@@ -269,7 +312,7 @@ export const hintsFor = (p: PuzzleDef): string[] => {
     const f = figure(u.id);
     const facing = u.pose.flip ? 'facing left' : 'facing right';
     out.push(
-      `${f.name} stands ${DEPTH_WORD[u.pose.d]}, ${facing}, arm ${ARM_WORD[u.pose.arm]}.`
+      `${f.name} stands ${DEPTH_WORD[u.pose.d]}, ${facing}, front arm ${ARM_WORD[u.pose.arm]}${p.joints >= 1 ? ` and ${ELBOW_WORD[u.pose.elbow]}` : ''}${p.joints >= 2 ? `, back arm ${ARM_WORD[u.pose.back]}` : ''}${p.joints >= 3 ? HEAD_WORD[u.pose.head] : ''}.`
     );
   }
   if (unused.length > 1)

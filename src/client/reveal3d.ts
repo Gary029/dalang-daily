@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
-import { figure } from '../shared/figures.ts';
+import { HEAD, figure } from '../shared/figures.ts';
 import { GH, GW } from '../shared/grid.ts';
 import {
   DEPTH_SCALE,
@@ -24,9 +24,12 @@ import type { PaintedPuppet } from './paint.ts';
  * z = LAMP_Z on the dalang's side.
  *
  * The puppets on show are the Blender-built vinyl figures (public/models,
- * tools/blender/build_wayang.py). They never cast the shadow: an invisible
- * plane with the exact scored silhouette does. Until a model loads, or if it
- * cannot, the painted plane from paint.ts stands in.
+ * tools/blender/build_wayang.py): a `body`, a `head` whose origin is the neck
+ * pivot, and every arm position as `front_<shoulder><elbow>` and
+ * `back_<shoulder><elbow>`, of which the pose shows one of each. They never
+ * cast the shadow: an invisible plane with the exact scored silhouette does.
+ * Until a model loads, or if it cannot, the painted plane from paint.ts
+ * stands in.
  */
 
 const modelUrl = (id: string) => `${import.meta.env.BASE_URL}models/${id}.glb`;
@@ -219,7 +222,16 @@ export const startReveal = (
       modelUrl(p.id),
       (gltf) => {
         const model = gltf.scene;
-        if (disposed) {
+        const pose = p.pose;
+        const front = `front_${pose.arm}${pose.elbow}`;
+        const back = `back_${pose.back}${pose.backElbow}`;
+        // a model from before the two-armed puppets cannot show this pose:
+        // the painted stand-in stays
+        if (
+          disposed ||
+          !model.getObjectByName(front) ||
+          !model.getObjectByName(back)
+        ) {
           model.traverse((o) => {
             if (o instanceof THREE.Mesh) {
               o.geometry.dispose();
@@ -228,10 +240,13 @@ export const startReveal = (
           });
           return;
         }
-        for (const k of [0, 1, 2]) {
-          const arm = model.getObjectByName(`arm${k}`);
-          if (arm) arm.visible = k === p.pose.arm;
+        for (const o of model.children) {
+          if (/^(front|back)_\d\d$/.test(o.name))
+            o.visible = o.name === front || o.name === back;
         }
+        // the head turns about the neck (its node's origin), in figure space
+        const head = model.getObjectByName('head');
+        if (head) head.rotation.z = THREE.MathUtils.degToRad(HEAD[pose.head]!);
         const opacity = (faded[0] as THREE.Material | undefined)?.opacity ?? 0;
         model.traverse((o) => {
           if (!(o instanceof THREE.Mesh)) return;

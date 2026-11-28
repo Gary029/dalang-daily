@@ -5,7 +5,9 @@
  */
 import { BANK } from '../src/shared/bank.ts';
 import { FIGURES } from '../src/shared/figures.ts';
+import { PUSAKA } from '../src/shared/pusaka.ts';
 import { decodeMask, equal } from '../src/shared/grid.ts';
+import { jointsAllowed } from '../src/shared/shadow.ts';
 import {
   isSolved,
   parOf,
@@ -34,12 +36,12 @@ for (const p of all) {
   )
     fail(p, 'slot count mismatch');
   if (p.index >= 0 && p.tale.length < 40) fail(p, 'missing story chapter');
-  for (const c of p.cards)
-    if (!p.solution[p.offered.indexOf(c)])
-      fail(p, `card ${c} is not in the answer`);
   if (p.weekday === 6 && p.index >= 0 && p.lamps !== 2)
     fail(p, 'Sunday should be a two-lamp night');
-  const { solutions } = solve(p.offered, target, 2, p.lamps);
+  for (const slot of [...p.solution, ...p.start])
+    if (slot && !jointsAllowed(slot, p.joints))
+      fail(p, 'a pose moves a joint this puzzle keeps still');
+  const { solutions } = solve(p.offered, target, 2, p.lamps, p.joints);
   if (solutions.length !== 1)
     fail(p, `${solutions.length} answers (must be exactly 1)`);
   console.log(
@@ -53,14 +55,27 @@ BANK.puzzles.forEach((p, k) => {
   if (p.weekday !== k % 7) fail(p, `weekday ${p.weekday}, expected ${k % 7}`);
   if (p.index !== k) fail(p, `index ${p.index}, expected ${k}`);
 });
-const collectable = new Set(BANK.puzzles.flatMap((p) => p.cards));
+// every pusaka is given by exactly one scene, and every wayang appears somewhere
+const given = all.flatMap((p) => p.cards);
+for (const q of PUSAKA) {
+  const n = given.filter((id) => id === q.id).length;
+  if (n !== 1) problems.push(`${q.name} is given by ${n} scenes (want 1)`);
+}
+for (const id of given)
+  if (!PUSAKA.some((q) => q.id === id)) problems.push(`unknown pusaka ${id}`);
+const met = new Set(all.flatMap((p) => p.cast));
 for (const f of FIGURES)
-  if (!collectable.has(f.id)) problems.push(`${f.name} can never be collected`);
+  if (!met.has(f.id)) problems.push(`${f.name} never appears in an answer`);
+for (const p of all)
+  for (const id of p.cast)
+    if (!p.solution[p.offered.indexOf(id)])
+      fail(p, `${id} is in the cast but not in the answer`);
+const collectable = new Set(given);
 
 if (problems.length) {
   console.error(`\n${problems.length} problem(s):\n${problems.join('\n')}`);
   process.exit(1);
 }
 console.log(
-  `\nAll ${all.length} puzzles pass: one answer each, true par, ${collectable.size}/${FIGURES.length} wayang collectable.`
+  `\nAll ${all.length} puzzles pass: one answer each, true par, ${collectable.size}/${PUSAKA.length} pusaka, ${met.size}/${FIGURES.length} wayang met.`
 );

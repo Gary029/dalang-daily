@@ -11,7 +11,6 @@ import {
   type TodaySolve,
 } from './api.ts';
 import { WARMUP, puzzleById, puzzleForDay, BANK } from './bank.ts';
-import { FIGURES, SETS } from './figures.ts';
 import {
   LEVELS,
   dateLabel,
@@ -21,7 +20,7 @@ import {
   type PuzzleDef,
   type Slot,
 } from './puzzle.ts';
-import { ANGLES, ARMS, DEPTHS, SLOTS } from './shadow.ts';
+import { isPose } from './shadow.ts';
 
 /** The slice of Devvit's Redis client this game uses (an in-memory one backs the tests). */
 export type KV = {
@@ -180,35 +179,26 @@ export const shownHints = async (
   def: PuzzleDef
 ) => hintsFor(def).slice(0, await hintsUsed(kv, postId, user));
 
-const isPose = (v: unknown): boolean => {
-  if (!v || typeof v !== 'object') return false;
-  const p = v as Record<string, unknown>;
-  const int = (x: unknown, n: number) =>
-    Number.isInteger(x) && (x as number) >= 0 && (x as number) < n;
-  return (
-    int(p.x, SLOTS) &&
-    int(p.d, DEPTHS) &&
-    int(p.a, ANGLES) &&
-    int(p.arm, ARMS) &&
-    typeof p.flip === 'boolean'
-  );
-};
-
 /** Checks a claimed answer against the puzzle (never trusts the post). */
 export const validSlots = (def: PuzzleDef, slots: unknown): slots is Slot[] =>
   Array.isArray(slots) &&
   slots.length === def.offered.length &&
   slots.every((s) => s === null || isPose(s));
 
-export const completedSets = (cards: Record<string, CardGrade>): string[] =>
-  SETS.filter((s) =>
-    FIGURES.filter((f) => f.set === s.id).every((f) => cards[f.id])
-  ).map((s) => s.id);
+/** a lakon is complete when every pusaka of its week is in the book */
+export const completedSets = (cards: Record<string, CardGrade>): string[] => {
+  const lakons = [...new Set(BANK.puzzles.map((p) => p.lakon))];
+  return lakons.filter((l) =>
+    BANK.puzzles
+      .filter((p) => p.lakon === l)
+      .every((p) => p.cards.every((c) => cards[c]))
+  );
+};
 
 export const flairText = (cards: Record<string, CardGrade>): string => {
   const n = Object.keys(cards).length;
   const sets = completedSets(cards).length;
-  return `${rankFor(n)} · ${n} wayang${sets > 0 ? ` · ${sets} gunungan` : ''}`;
+  return `${rankFor(n)} · ${n} pusaka${sets > 0 ? ` · ${sets} gunungan` : ''}`;
 };
 
 /** fewest moves first, then whoever solved first */
@@ -256,7 +246,7 @@ export const tomorrowOf = (info: PostInfo): Tomorrow => {
   const at = Math.max(0, BANK.puzzles.indexOf(today));
   const next = BANK.puzzles[(at + 1) % BANK.puzzles.length]!;
   return {
-    figure: next.cards.find((c) => !today.cards.includes(c)) ?? next.cards[0]!,
+    figure: next.cast.find((c) => !today.cast.includes(c)) ?? next.cast[0]!,
     lakon: next.lakon,
     level: LEVELS[next.weekday]!,
   };
@@ -308,6 +298,8 @@ export const recordSolve = async (
       oilUsed: 0,
       board: [],
       myRank: null,
+      met: profile.met,
+      read: profile.read,
       ...c,
     };
   }
@@ -325,6 +317,9 @@ export const recordSolve = async (
         newCards.push(id);
       }
     }
+    // the book: who you met, which chapters you can read
+    for (const id of def.cast) profile.met[id] = true;
+    if (def.tale && !profile.read.includes(def.id)) profile.read.push(def.id);
     if (isWarmup) {
       profile.warmupDone = true;
     } else if (isUgc(def)) {
@@ -378,6 +373,8 @@ export const recordSolve = async (
     tale: def.tale || null,
     oil: profile.oil,
     oilUsed,
+    met: profile.met,
+    read: profile.read,
     ...(isWarmup ? { board: [], myRank: null } : await board(kv, postId, user)),
     ...c,
   };

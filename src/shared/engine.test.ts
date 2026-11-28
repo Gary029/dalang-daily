@@ -40,7 +40,14 @@ test('a square fills the cells whose centres it covers', () => {
 });
 
 test('mask text encoding round-trips', () => {
-  const m = puppetMask('bima', { x: 2, d: 3, a: 1, arm: 2, flip: true });
+  const m = puppetMask('bima', {
+    ...DEFAULT_POSE,
+    x: 2,
+    d: 3,
+    a: 1,
+    arm: 2,
+    flip: true,
+  });
   assert.ok(count(m) > 100 && count(m) < CELLS);
   assert.ok(equal(decodeMask(encodeMask(m)), m));
 });
@@ -60,7 +67,7 @@ test('pose index covers every pose exactly once', () => {
 test('carved holes let light through every figure', () => {
   for (const f of FIGURES) {
     const p = { ...DEFAULT_POSE, d: 4 };
-    const { solids } = placedPolys(f, p);
+    const solids = placedPolys(f, p).flatMap((q) => q.solids);
     const solid = count(fillPolys(emptyMask(), solids));
     const carved = count(puppetMask(f.id, p));
     assert.ok(
@@ -102,7 +109,7 @@ test('the calendar starts on Monday 23 Nov 2026 and cycles the bank', () => {
   assert.equal(new Date(ANCHOR_UTC).getUTCDay(), 1);
   assert.equal(dayNumber(ANCHOR_UTC + 3600_000), 0);
   assert.equal(bankIndexForDay(-1, 14), 13);
-  assert.equal(puzzleForDay(14).id, BANK.puzzles[0]!.id);
+  assert.equal(puzzleForDay(BANK.puzzles.length).id, BANK.puzzles[0]!.id);
   assert.equal(puzzleForDay(6).weekday, 6);
 });
 
@@ -135,4 +142,17 @@ test('the painting matrix matches the shadow transform for every pose', () => {
         assert.ok(Math.abs(m.b * x + m.d * y + m.f - Y) < 1e-9);
       }
     }
+});
+
+test('every joint moves part of the shadow, for every figure', () => {
+  for (const f of FIGURES) {
+    const base = { ...DEFAULT_POSE, d: 4 };
+    const rest = puppetMask(f.id, base);
+    for (const k of ['arm', 'elbow', 'back', 'backElbow', 'head'] as const)
+      for (const v of [1, 2])
+        assert.ok(
+          !equal(puppetMask(f.id, { ...base, [k]: v }), rest),
+          `${f.id}: ${k}=${v} casts the same shadow as rest`
+        );
+  }
 });

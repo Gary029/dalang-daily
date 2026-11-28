@@ -1,6 +1,5 @@
 import { navigateTo } from '@devvit/web/client';
 import { useMemo, useState } from 'react';
-import type { CardGrade } from '../shared/api.ts';
 import { FIGURES, figure } from '../shared/figures.ts';
 import { LEVELS, shapesOf, type Slot } from '../shared/puzzle.ts';
 import {
@@ -17,23 +16,25 @@ import {
 } from '../shared/ugc.ts';
 import { api } from './api.ts';
 import { Kelir } from './board.tsx';
-import { TOOLS, applyTool, type Tool } from './stage.ts';
-import { Icon, KAWUNG, PuppetArt } from './ui.tsx';
+import { applyTool, toolsFor, type Side, type Tool } from './stage.ts';
+import { Icon, KAWUNG, PuppetArt, type IconName } from './ui.tsx';
 
 /**
- * Make a shadow for other players: pick wayang from your album, pose some of
+ * Make a shadow for other players: pick wayang you have met, pose some of
  * them, keep at least one as a decoy, and Semar (the solver) checks there is
  * exactly one answer before it can be posted.
  */
 export const Builder = (props: {
-  cards: Record<string, CardGrade>;
+  /** wayang met in solved scenes: the builder's chest */
+  met: Record<string, true>;
   onClose: () => void;
   say: (text: string) => void;
 }) => {
-  const owned = FIGURES.filter((f) => props.cards[f.id]).map((f) => f.id);
+  const owned = FIGURES.filter((f) => props.met[f.id]).map((f) => f.id);
   const [chest, setChest] = useState<string[]>([]);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [sel, setSel] = useState<number | null>(null);
+  const [side, setSide] = useState<Side>('front');
   const [title, setTitle] = useState('');
   const [check, setCheck] = useState<CreateCheck | 'checking' | null>(null);
   const [posting, setPosting] = useState(false);
@@ -70,7 +71,7 @@ export const Builder = (props: {
 
   const run = (t: Tool) => {
     if (sel === null || !slots[sel]) return;
-    const p = applyTool(slots[sel]!, t);
+    const p = applyTool(slots[sel]!, t, side);
     if (!p) return;
     changed();
     setSlots(slots.map((s, n) => (n === sel ? p : s)));
@@ -129,7 +130,7 @@ export const Builder = (props: {
 
       <p className="coach">
         {chest.length === 0
-          ? `Pick 2 to ${MAX_OFFERED} wayang from your album for the chest.`
+          ? `Pick 2 to ${MAX_OFFERED} wayang you have met for the chest.`
           : slots.every((s) => !s)
             ? 'Tap a puppet below to stand it on the screen.'
             : 'Pose them. Leave at least one in the chest as a decoy.'}
@@ -176,9 +177,18 @@ export const Builder = (props: {
           )}
         </div>
         <div className="pad">
-          {TOOLS.map(({ tool, label }) => (
+          <button
+            className={`side-switch ${side}`}
+            onClick={() => setSide(side === 'front' ? 'back' : 'front')}
+            disabled={!selSlot}
+            aria-pressed={side === 'back'}
+          >
+            <Icon name="swap" />
+            <span>{side === 'front' ? 'Front arm' : 'Back arm'}</span>
+          </button>
+          {toolsFor(3).map(({ tool, label, icon }) => (
             <button key={tool} onClick={() => run(tool)} disabled={!selSlot}>
-              <Icon name={tool} />
+              <Icon name={icon as IconName} />
               <span>{label}</span>
             </button>
           ))}

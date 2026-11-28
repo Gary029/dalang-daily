@@ -1010,3 +1010,91 @@ button:focus-visible {
 .chest .chip.reset {
   flex: 0 0 48px;
 }
+
+/* ---------- Serat Dalang (the book) ---------- */
+.book-tabs {
+  display: flex;
+  gap: 6px;
+  max-width: 720px;
+  margin: 6px auto 8px;
+}
+.book-tabs button {
+  flex: 1;
+  padding: 8px 4px;
+  border-radius: 10px;
+  border: 1px solid #3a2c47;
+  background: var(--night-2);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+}
+.book-tabs button.on {
+  border-color: var(--gold-dim);
+  color: var(--gold);
+  background: #2e2138;
+}
+.chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.chapters li {
+  padding: 10px 12px;
+  border-left: 3px solid var(--gold-dim);
+  background: rgba(224, 179, 90, 0.06);
+  border-radius: 0 10px 10px 0;
+}
+.chapters li.untold {
+  border-left-color: #3a2c47;
+  background: none;
+}
+.chapters .chapter {
+  font-family: 'Lora', serif;
+  margin: 2px 0 0;
+  line-height: 1.45;
+}
+.mini-card.locked .mini-art {
+  opacity: 0.8;
+}
+
+/* ---------- the arm switch on the pad ---------- */
+.pad .side-switch {
+  border-style: dashed;
+}
+.pad .side-switch.back {
+  border-color: var(--gold-dim);
+  color: var(--gold);
+}
+
+/* ---------- Sunday finale ---------- */
+.finale-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  padding: 16px;
+  overflow: hidden;
+}
+.finale-stage .kelir-box {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+.finale-caption {
+  animation-delay: 0ms;
+}
+.chest .chip span {
+  overflow-wrap: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  font-size: 10.5px;
+}
+.reveal.finale {
+  z-index: 30;
+}

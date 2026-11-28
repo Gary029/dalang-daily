@@ -1,7 +1,7 @@
 import { FIGURES } from './figures.ts';
 import { count, encodeMask } from './grid.ts';
 import { parOf, shadowOf, solve, type Slot } from './puzzle.ts';
-import { ANGLES, ARMS, DEPTHS, SLOTS } from './shadow.ts';
+import { isPose } from './shadow.ts';
 import type { UgcPuzzle } from './game.ts';
 
 /**
@@ -17,20 +17,6 @@ export type CreateCheck =
 
 export const MAX_OFFERED = 4;
 export const MAX_CAST = 3;
-
-const isPose = (v: unknown): boolean => {
-  if (!v || typeof v !== 'object') return false;
-  const p = v as Record<string, unknown>;
-  const int = (x: unknown, n: number) =>
-    Number.isInteger(x) && (x as number) >= 0 && (x as number) < n;
-  return (
-    int(p.x, SLOTS) &&
-    int(p.d, DEPTHS) &&
-    int(p.a, ANGLES) &&
-    int(p.arm, ARMS) &&
-    typeof p.flip === 'boolean'
-  );
-};
 
 export const cleanTitle = (t: unknown): string =>
   typeof t === 'string'
@@ -76,7 +62,7 @@ export const checkShadow = (
   if (!ids.every((id) => FIGURES.some((f) => f.id === id)))
     return { ok: false, message: 'Unknown puppet.' };
   if (!ids.every((id) => owned.includes(id)))
-    return { ok: false, message: 'You can only use wayang from your album.' };
+    return { ok: false, message: 'You can only use wayang you have met.' };
   const slots = req.slots;
   if (
     !Array.isArray(slots) ||
@@ -98,7 +84,7 @@ export const checkShadow = (
   const target = shadowOf(ids, slots);
   if (count(target) === 0)
     return { ok: false, message: 'The screen is empty.' };
-  const { solutions } = solve(ids, target, 2);
+  const { solutions } = solve(ids, target, 2, 1, 3);
   if (solutions.length !== 1)
     return {
       ok: false,
@@ -129,9 +115,11 @@ export const toUgc = (
   start: req.offered.map(() => null),
   par: check.par,
   lamps: 1,
+  joints: 3,
   target: encodeMask(shadowOf(req.offered, req.slots)),
   solution: [...req.slots],
   cards: [],
+  cast: req.offered.filter((_, k) => req.slots[k] !== null),
   tale: '',
   author,
   created: Date.now(),

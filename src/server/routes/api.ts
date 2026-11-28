@@ -163,7 +163,7 @@ api.post('/create', async (c) => {
     });
   const body = await c.req.json<CreateRequest>();
   const profile = await loadProfile(kv, username);
-  const check = checkShadow(body, Object.keys(profile.cards));
+  const check = checkShadow(body, Object.keys(profile.met));
   if (!check.ok)
     return c.json<CreateResponse>({
       type: 'create',

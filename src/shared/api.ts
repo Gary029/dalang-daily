@@ -11,6 +11,10 @@ export type Profile = {
   solves: number;
   /** lamp oil: earned with gold, burned to keep a streak across missed days */
   oil: number;
+  /** wayang met in a solved scene (for the book) */
+  met: Record<string, true>;
+  /** puzzle ids whose story chapter is unlocked (for the book) */
+  read: string[];
 };
 
 export const MAX_OIL = 3;
@@ -86,6 +90,9 @@ export type SolveResponse = {
   oilUsed: number;
   board: BoardRow[];
   myRank: number | null;
+  /** the book after this solve */
+  met: Record<string, true>;
+  read: string[];
 };
 
 export type ShareResponse = {
@@ -127,4 +134,6 @@ export const emptyProfile = (): Profile => ({
   warmupDone: false,
   solves: 0,
   oil: 0,
+  met: {},
+  read: [],
 });

@@ -8,14 +8,15 @@ for Reddit's Game of the Day hackathon (2026).
 
 Every day a new scene from a wayang story appears on the kelir, the cloth
 screen of Javanese shadow theatre. You are the dalang, the puppet master.
-Pick the right puppets from the chest, stand them at the right place and
-depth in front of the lamp, tilt them, raise their arms, turn them around,
-until their shadows fill the outline **exactly**. Every position snaps, so
-each puzzle is solved by reasoning, not nudging, and every puzzle has been
-proved by a solver to have exactly one answer.
+Pick puppets from the chest, stand them at the right place and depth in
+front of the lamp, tilt them, bend their arms and turn them around until
+their shadows fill the outline exactly. Every position snaps, so you work
+out the answer rather than nudge towards it, and a solver has checked that
+each puzzle has only one.
 
-Solve the scene and the wayang in it join your album. Solve it at par with no
-hints and the card turns to gold leaf.
+Solve the scene and you earn its pusaka, an heirloom from the story (Bima's
+club, Arjuna's keris, Sinta's hairpin). Solve it at par with no hints and it
+turns to gold leaf. Everything goes into your book, _Serat Dalang_.
 
 > Dalang is a **port**: it brings the characters, stories and look of our
 > Dalang VR game for Meta Quest to Reddit, rebuilt as a daily logic puzzle.
@@ -23,17 +24,21 @@ hints and the card turns to gold leaf.
 
 ## How a day works
 
-|             | Player                                     | In the post                                      | Server (Devvit + Redis)                                       |
-| ----------- | ------------------------------------------ | ------------------------------------------------ | ------------------------------------------------------------- |
-| **Open**    | Taps today's post in the feed              | Shows the scene, the outline, the date and par   | The scheduler made the post at 00:00 UTC (07:00 WIB)          |
-| **Solve**   | Drops a decoy, moves Bima two slots closer | Recasts the shadow on every tap; nothing is sent |                                                               |
-| **Collect** | 100% match: the gamelan plays              | Shows the result card and the new wayang cards   | Re-checks the answer, saves cards, streak and the solve count |
-| **Share**   | Posts the result as a comment in one tap   |                                                  | Comments as the player, updates their flair rank              |
+|             | Player                                     | In the post                                      | Server (Devvit + Redis)                                        |
+| ----------- | ------------------------------------------ | ------------------------------------------------ | -------------------------------------------------------------- |
+| **Open**    | Taps today's post in the feed              | Shows the scene, the outline, the date and par   | The scheduler made the post at 00:00 UTC (07:00 WIB)           |
+| **Solve**   | Drops a decoy, moves Bima two slots closer | Recasts the shadow on every tap; nothing is sent |                                                                |
+| **Collect** | 100% match: the gamelan plays              | Shows the result card and the new pusaka         | Re-checks the answer, saves pusaka, streak and the solve count |
+| **Share**   | Posts the result as a comment in one tap   |                                                  | Comments as the player, updates their flair rank               |
 
 ## The four tools
 
 - **Place**: 7 rod slots along the banana trunk, 5 depths (closer to the lamp
-  = bigger shadow), tilt in 45° steps, the arm down / forward / up, flip.
+  = bigger shadow), tilt in 45° steps, flip. As in real wayang kulit, the
+  legs are carved with the body and the arms move: each arm bends at the
+  shoulder and the elbow, and the head bows or rises. The week unlocks them
+  in turn (Monday the front shoulder, then the elbow, the back arm on
+  Thursday, the head at the weekend). Undo steps back one move.
 - **Pierce**: every puppet has its own carved holes. Light shows through
   them, so the holes in the outline tell you who is in the scene.
 - **Cast**: the chest offers more puppets than the scene needs. Decoys look
@@ -49,11 +54,11 @@ hints and the card turns to gold leaf.
 - A 30-second warm-up with Semar's step-by-step tips, then one-time
   contextual tips; Semar's three hints per puzzle (a hint costs the gold card,
   never the solve).
-- Two story weeks (14 puzzles), Monday gentle to Sunday fiendish:
-  _Bima Suci_ and _Arjuna Wiwaha_. After the second week the calendar
-  starts again. Each solve unlocks that day's chapter of the story, which
+- Three story weeks (21 puzzles), Monday gentle to Sunday fiendish:
+  _Bima Suci_, _Arjuna Wiwaha_ and _Hanoman Duta_ (from the Ramayana). After
+  the third week the calendar starts again. Each solve unlocks that day's chapter of the story, which
   ends on tomorrow's hook.
-- The week gets harder by rule, not just by par: from Wednesday puppets
+- Each weekday adds a rule as well as raising par: from Wednesday puppets
   overlap and hide each other's carved holes; from Thursday the match meter
   is gone and one decoy almost fits; at the weekend shadow that spills
   outside the outline is no longer marked red.
@@ -63,9 +68,14 @@ hints and the card turns to gold leaf.
   both shadows meet the screen is darkest. The second shadow follows the
   same projection as the 3D reveal, which lights the scene with two real
   lamps.
-- 15 wayang in five sets (Punakawan, Pandawa, Kurawa, Dewa, Raksasa), gold
-  cards, a gunungan badge for a full set, ranks (Penonton → Dalang Muda →
-  Dalang Agung) shown as user flair.
+- 22 pusaka to collect (one per scene, gold at par), 19 wayang to meet in
+  six sets (Punakawan, Pandawa, Kurawa, Dewa, Raksasa, Ramayana), and the
+  story chapters, all in the book _Serat Dalang_ (Pusaka, Wayang and Lakon
+  tabs; unfound pusaka show as silhouettes). Finishing a lakon's pusaka
+  earns its gunungan. Ranks (Penonton → Dalang Muda → Dalang Agung) show as
+  user flair.
+- Sunday's finale: after the two-lamp puzzle, the puppets you posed perform
+  the week's story on the kelir to the gamelan, chapter by chapter.
 - The turn-around: after a solve, a three.js scene swings the camera to the
   dalang's side of the screen. The painted puppets stand in your pose, and
   a real lamp casts your matched shadow onto the cloth. It loads only after
@@ -78,7 +88,7 @@ hints and the card turns to gold leaf.
 - Tomorrow's newcomer as a mystery silhouette on the feed and result cards.
 - A spoiler-free result card (moves, par, gold, streak and a row of squares
   showing how close each move came), posted as a comment or copied.
-- Player-made shadows: pose wayang from your album, keep a decoy, and Semar
+- Player-made shadows: pose wayang you have met, keep a decoy, and Semar
   (the solver) must find exactly one answer before you can post it. One per
   player per day, posted as the player. On Sunday the week's most upvoted
   player shadow gets its own post.
@@ -97,13 +107,17 @@ hints and the card turns to gold leaf.
 
 ```
 src/shared/    the game itself, shared by the post and the server
-  figures.ts     the 15 wayang as polygons, carved holes, posable arm and rods
+  figures.ts     the 19 wayang as polygons, carved holes, two posable arms,
+                 a turning head, rods
+  pusaka.ts      the 22 heirlooms you collect
+  tales.json     the story chapters (generated, no answers in it)
   grid.ts        the shadow grid: rasteriser, bit masks, compact encoding
   shadow.ts      poses: slot, depth, tilt, arm, flip -> a puppet's shadow
   puzzle.ts      moves and par, the solver, the calendar, Semar's hints
   game.ts        saves: cards, gold, streaks, counts (any Redis-like store)
   bank.json      the generated, solver-checked puzzles
-src/client/    the post (React): splash card in the feed, the game, album,
+src/client/    the post (React): splash card in the feed, the game, the book
+               (book.tsx), the Sunday finale (finale.tsx),
                reveal3d.ts (the three.js turn-around, loaded after a solve)
 src/server/    Devvit Web server (Hono): API, scheduler, menu, install trigger
 scripts/       generate-bank.ts, check-bank.ts (the CI gate), bundle check
@@ -169,15 +183,19 @@ blender -b --python tools/blender/build_wayang.py -- --only semar,bima --no-art
 - `scripts/export-figures.ts` tags every polygon (skin, face, cloth, hair,
   gold...) and gives the colours; if a figure in `src/shared/figures.ts`
   gains or loses a polygon, update its tag list there (the script checks).
-- Models: one GLB per figure with nodes `body`, `arm0`, `arm1`, `arm2`, in
-  figure units, meshopt-compressed without normals (three.js recomputes them),
-  about 40 KB each. They are only for show: in the reveal an invisible plane
-  with the exact scored silhouette casts the shadow.
+- Models: one GLB per figure with nodes `body`, `head` (origin at the neck,
+  so the reveal can turn it), and the arms `front_<s><e>` and `back_<s><e>`
+  for every shoulder and elbow position, in figure units, meshopt-compressed
+  without normals (three.js recomputes them). They are only for show: in the
+  reveal an invisible plane with the exact scored silhouette casts the
+  shadow. Until a figure's GLB has these nodes, the reveal shows its painted
+  stand-in.
 - Card art: `<id>-<arm>.webp`, 360×480, every figure at the same scale.
 
 ## Credits
 
-Characters and stories come from traditional Javanese wayang (the Mahabharata
-and its Javanese tales). All puppet artwork is made for this game: drawn in code and modelled in Blender from the same shapes.
+Characters and stories come from traditional Javanese wayang (the
+Mahabharata, the Ramayana and their Javanese tellings, and Mpu Kanwa's
+Arjunawiwaha). Sources for the story text are in `docs/STORY-SOURCES.md`. All puppet artwork is made for this game: drawn in code and modelled in Blender from the same shapes.
 Fonts: Yatra One, Lora and Nunito (SIL Open Font License, in `public/fonts`).
 Built from Reddit's Devvit React template (BSD-3-Clause).

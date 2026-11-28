@@ -1,5 +1,6 @@
 import { REST, figure, figureParts } from '../shared/figures.ts';
 import type { Poly } from '../shared/grid.ts';
+import { paintLeather } from './leather.ts';
 
 /**
  * The painted side of a puppet, for the chest and the album: leather in the
@@ -30,7 +31,7 @@ export const drawPuppet = (
   const pad = 0.06;
   // every figure is drawn at the same scale so sizes compare honestly
   const scale = Math.min(
-    (h * (1 - pad * 2)) / 1.16,
+    (h * (1 - pad * 2)) / Math.max(1.16, f.height + 0.03),
     (w * (1 - pad * 2)) / Math.max(0.5, maxX - minX)
   );
   const ox = w / 2 - ((minX + maxX) / 2) * scale;
@@ -50,10 +51,7 @@ export const drawPuppet = (
   off.height = h;
   const g = off.getContext('2d')!;
   const solid = path(parts);
-  if (style === 'locked') {
-    g.fillStyle = '#2a2235';
-    g.fill(solid, 'nonzero');
-  } else {
+  if (style !== 'locked') {
     // gilt rim: the silhouette in gold, nudged around, under the painted leather
     g.fillStyle = style === 'gold' ? '#ffd76a' : '#b8862f';
     const rim = Math.max(1, w / 90);
@@ -62,27 +60,11 @@ export const drawPuppet = (
       g.setTransform(1, 0, 0, 1, Math.cos(a) * rim, Math.sin(a) * rim);
       g.fill(solid, 'nonzero');
     }
-    g.setTransform(1, 0, 0, 1, 0, 0);
-    const grad = g.createLinearGradient(0, oy - f.height * scale, 0, oy);
-    grad.addColorStop(0, f.skin);
-    grad.addColorStop(0.4, f.skin);
-    grad.addColorStop(0.52, f.cloth);
-    grad.addColorStop(1, f.cloth);
-    g.fillStyle = grad;
-    g.fill(solid, 'nonzero');
   }
-  // carved holes
-  g.globalCompositeOperation = 'destination-out';
-  g.fill(path(fp.holes), 'nonzero');
-  g.globalCompositeOperation = 'source-over';
-  // the arms are held in front of the body, so the holes never cut them
-  if (style === 'locked') {
-    g.fillStyle = '#2a2235';
-    g.fill(path(fp.arms), 'nonzero');
-  } else {
-    g.fillStyle = f.skin;
-    g.fill(path(fp.arms), 'nonzero');
-  }
+  // figure units (y up) to pixels
+  g.setTransform(scale, 0, 0, -scale, ox, oy);
+  paintLeather(g, f, fp, style === 'locked');
+  g.setTransform(1, 0, 0, 1, 0, 0);
   if (style === 'gold') {
     ctx.shadowColor = 'rgba(255, 205, 90, 0.85)';
     ctx.shadowBlur = w / 10;

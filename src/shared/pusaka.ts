@@ -1,7 +1,7 @@
 /**
  * Pusaka: the heirlooms and objects of the stories. Each solved scene gives
  * one; solved at par with no hints, it turns to gold leaf. Art lives in
- * public/pusaka/<id>.svg. Sources for each story: docs/STORY-SOURCES.md.
+ * public/pusaka/<id>.webp (rendered by tools/blender/build_pusaka.py). Sources for each story: docs/STORY-SOURCES.md.
  */
 export type Pusaka = {
   id: string;
@@ -209,4 +209,4 @@ export const pusaka = (id: string): Pusaka => {
 
 /** a pusaka's picture, under the Pages base path or on Reddit */
 export const pusakaUrl = (base: string, id: string) =>
-  `${base}pusaka/${id}.svg`;
+  `${base}pusaka/${id}.webp`;

@@ -67,6 +67,71 @@ def material(key, color, kind):
     _mats[key] = m
     return m
 
+# --- cloth patterns ------------------------------------------------------------
+# A small tiling image per pattern, mapped flat onto the cloth (figure x across,
+# figure y up), so the GLB carries it as an ordinary texture.
+PATTERN_TILE = 0.1  # figure units covered by one image tile
+_pattern_imgs = {}
+
+def pattern_image(kind, base):
+    key = (kind, base)
+    if key in _pattern_imgs:
+        return _pattern_imgs[key]
+    n = 32
+    img = bpy.data.images.new(f"pat_{kind}_{base[1:]}", n, n, alpha=False)
+    r0, g0, b0, _ = hex_rgba(base)
+    dark = (r0 * 0.45, g0 * 0.4, b0 * 0.38)
+    px = []
+    for j in range(n):
+        for i in range(n):
+            if kind == "poleng":
+                # the checked cloth: black and white, with Bima's red and gold squares
+                ci, cj = i // 8, j // 8
+                if (ci + cj) % 2 == 0:
+                    c = (0.92, 0.9, 0.86)
+                elif (ci * 3 + cj) % 4 == 1:
+                    c = (0.62, 0.12, 0.1)
+                elif (ci * 3 + cj) % 4 == 3:
+                    c = (0.85, 0.65, 0.2)
+                else:
+                    c = (0.07, 0.06, 0.06)
+            elif kind == "parang":
+                # diagonal parang bands with a dark edge
+                d = (i + j) % 16
+                c = dark if d < 3 else ((0.9, 0.85, 0.72) if d == 8 else (r0, g0, b0))
+            else:  # kawung: four-petal ovals on the cloth colour
+                ci, cj = i % 16 - 7.5, j % 16 - 7.5
+                petal = (abs(ci) - abs(cj)) ** 2 < 6 and abs(ci) + abs(cj) > 4
+                c = dark if petal else (r0, g0, b0)
+            px += [c[0], c[1], c[2], 1.0]
+    img.pixels = px
+    img.pack()
+    _pattern_imgs[key] = img
+    return img
+
+def planar_uv(me):
+    """UVs from the figure plane (after the slab's rotation: x across, z up)"""
+    while me.uv_layers:
+        me.uv_layers.remove(me.uv_layers[0])
+    uv = me.uv_layers.new(name="UVMap")
+    me.uv_layers.active = uv
+    uv.active_render = True
+    for loop in me.loops:
+        co = me.vertices[loop.vertex_index].co
+        uv.data[loop.index].uv = (co.x / PATTERN_TILE, co.z / PATTERN_TILE)
+
+def pattern_material(key, color, kind):
+    if key in _mats:
+        return _mats[key]
+    m = material(key, color, "cloth")
+    nt = m.node_tree
+    tex = nt.nodes.new("ShaderNodeTexImage")
+    tex.image = pattern_image(kind, color)
+    tex.interpolation = "Closest"
+    tex.extension = "REPEAT"
+    nt.links.new(tex.outputs["Color"], nt.nodes.get("Principled BSDF").inputs["Base Color"])
+    return m
+
 def slab(name, poly, z, thick, bevel):
     """a rounded slab from a 2D polygon, centred at figure depth z"""
     cu = bpy.data.curves.new(name, "CURVE")
@@ -208,6 +273,7 @@ def shifted(poly, dx, dy):
 def build(f):
     reset()
     _mats.clear()
+    _pattern_imgs.clear()
     col = f["colors"]
     mat = lambda kind: material(f"{f['id']}_{kind}", col[kind], kind)
     braid = material(f"{f['id']}_bracelet", f["bracelet"], "gold")
@@ -223,7 +289,13 @@ def build(f):
         horn = p["kind"] == "horn"
         thick = ROD_THICK if horn else THICK
         ob = slab(f"p{k}", p["poly"], fz(p["layer"]), thick, BEVEL * (0.5 if horn else 1))
-        ob.data.materials.append(mat(p["kind"]))
+        if p["kind"] == "cloth" and f.get("pattern"):
+            planar_uv(ob.data)
+            ob.data.materials.append(
+                pattern_material(f"{f['id']}_cloth_pat", col["cloth"], f["pattern"])
+            )
+        else:
+            ob.data.materials.append(mat(p["kind"]))
         if not horn:
             for cut, boxes in groups:
                 if any(overlaps(bbox2(p["poly"]), h) for h in boxes):

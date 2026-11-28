@@ -191,6 +191,10 @@ blender -b --python tools/blender/build_wayang.py -- --only semar,bima --no-art
   shadow. Until a figure's GLB has these nodes, the reveal shows its painted
   stand-in.
 - Card art: `<id>-<arm>.webp`, 360×480, every figure at the same scale.
+  Cloth with a `pattern` (poleng, parang, kawung) gets a small tiling texture.
+- Pusaka: `tools/blender/build_pusaka.py` models the 22 heirlooms and renders
+  `public/pusaka/<id>.webp` (240×320). Run it the same way:
+  `blender -b --python tools/blender/build_pusaka.py -- [--only kayon,blencong]`.
 
 ## Credits
 

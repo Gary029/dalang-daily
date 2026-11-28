@@ -7,9 +7,8 @@
  *
  *   node --experimental-strip-types scripts/export-figures.ts
  *
- * The tags follow the polygon order in src/shared/figures.ts: if a body kit
- * gains or loses a polygon, update its list here (the script checks counts).
- * Which polygons are the head is the engine's own split (figureParts), read
+ * The tags (kind and layer) come from the figures themselves (Figure.tags),
+ * and so do the body, face and cloth colours. Which polygons are the head is the engine's own split (figureParts), read
  * back here, so the 3D head turns exactly what the scored shadow turns.
  */
 import { writeFileSync, mkdirSync } from 'node:fs';
@@ -19,123 +18,22 @@ import {
   HEAD,
   REST,
   SHOULDER,
+  armKinds,
   armPolys,
   figureParts,
   type Figure,
 } from '../src/shared/figures.ts';
 import type { Poly } from '../src/shared/grid.ts';
 
-type Kind = 'body' | 'face' | 'cloth' | 'hair' | 'gold' | 'white' | 'horn';
-/** kind and stacking layer (higher = nearer the viewer's side of the slab) */
+type Kind = Figure['tags'][number][0];
 type Tag = [Kind, number];
-
-const B = (l = 0): Tag => ['body', l];
-const F = (l = 3): Tag => ['face', l];
-const C = (l = 2): Tag => ['cloth', l];
-const H = (l = 4): Tag => ['hair', l];
-const G = (l = 4): Tag => ['gold', l];
-const W = (l = 5): Tag => ['white', l];
-
-const feetLegs = [B(), B(), B(), B()];
-/** feet, legs, dodot, torso, neck, head, nose, chin */
-const alus10 = [...feetLegs, C(), B(1), B(1), F(), F(4), F(4)];
-const crowns: Record<string, Tag[]> = {
-  gelung: [H(), H(), H()],
-  makuta: [G(5), H(2)],
-  topong: [G(5), H(2)],
-  jamang: [G(5), H(2)],
-};
-const alus = (crown: string, extra: Tag[] = []) => [
-  ...alus10,
-  ...crowns[crown]!,
-  ...extra,
-];
-const bima = [...feetLegs, C(), B(1), B(1), F(), F(4), H(), H(), H()];
-const buta = [...feetLegs, B(1.5), C(), B(1), B(1), F(), F(4), W(), G(), H(2)];
-
-/** per figure: tags for the body polygons (before the gapit), head index */
-const TAGS: Record<string, { tags: Tag[]; head: number }> = {
-  semar: {
-    tags: [...feetLegs, B(1), B(-1), C(), F(), F(4), F(4), H(), H()],
-    head: 7,
-  },
-  gareng: { tags: [...feetLegs, C(), B(1), F(), F(4), H()], head: 6 },
-  petruk: { tags: [...feetLegs, C(), B(1), B(1), F(), F(4), H()], head: 7 },
-  bagong: { tags: [...feetLegs, B(1), C(), F(), F(4), F(4)], head: 6 },
-  yudhistira: { tags: alus('jamang'), head: 7 },
-  bima: { tags: bima, head: 7 },
-  arjuna: { tags: alus('gelung'), head: 7 },
-  nakula: { tags: alus('topong'), head: 7 },
-  sadewa: { tags: alus('topong'), head: 7 },
-  duryudana: { tags: alus('makuta'), head: 7 },
-  sengkuni: { tags: alus('jamang', [B(-1), G(6), F(4)]), head: 7 },
-  guru: { tags: alus('makuta', [B(-3), B(-3), B(-3), G(6), G(-4)]), head: 7 },
-  dewaruci: { tags: bima, head: 7 },
-  cakil: {
-    tags: [...feetLegs, C(), B(1), B(1), F(), F(4), W(), H(5), H(2), H(2)],
-    head: 7,
-  },
-  buta: { tags: buta, head: 8 },
-  rama: { tags: alus('makuta'), head: 7 },
-  sinta: {
-    tags: [B(), C(), C(-1), B(1), B(1), F(), F(4), H(), H(), G(5)],
-    head: 5,
-  },
-  hanoman: {
-    tags: [
-      ...feetLegs,
-      C(),
-      B(1),
-      B(-1),
-      B(-1),
-      B(-1),
-      B(1),
-      F(),
-      F(4),
-      H(),
-      H(),
-    ],
-    head: 10,
-  },
-  rahwana: { tags: [...buta, G(5), G(5), G(5)], head: 8 },
-};
 
 const GOLD = '#e2b247';
 const BLACK = '#2a2321';
-/** vinyl-toy colours, after the Dalang VR figures */
-const PALETTE: Record<
-  string,
-  Partial<Record<Kind, string>> & { bracelet?: string }
-> = {
-  semar: {
-    body: '#2a2321',
-    face: '#f1e9d6',
-    cloth: '#c9b37a',
-    bracelet: '#c0302a',
-  },
-  gareng: { body: '#3a2f2a', face: '#3a2f2a', cloth: '#a8302c' },
-  petruk: { body: '#262020', face: '#d9a441', cloth: '#b5332b' },
-  bagong: { body: '#352b27', face: '#352b27', cloth: '#5b8a3a' },
-  yudhistira: { body: GOLD, face: BLACK, cloth: '#efe4c2' },
-  bima: { body: BLACK, face: BLACK, cloth: '#d9b84e' },
-  arjuna: { body: GOLD, face: BLACK, cloth: '#9b2f2f' },
-  nakula: { body: GOLD, face: BLACK, cloth: '#3f7b86' },
-  sadewa: { body: GOLD, face: BLACK, cloth: '#7a54a0' },
-  duryudana: { body: '#a3322a', face: '#a3322a', cloth: '#d4a23a' },
-  sengkuni: { body: '#d8c09a', face: '#d8c09a', cloth: '#56662e' },
-  guru: { body: '#e0b85a', face: '#e0b85a', cloth: '#8a2f44' },
-  dewaruci: { body: '#e8b96a', face: '#e8b96a', cloth: '#2f5f8f' },
-  cakil: { body: '#efe3c4', face: '#e8908a', cloth: '#cf4436' },
-  buta: { body: '#b8322a', face: '#b8322a', cloth: '#2d2a4a' },
-  rama: { body: GOLD, face: BLACK, cloth: '#2f6b4f' },
-  sinta: { body: '#e3bc62', face: '#e3bc62', cloth: '#7a2f66' },
-  hanoman: {
-    body: '#f2ede2',
-    face: '#f2ede2',
-    cloth: '#3b3532',
-    hair: '#2a2321',
-  },
-  rahwana: { body: '#9a2430', face: '#9a2430', cloth: '#2a2348' },
+/** extra colours per figure (the rest come from the figure) */
+const EXTRA: Record<string, { hair?: string; bracelet?: string }> = {
+  semar: { bracelet: '#c0302a' },
+  hanoman: { hair: '#2a2321' },
 };
 const BASE: Record<Kind, string> = {
   body: BLACK,
@@ -145,6 +43,7 @@ const BASE: Record<Kind, string> = {
   gold: GOLD,
   white: '#f5efe2',
   horn: '#4a3220',
+  red: '#a8302a',
 };
 
 const bbox = (p: Poly) => {
@@ -185,9 +84,10 @@ const armOf = (f: Figure, side: 'front' | 'back', s: number, e: number) => {
   const wx = ex + Math.cos(r2) * f.arm.fore;
   const wy = ey + Math.sin(r2) * f.arm.fore;
   const base = side === 'front' ? FRONT_LAYER : BACK_LAYER;
-  const tags: Tag[] = [B(base), B(base), B(base + 0.5)];
-  if (f.arm.hand === 'claw') tags.push(['gold', base + 0.5]);
-  tags.push(['horn', base - 2]);
+  const tags: Tag[] = armKinds(f.arm.hand).map((kind, k): Tag => [
+    kind,
+    kind === 'horn' ? base - 2 : k < 2 ? base : base + 0.5,
+  ]);
   if (tags.length !== polys.length) throw new Error(`${f.id}: arm tags`);
   const w = f.arm.width * (side === 'front' ? 1 : 0.92);
   return {
@@ -212,31 +112,44 @@ const armOf = (f: Figure, side: 'front' | 'back', s: number, e: number) => {
 };
 
 const out = FIGURES.map((f) => {
-  const t = TAGS[f.id];
-  if (!t) throw new Error(`no tags for ${f.id}`);
-  const n = f.body.length - 1; // the last one is the gapit
-  if (t.tags.length !== n)
-    throw new Error(`${f.id}: ${t.tags.length} tags for ${n} body polygons`);
   const headBody = headSet(f, 'body');
   const headHoles = headSet(f, 'holes');
-  if (!headBody.has(t.head))
-    console.warn(`${f.id}: the head polygon ${t.head} does not turn`);
   const parts = f.body.map((poly, k) => ({
     poly,
-    kind: k < n ? t.tags[k]![0] : ('horn' as Kind),
-    layer: k < n ? t.tags[k]![1] : 0,
+    kind: f.tags[k]![0],
+    layer: f.tags[k]![1],
     head: headBody.has(k),
   }));
-  const hb = bbox(f.body[t.head]!);
-  const pal = PALETTE[f.id] ?? {};
-  const colors = { ...BASE, ...pal } as Record<Kind, string>;
+  // the face polygon: the biggest face piece that turns with the head
+  let face = -1;
+  let best = -1;
+  f.body.forEach((q, k) => {
+    if (f.tags[k]![0] !== 'face' || !headBody.has(k)) return;
+    const b = bbox(q);
+    const a = (b.x1 - b.x0) * (b.y1 - b.y0);
+    if (a > best) {
+      best = a;
+      face = k;
+    }
+  });
+  if (face < 0) throw new Error(`${f.id}: no face polygon in the head`);
+  const hb = bbox(f.body[face]!);
+  const extra = EXTRA[f.id] ?? {};
+  const colors: Record<Kind, string> = {
+    ...BASE,
+    body: f.skin,
+    face: f.face,
+    cloth: f.cloth,
+    ...(extra.hair ? { hair: extra.hair } : {}),
+  };
   return {
     id: f.id,
     name: f.name,
     set: f.set,
     height: f.height,
     colors,
-    bracelet: pal.bracelet ?? GOLD,
+    bracelet: extra.bracelet ?? GOLD,
+    pattern: f.pattern ?? null,
     parts,
     holes: f.holes.map((poly, k) => ({ poly, head: headHoles.has(k) })),
     neck: f.neck,
@@ -247,7 +160,7 @@ const out = FIGURES.map((f) => {
       rx: (hb.x1 - hb.x0) / 2,
       ry: (hb.y1 - hb.y0) / 2,
       /** the eyes turn with the head when the face polygon does */
-      turns: headBody.has(t.head),
+      turns: true,
     },
     /** side * 9 + shoulder * 3 + elbow, side 0 front, 1 back */
     arms: (['front', 'back'] as const).flatMap((side) =>

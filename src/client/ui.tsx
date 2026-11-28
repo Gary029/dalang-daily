@@ -158,7 +158,7 @@ export const PusakaArt = (props: {
   className?: string;
 }) => (
   <img
-    src={`${import.meta.env.BASE_URL}pusaka/${props.id}.svg`}
+    src={`${import.meta.env.BASE_URL}pusaka/${props.id}.webp`}
     alt=""
     aria-hidden="true"
     draggable={false}

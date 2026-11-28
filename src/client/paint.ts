@@ -1,6 +1,7 @@
 import { figure, figureParts } from '../shared/figures.ts';
 import type { Poly } from '../shared/grid.ts';
 import { placedPolys, poseAffine, type Pose } from '../shared/shadow.ts';
+import { paintLeather } from './leather.ts';
 
 /**
  * A puppet painted in exactly the pose it was cast in, for the reveal.
@@ -103,31 +104,7 @@ export const paintPuppet = (id: string, pose: Pose): PaintedPuppet => {
     g.drawImage(sil, Math.cos(a) * rim, Math.sin(a) * rim);
   }
   setPose(g);
-  const grad = g.createLinearGradient(0, f.height, 0, 0);
-  grad.addColorStop(0, f.skin);
-  grad.addColorStop(0.4, f.skin);
-  grad.addColorStop(0.52, f.cloth);
-  grad.addColorStop(1, f.cloth);
-  g.fillStyle = grad;
-  g.fill(bodyPath, 'nonzero');
-  // a fine gold line inside the edge, like tooled leather
-  g.lineWidth = 0.006;
-  g.strokeStyle = 'rgba(240, 200, 110, 0.55)';
-  g.stroke(bodyPath);
-  g.globalCompositeOperation = 'destination-out';
-  g.fill(holes, 'nonzero');
-  // gold around each carved hole
-  g.globalCompositeOperation = 'source-atop';
-  g.lineWidth = 0.012;
-  g.strokeStyle = '#e0b35a';
-  g.stroke(holes);
-  g.globalCompositeOperation = 'source-over';
-  // the arms, held in front
-  g.fillStyle = f.skin;
-  g.fill(armsPath, 'nonzero');
-  g.lineWidth = 0.006;
-  g.strokeStyle = 'rgba(240, 200, 110, 0.55)';
-  g.stroke(armsPath);
+  paintLeather(g, f, parts);
 
   return { id, pose, box: { x0, y0, x1, y1 }, color, mask };
 };
